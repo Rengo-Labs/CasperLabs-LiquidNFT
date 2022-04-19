@@ -1,0 +1,10 @@
+[workspace]
+
+members = [
+    "liquid_helper",
+    "liquid_helper-tests"
+]
+
+[profile.release]
+codegen-units = 1
+lto = true
