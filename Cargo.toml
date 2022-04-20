@@ -1,18 +1,20 @@
 [workspace]
 members = [
+  # ERC20
+  "erc20/erc20",
+  "erc20/erc20-crate",
+  "erc20/erc20-proxy",
+  "erc20/erc20-tests",
   # LIQUID BASE
   "liquid-base-crate",
   # LIQUID HELPER
   "liquid-helper/liquid-helper",
   "liquid-helper/liquid-helper-crate",
+  "liquid-helper/liquid-helper-proxy",
   "liquid-helper/liquid-helper-tests",
   # LIQUID LOCKER
   "liquid-locker/liquid-locker",
   "liquid-locker/liquid-locker-crate",
-  "liquid-locker/liquid-locker-tests",
   "liquid-locker/liquid-locker-proxy",
-  # LIQUID TRANSFER
-  "liquid-transfer/liquid-transfer",
-  "liquid-transfer/liquid-transfer-crate",
-  "liquid-transfer/liquid-transfer-tests",
+  "liquid-locker/liquid-locker-tests",
 ]

@@ -4,29 +4,33 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
-use liquid_helper_crate::liquid_base_crate::{
-    data::{DEADLINE_TIME, FEE, SECONDS_IN_DAY},
-    LIQUIDBASE,
-};
+use liquid_helper_crate::liquid_base_crate::{data as liquid_base_data, data::*, LIQUIDBASE};
 use liquid_helper_crate::LIQUIDHELPER;
-use liquid_nft_utils::commons::key_names::*;
-use liquid_transfer_crate::{self, LIQUIDTRANSFER};
 
 pub trait LIQUIDLOCKER<Storage: ContractStorage>:
-    ContractContext<Storage> + LIQUIDTRANSFER<Storage> + LIQUIDHELPER<Storage> + LIQUIDBASE<Storage>
+    ContractContext<Storage> + LIQUIDHELPER<Storage> + LIQUIDBASE<Storage>
 {
-    fn init(&mut self, contract_hash: Key, package_hash: ContractPackageHash) {
+    fn init(
+        &mut self,
+        trustee_multisig: Key,
+        payment_token: Key,
+        contract_hash: Key,
+        package_hash: ContractPackageHash,
+    ) {
         LIQUIDBASE::init(self);
-        LIQUIDBASE::Globals(self).set(LOCKER_OWNER, self.get_caller());
-
+        let mut g = get_globals();
+        g.locker_owner = self.get_caller();
+        set_globals(g);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
+        liquid_base_data::set_payment_token(payment_token);
+        liquid_base_data::set_trustee_multisig(trustee_multisig);
     }
 
     fn only_locker_owner(&self) {
-        if !(self.get_caller() == LIQUIDBASE::Globals(self).get(LOCKER_OWNER)) {
+        if !(self.get_caller() == get_globals().locker_owner) {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
     }
@@ -49,11 +53,13 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         payment_time: U256,
         payment_rate: U256,
     ) {
-        LIQUIDBASE::Globals(self).set(TOKEN_ID, token_id);
-        LIQUIDBASE::Globals(self).set(LOCKER_OWNER, token_owner);
-        LIQUIDBASE::Globals(self).set(TOKEN_ADDRESS, token_address);
-        LIQUIDBASE::Globals(self).set(PAYMENT_TIME, payment_time);
-        LIQUIDBASE::Globals(self).set(PAYMENT_RATE, payment_rate);
+        set_globals(Globals {
+            token_id,
+            payment_time,
+            payment_rate,
+            locker_owner: token_owner,
+            token_address,
+        });
 
         LIQUIDBASE::set_floor_asked(self, floor_asked);
         LIQUIDBASE::set_total_asked(self, total_asked);
@@ -76,22 +82,26 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         self.only_locker_owner();
         self.only_during_contribution_phase();
 
-        if !(new_payment_rate > LIQUIDBASE::Globals(self).get(PAYMENT_RATE)) {
+        if !(new_payment_rate > get_globals().payment_rate) {
             runtime::revert(ApiError::from(Error::InvalidIncrease));
         }
 
-        // LIQUIDBASE::Globals(self).set(PAYMENT_RATE, new_payment_rate);
+        let mut g = get_globals();
+        g.payment_rate = new_payment_rate;
+        set_globals(g);
     }
 
     fn decrease_payment_time(&self, new_payment_time: U256) {
         self.only_locker_owner();
         self.only_during_contribution_phase();
 
-        if !(new_payment_time < LIQUIDBASE::Globals(self).get(PAYMENT_TIME)) {
+        if !(new_payment_time < get_globals().payment_time) {
             runtime::revert(ApiError::from(Error::InvalidDecrease));
         }
 
-        LIQUIDBASE::Globals(self).set(PAYMENT_TIME, new_payment_time);
+        let mut g = get_globals();
+        g.payment_time = new_payment_time;
+        set_globals(g);
     }
 
     fn make_contribution(&mut self, token_amount: U256, token_holder: Key) -> (U256, U256) {
@@ -162,8 +172,8 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         let (total_payback, epoch_payback, teams_payback): (U256, U256, U256) = self
             .calculate_paybacks(
                 LIQUIDBASE::get_total_collected(self),
-                LIQUIDBASE::Globals(self).get(PAYMENT_TIME),
-                LIQUIDBASE::Globals(self).get(PAYMENT_RATE),
+                get_globals().payment_time,
+                get_globals().payment_rate,
             );
 
         LIQUIDBASE::set_claimable_balance(
@@ -181,7 +191,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         LIQUIDHELPER::_safe_transfer(
             self,
             LIQUIDBASE::PAYMENT_TOKEN(self),
-            LIQUIDBASE::Globals(self).get(LOCKER_OWNER),
+            get_globals().locker_owner,
             LIQUIDBASE::get_total_collected(self)
                 .checked_sub(prepay_amount)
                 .unwrap_or_revert()
@@ -213,7 +223,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     fn disable_locker(&self) {
         self.only_locker_owner();
 
-        if !(self.get_caller() == LIQUIDBASE::Globals(self).get(LOCKER_OWNER)) {
+        if !(self.get_caller() == get_globals().locker_owner) {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
         if !(LIQUIDHELPER::below_floor_asked(self) == true) {
@@ -232,9 +242,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             runtime::revert(ApiError::from(Error::InvalidTrustee));
         }
 
-        if !(LIQUIDHELPER::time_since(self, LIQUIDBASE::get_creation_time(self))
-            > U256::from(DEADLINE_TIME))
-        {
+        if !(LIQUIDHELPER::time_since(self, LIQUIDBASE::get_creation_time(self)) > DEADLINE_TIME) {
             runtime::revert(ApiError::from(Error::NotEnoughTime));
         }
 
@@ -302,12 +310,12 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         let purchased_time: U256 = payment_amount
             .checked_div(self.calculate_epoch(
                 LIQUIDBASE::get_total_collected(self),
-                LIQUIDBASE::Globals(self).get(PAYMENT_TIME),
-                LIQUIDBASE::Globals(self).get(PAYMENT_RATE),
+                get_globals().payment_time,
+                get_globals().payment_rate,
             ))
             .unwrap_or_revert();
 
-        if !(purchased_time >= U256::from(SECONDS_IN_DAY)) {
+        if !(purchased_time >= SECONDS_IN_DAY) {
             runtime::revert(ApiError::from(Error::MinimumPayoff));
         }
 
@@ -334,15 +342,18 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             runtime::revert(ApiError::from(Error::TooEarly));
         }
 
-        let token_id: Vec<U256> = LIQUIDBASE::Globals(self).get(TOKEN_ID);
-        let token_address: Key = LIQUIDBASE::Globals(self).get(TOKEN_ADDRESS);
+        let token_id: Vec<U256> = get_globals().token_id;
+        let token_address: Key = get_globals().token_address;
         for i in token_id {
-            LIQUIDTRANSFER::transfer_nft(
-                self,
-                data::get_hash(),
-                LIQUIDHELPER::liquidate_to(self),
-                token_address,
-                i,
+            let () = runtime::call_versioned_contract(
+                token_address.into_hash().unwrap_or_revert().into(),
+                None,
+                "transfer_from",
+                runtime_args! {
+                    "from" => Key::from(data::get_contract_package_hash()),
+                    "to" => LIQUIDHELPER::liquidate_to(self),
+                    "token_id" => i
+                },
             );
         }
 
@@ -384,7 +395,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             U256::from(blocktime)
                 .checked_sub(LIQUIDBASE::get_next_due_time(self))
                 .unwrap_or_revert()
-                .checked_div(SECONDS_IN_DAY.into())
+                .checked_div(SECONDS_IN_DAY)
                 .unwrap_or_revert()
         } else {
             0.into()
@@ -407,7 +418,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         let teams_payback: U256 = total_payback
             .checked_sub(total_value)
             .unwrap_or_revert()
-            .checked_mul(FEE.into())
+            .checked_mul(FEE)
             .unwrap_or_revert()
             .checked_div(100.into())
             .unwrap_or_revert();
@@ -489,7 +500,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
 
     fn _split_penalties(&self) {
         let team_balance: U256 = LIQUIDBASE::get_penalties_balance(self)
-            .checked_mul(FEE.into())
+            .checked_mul(FEE)
             .unwrap_or_revert()
             .checked_div(100.into())
             .unwrap_or_revert();
@@ -540,11 +551,20 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn _return_token(&self) {
-        let token_id: Vec<U256> = LIQUIDBASE::Globals(self).get(TOKEN_ID);
-        let token_address: Key = LIQUIDBASE::Globals(self).get(TOKEN_ADDRESS);
-        let locker_owner: Key = LIQUIDBASE::Globals(self).get(LOCKER_OWNER);
+        let token_id: Vec<U256> = get_globals().token_id;
+        let token_address: Key = get_globals().token_address;
+        let locker_owner: Key = get_globals().locker_owner;
         for i in token_id {
-            LIQUIDTRANSFER::transfer_nft(self, data::get_hash(), locker_owner, token_address, i);
+            let () = runtime::call_versioned_contract(
+                token_address.into_hash().unwrap_or_revert().into(),
+                None,
+                "transfer_from",
+                runtime_args! {
+                    "from" => Key::from(data::get_contract_package_hash()),
+                    "to" => locker_owner,
+                    "token_id" => i
+                },
+            );
         }
     }
 

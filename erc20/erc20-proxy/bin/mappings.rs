@@ -43,10 +43,26 @@ pub fn self_package_key() -> String {
     format!("package_hash")
 }
 
-pub fn liquid_locker_key() -> String {
-    format!("liquid_locker")
+pub fn erc20_key() -> String {
+    format!("erc20")
 }
 
-pub fn result_key() -> String {
-    format!("result")
+pub fn transfer_key() -> String {
+    format!("transfer_result")
+}
+
+pub fn transfer_from_key() -> String {
+    format!("transfer_from_result")
+}
+
+pub fn allowance() -> String {
+    format!("allowance")
+}
+
+pub fn increase_allowance_key() -> String {
+    format!("increase_allowance_result")
+}
+
+pub fn decrease_allowance_key() -> String {
+    format!("decrease_allowance_result")
 }

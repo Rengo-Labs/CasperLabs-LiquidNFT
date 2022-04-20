@@ -1,5 +1,4 @@
-use crate::data::{self, Compensations, Contributions, Globals};
-use casper_contract::unwrap_or_revert::UnwrapOrRevert;
+use crate::data::{self, Compensations, Contributions};
 use casper_types::{Key, U256};
 use contract_utils::{get_key, set_key};
 use contract_utils::{ContractContext, ContractStorage};
@@ -9,28 +8,26 @@ pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self) {
         data::Compensations::init();
         data::Contributions::init();
-        data::Globals::init();
+    }
+
+    fn SET_TRUSTEE_MULTISIG(&self, trustee_multisig: Key) {
+        data::set_trustee_multisig(trustee_multisig);
     }
 
     fn TRUSTEE_MULTISIG(&self) -> Key {
-        Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-        )
-        .unwrap()
+        data::get_trustee_multisig()
+    }
+
+    fn SET_PAYMENT_TOKEN(&self, payment_token: Key) {
+        data::set_payment_token(payment_token);
     }
 
     fn PAYMENT_TOKEN(&self) -> Key {
-        Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-        )
-        .unwrap()
+        data::get_payment_token()
     }
 
     fn ZERO_ADDRESS(&self) -> Key {
-        Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-        )
-        .unwrap()
+        data::zero_address()
     }
 
     // Mappings
@@ -42,9 +39,9 @@ pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
         Contributions::instance()
     }
 
-    fn Globals(&self) -> Globals {
-        Globals::instance()
-    }
+    // fn Globals(&self) -> Globals {
+    //     Globals::instance()
+    // }
 
     // Variables
     fn set_single_provider(&self, single_provider: Key) {
@@ -52,7 +49,7 @@ pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn get_single_provider(&self) -> Key {
-        get_key(data::SINGLE_PROVIDER).unwrap_or_revert()
+        get_key(data::SINGLE_PROVIDER).unwrap_or(self.ZERO_ADDRESS())
     }
 
     //Minimum the owner wants for the loan. If less than this contributors refunded

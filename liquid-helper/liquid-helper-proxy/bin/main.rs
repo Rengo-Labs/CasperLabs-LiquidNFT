@@ -3,131 +3,223 @@
 
 extern crate alloc;
 use alloc::{boxed::Box, collections::BTreeSet, format, vec, vec::Vec};
+
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    contracts::{ContractHash, ContractPackageHash},
+    runtime_args, CLType, CLTyped, EntryPoint, EntryPointAccess, EntryPointType, EntryPoints,
+    Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
-use liquid_helper_crate::{self, liquid_base_crate::LIQUIDBASE, LIQUIDHELPER};
-
-#[derive(Default)]
-struct LiquidHelper(OnChainContractStorage);
-
-impl ContractContext<OnChainContractStorage> for LiquidHelper {
-    fn storage(&self) -> &OnChainContractStorage {
-        &self.0
-    }
-}
-
-impl LIQUIDBASE<OnChainContractStorage> for LiquidHelper {}
-impl LIQUIDHELPER<OnChainContractStorage> for LiquidHelper {}
-
-impl LiquidHelper {
-    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
-        LIQUIDHELPER::init(self, Key::from(contract_hash), package_hash);
-    }
-}
+pub mod mappings;
 
 #[no_mangle]
 fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    LiquidHelper::default().constructor(contract_hash, package_hash);
+    let liquid_helper: Key = runtime::get_named_arg("liquid_helper");
+
+    mappings::set_key(&mappings::self_hash_key(), contract_hash);
+    mappings::set_key(&mappings::self_package_key(), package_hash);
+    mappings::set_key(
+        &mappings::liquid_helper_key(),
+        ContractPackageHash::from(liquid_helper.into_hash().unwrap_or_default()),
+    );
 }
 
 #[no_mangle]
 fn get_tokens() {
-    let ret: Vec<U256> = LiquidHelper::default().get_tokens();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: Vec<U256> = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "get_tokens",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn ownerless_locker() {
-    let ret: bool = LiquidHelper::default().ownerless_locker();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "ownerless_locker",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn floor_not_reached() {
-    let ret: bool = LiquidHelper::default().floor_not_reached();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "floor_not_reached",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn not_single_provider() {
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
     let check_address: Key = runtime::get_named_arg("check_address");
-
-    let ret: bool = LiquidHelper::default().not_single_provider(check_address);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "not_single_provider",
+        runtime_args! {
+            "check_address" => check_address
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn reached_total() {
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
     let contributor: Key = runtime::get_named_arg("contributor");
     let token_amount: U256 = runtime::get_named_arg("token_amount");
-
-    let ret: bool = LiquidHelper::default().reached_total(contributor, token_amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "reached_total",
+        runtime_args! {
+            "contributor" => contributor,
+            "token_amount" => token_amount
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn missed_activate() {
-    let ret: bool = LiquidHelper::default().missed_activate();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "missed_activate",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn missed_deadline() {
-    let ret: bool = LiquidHelper::default().missed_deadline();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "missed_deadline",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn payment_time_not_set() {
-    let ret: bool = LiquidHelper::default().payment_time_not_set();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "payment_time_not_set",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn below_floor_asked() {
-    let ret: bool = LiquidHelper::default().below_floor_asked();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "below_floor_asked",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn contribution_phase() {
-    let ret: bool = LiquidHelper::default().contribution_phase();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: bool = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "contribution_phase",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn payback_timestamp() {
-    let ret: U256 = LiquidHelper::default().payback_timestamp();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: U256 = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "payback_timestamp",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn starting_timestamp() {
-    let ret: U256 = LiquidHelper::default().starting_timestamp();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: U256 = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "starting_timestamp",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn liquidate_to() {
-    let ret: Key = LiquidHelper::default().liquidate_to();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
+    let ret: Key = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "liquidate_to",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 #[no_mangle]
 fn time_since() {
+    let liquid_helper_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_helper_key());
     let time_stamp: U256 = runtime::get_named_arg("time_stamp");
-
-    let ret: U256 = LiquidHelper::default().time_since(time_stamp);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let ret: U256 = runtime::call_versioned_contract(
+        liquid_helper_address,
+        None,
+        "time_since",
+        runtime_args! {
+            "time_stamp" => time_stamp
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 
 fn get_entry_points() -> EntryPoints {
@@ -135,8 +227,9 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
-            Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
+            Parameter::new("contract_hash", ContractHash::cl_type()),
+            Parameter::new("liquid_helper", Key::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
@@ -145,28 +238,28 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "get_tokens",
         vec![],
-        CLType::List(Box::new(CLType::U256)),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "ownerless_locker",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "floor_not_reached",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "not_single_provider",
         vec![Parameter::new("check_address", Key::cl_type())],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -176,70 +269,70 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("contributor", Key::cl_type()),
             Parameter::new("token_amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "missed_activate",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "missed_deadline",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "below_floor_asked",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "payment_time_not_set",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "contribution_phase",
         vec![],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "payback_timestamp",
         vec![],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "starting_timestamp",
         vec![],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "liquidate_to",
         vec![Parameter::new("time_stamp", U256::cl_type())],
-        Key::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "time_since",
         vec![Parameter::new("time_stamp", U256::cl_type())],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -252,11 +345,13 @@ fn call() {
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
     let (contract_hash, _) =
         storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+    let liquid_helper: Key = runtime::get_named_arg("liquid_helper");
 
     // Prepare constructor args
     let constructor_args = runtime_args! {
         "contract_hash" => contract_hash,
-        "package_hash"=> package_hash
+        "package_hash" => package_hash,
+        "liquid_helper" => liquid_helper
     };
 
     // Add the constructor group to the package hash with a single URef.

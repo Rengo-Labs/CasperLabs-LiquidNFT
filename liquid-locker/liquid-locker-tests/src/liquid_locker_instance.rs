@@ -14,7 +14,7 @@ impl LIQUIDLOCKERInstance {
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
-        owner: Key,
+        trustee_multisig: Key,
         payment_token: Key,
     ) -> TestContract {
         TestContract::new(
@@ -23,8 +23,7 @@ impl LIQUIDLOCKERInstance {
             contract_name,
             sender,
             runtime_args! {
-                "factory_address" => owner,
-                "trustee_multisig" => owner,
+                "trustee_multisig" => trustee_multisig,
                 "payment_token" => payment_token
             },
             0,

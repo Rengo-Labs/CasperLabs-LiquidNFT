@@ -9,4 +9,3 @@ pub mod liquid_locker;
 
 pub use liquid_helper_crate;
 pub use liquid_locker::LIQUIDLOCKER;
-pub use liquid_transfer_crate;

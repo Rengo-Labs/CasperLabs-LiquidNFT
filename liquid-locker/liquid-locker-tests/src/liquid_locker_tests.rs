@@ -19,6 +19,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
         0,
     )
 }
+
 fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
@@ -33,17 +34,18 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
         .unwrap(),
     );
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
+
     let contract = LIQUIDLOCKERInstance::new(
         &env,
         "LIQUIDLOCKER",
         owner,
         Key::from(package_hash),
-        Key::Hash(erc20.contract_hash()),
+        Key::Hash(erc20.package_hash()),
     );
     proxy.call_contract(
         owner,
         "set_liquid_locker",
-        runtime_args! {"token" => Key::Hash(contract.contract_hash())},
+        runtime_args! {"token" => Key::Hash(contract.package_hash())},
         0,
     );
     let package_hash: ContractPackageHash =
@@ -76,9 +78,15 @@ fn initialize(owner: AccountHash, instance: &LIQUIDLOCKERInstance, token_owner: 
         payment_rate,
     );
 }
+
+#[test]
+fn test_deploy() {
+    let (_, owner, _, proxy) = deploy();
+}
+
 #[test]
 fn test_intialize() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let token_id: Vec<U256> = Vec::new();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
@@ -99,9 +107,10 @@ fn test_intialize() {
         payment_rate,
     );
 }
+
 #[test]
 fn test_increase_payment_rate() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
@@ -109,9 +118,10 @@ fn test_increase_payment_rate() {
     let new_payment_rate: U256 = U256::from(1000000000);
     proxy.increase_payment_rate(owner, new_payment_rate);
 }
+
 #[test]
 fn test_decrease_payment_time() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
@@ -119,9 +129,10 @@ fn test_decrease_payment_time() {
     let new_payment_rate: U256 = U256::from(0);
     proxy.decrease_payment_time(owner, new_payment_rate);
 }
+
 #[test]
 fn test_enable_locker() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let prepay_amount: U256 = U256::from(20);
@@ -145,28 +156,30 @@ fn test_enable_locker() {
     proxy.make_contribution(owner, 150.into(), token_owner);
     proxy.enable_locker(owner, prepay_amount);
 }
+
 #[test]
 fn test_disable_locker() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_owner: Key = Key::from(package_hash);
     initialize(owner, &proxy, token_owner);
     proxy.disable_locker(owner);
 }
+
 #[test]
 fn test_rescue_locker() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     initialize(owner, &proxy, token_owner);
     proxy.rescue_locker(owner);
 }
+
 #[test]
 fn test_refund_due_disabled() {
-    let (_, owner, contract, proxy) = deploy();
-    let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
+    let (_, owner, _, proxy) = deploy();
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_id: Vec<U256> = Vec::new();
     let token_address: Key = Key::Account(owner);
@@ -192,9 +205,10 @@ fn test_refund_due_disabled() {
     let refund_address: Key = Key::Account(owner);
     proxy.refund_due_disabled(owner, refund_address);
 }
+
 #[test]
 fn test_refund_due_single() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
@@ -225,9 +239,10 @@ fn test_refund_due_single() {
     proxy.make_contribution(owner, token_amount1, refund_address);
     proxy.refund_due_single(owner, refund_address);
 }
+
 #[test]
 fn test_donate_funds() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
@@ -235,9 +250,10 @@ fn test_donate_funds() {
     let donation_amount: U256 = U256::from(1);
     proxy.donate_funds(owner, donation_amount);
 }
+
 #[test]
 fn test_pay_back_funds() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_id: Vec<U256> = Vec::new();
     let token_owner: Key = Key::from(package_hash);
@@ -262,9 +278,10 @@ fn test_pay_back_funds() {
     let payment_amount: U256 = U256::from(100000000);
     proxy.pay_back_funds(owner, payment_amount);
 }
+
 #[test]
 fn test_liquidate_locker() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_id: Vec<U256> = Vec::new();
@@ -286,9 +303,10 @@ fn test_liquidate_locker() {
     );
     proxy.liquidate_locker(owner);
 }
+
 #[test]
 fn test_claim_interest_single() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_owner: Key = Key::from(package_hash);
@@ -298,9 +316,10 @@ fn test_claim_interest_single() {
     proxy.make_contribution(owner, token_amount, token_owner);
     proxy.claim_interest_single(owner);
 }
+
 #[test]
 fn test_claim_interest_public() {
-    let (_, owner, contract, proxy) = deploy();
+    let (_, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_amount = U256::from(1000);

@@ -2,16 +2,17 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, vec, vec::Vec};
 
 use casper_contract::{
-    contract_api::{runtime, storage,},
+    contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
     contracts::{ContractHash, ContractPackageHash},
     runtime_args, CLType, CLTyped, EntryPoint, EntryPointAccess, EntryPointType, EntryPoints,
-    Group, Key, Parameter, RuntimeArgs, URef, U256};
+    Group, Key, Parameter, RuntimeArgs, URef, U256,
+};
 pub mod mappings;
 
 #[no_mangle]
@@ -19,7 +20,7 @@ fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     let liquid_locker: Key = runtime::get_named_arg("liquid_locker");
-    
+
     mappings::set_key(&mappings::self_hash_key(), contract_hash);
     mappings::set_key(&mappings::self_package_key(), package_hash);
     mappings::set_key(
@@ -29,259 +30,283 @@ fn constructor() {
 }
 
 #[no_mangle]
-fn liquidate_locker(){
+fn initialize() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "liquidate_locker",
-            runtime_args! {},
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let token_id: Vec<U256> = runtime::get_named_arg("token_id");
+    let token_address: Key = runtime::get_named_arg("token_address");
+    let token_owner: Key = runtime::get_named_arg("token_owner");
+    let floor_asked: U256 = runtime::get_named_arg("floor_asked");
+    let total_asked: U256 = runtime::get_named_arg("total_asked");
+    let payment_time: U256 = runtime::get_named_arg("payment_time");
+    let payment_rate: U256 = runtime::get_named_arg("payment_rate");
+    let () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "initialize",
+        runtime_args! {
+            "token_id" => token_id,
+            "token_address" => token_address,
+            "token_owner" => token_owner,
+            "floor_asked" => floor_asked,
+            "total_asked" => total_asked,
+            "payment_time" => payment_time,
+            "payment_rate" => payment_rate
+        },
+    );
 }
+
 #[no_mangle]
-fn claim_interest_single(){
+fn liquidate_locker() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "claim_interest_single",
-            runtime_args! {},
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "liquidate_locker",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn claim_interest_public(){
+fn claim_interest_single() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "claim_interest_public",
-            runtime_args! {},
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "claim_interest_single",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn decrease_payment_time(){
+fn claim_interest_public() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "decrease_payment_time",
-            runtime_args! {
-                "new_payment_rate" => new_payment_rate
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "claim_interest_public",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn increase_payment_rate(){
+fn decrease_payment_time() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "increase_payment_rate",
-            runtime_args! {
-                "new_payment_rate" => new_payment_rate
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "decrease_payment_time",
+        runtime_args! {
+            "new_payment_rate" => new_payment_rate
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn enable_locker(){
+fn increase_payment_rate() {
+    let liquid_locker_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_locker_key());
+    let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "increase_payment_rate",
+        runtime_args! {
+            "new_payment_rate" => new_payment_rate
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
+}
+#[no_mangle]
+fn enable_locker() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
     let prepay_amount: U256 = runtime::get_named_arg("prepay_amount");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "enable_locker",
-            runtime_args! {
-                "prepay_amount" => prepay_amount
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "enable_locker",
+        runtime_args! {
+            "prepay_amount" => prepay_amount
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn disable_locker(){
+fn disable_locker() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "disable_locker",
-            runtime_args! {
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "disable_locker",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn rescue_locker(){
+fn rescue_locker() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "rescue_locker",
-            runtime_args! {
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "rescue_locker",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn refund_due_disabled(){
-    let liquid_locker_address: ContractPackageHash =
-        mappings::get_key(&mappings::liquid_locker_key());
-    let refund_address: Key = runtime::get_named_arg("refund_address");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "refund_due_disabled",
-            runtime_args! {
-                "refund_address" => refund_address
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
-}
-#[no_mangle]
-fn refund_due_single(){
+fn refund_due_disabled() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
     let refund_address: Key = runtime::get_named_arg("refund_address");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "refund_due_single",
-            runtime_args! {
-                "refund_address" => refund_address
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "refund_due_disabled",
+        runtime_args! {
+            "refund_address" => refund_address
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn donate_funds(){
+fn refund_due_single() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-    let donation_amount: Key = runtime::get_named_arg("donation_amount");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "donate_funds",
-            runtime_args! {
-                "donation_amount" => donation_amount
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let refund_address: Key = runtime::get_named_arg("refund_address");
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "refund_due_single",
+        runtime_args! {
+            "refund_address" => refund_address
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn pay_back_funds(){
+fn donate_funds() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-    let payment_amount: Key = runtime::get_named_arg("payment_amount");
-        let ret:() = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "pay_back_funds",
-            runtime_args! {
-                "payment_amount" => payment_amount
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let donation_amount: U256 = runtime::get_named_arg("donation_amount");
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "donate_funds",
+        runtime_args! {
+            "donation_amount" => donation_amount
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn calculate_epoch(){
+fn pay_back_funds() {
+    let liquid_locker_address: ContractPackageHash =
+        mappings::get_key(&mappings::liquid_locker_key());
+    let payment_amount: U256 = runtime::get_named_arg("payment_amount");
+    let ret: () = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "pay_back_funds",
+        runtime_args! {
+            "payment_amount" => payment_amount
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
+}
+#[no_mangle]
+fn calculate_epoch() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
     let total_value: U256 = runtime::get_named_arg("total_value");
     let payment_time: U256 = runtime::get_named_arg("payment_time");
     let payment_rate: U256 = runtime::get_named_arg("payment_rate");
-        let ret:U256 = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "calculate_epoch",
-            runtime_args! {
-                "total_value" => total_value,
-                "payment_time" => payment_time,
-                "payment_rate" => payment_rate,
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: U256 = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "calculate_epoch",
+        runtime_args! {
+            "total_value" => total_value,
+            "payment_time" => payment_time,
+            "payment_rate" => payment_rate,
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn calculate_paybacks(){
+fn calculate_paybacks() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
     let total_value: U256 = runtime::get_named_arg("total_value");
     let payment_time: U256 = runtime::get_named_arg("payment_time");
     let payment_rate: U256 = runtime::get_named_arg("payment_rate");
-        let ret:(U256,U256,U256) = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "calculate_paybacks",
-            runtime_args! {
-                "total_value" => total_value,
-                "payment_time" => payment_time,
-                "payment_rate" => payment_rate,
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: (U256, U256, U256) = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "calculate_paybacks",
+        runtime_args! {
+            "total_value" => total_value,
+            "payment_time" => payment_time,
+            "payment_rate" => payment_rate,
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn get_late_days(){
+fn get_late_days() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let ret:U256 = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "get_late_days",
-            runtime_args! {
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let ret: U256 = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "get_late_days",
+        runtime_args! {},
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn penalty_amount(){
+fn penalty_amount() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let total_collected: U256 = runtime::get_named_arg("total_collected");
-        let late_days_amount: U256 = runtime::get_named_arg("late_days_amount");
-        let ret:U256 = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "penalty_amount",
-            runtime_args! {
-                "total_collected" => total_collected,
-                "late_days_amount" => late_days_amount
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let total_collected: U256 = runtime::get_named_arg("total_collected");
+    let late_days_amount: U256 = runtime::get_named_arg("late_days_amount");
+    let ret: U256 = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "penalty_amount",
+        runtime_args! {
+            "total_collected" => total_collected,
+            "late_days_amount" => late_days_amount
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn make_contribution(){
+fn make_contribution() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-        let token_amount:U256 = runtime::get_named_arg("token_amount");
-        let token_holder: Key = runtime::get_named_arg("token_holder");
-        let ret:(U256,U256) = runtime::call_versioned_contract(
-            liquid_locker_address,
-            None,
-            "make_contribution",
-            runtime_args! {
-                "token_amount" => token_amount,
-                "token_holder" => token_holder
-            },
-        );
-       mappings::set_key(&mappings::result_key(), ret);
+    let token_amount: U256 = runtime::get_named_arg("token_amount");
+    let token_holder: Key = runtime::get_named_arg("token_holder");
+    let ret: (U256, U256) = runtime::call_versioned_contract(
+        liquid_locker_address,
+        None,
+        "make_contribution",
+        runtime_args! {
+            "token_amount" => token_amount,
+            "token_holder" => token_holder
+        },
+    );
+    mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn set_liquid_locker(){
+fn set_liquid_locker() {
     let token: Key = runtime::get_named_arg("token");
     mappings::set_key(
         &mappings::liquid_locker_key(),
@@ -299,6 +324,13 @@ fn get_entry_points() -> EntryPoints {
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "set_liquid_locker",
+        vec![Parameter::new("token", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(

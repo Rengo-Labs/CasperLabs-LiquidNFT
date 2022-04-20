@@ -16,7 +16,6 @@ use contract_utils::{ContractContext, OnChainContractStorage};
 use liquid_locker_crate::{
     self,
     liquid_helper_crate::{liquid_base_crate::LIQUIDBASE, LIQUIDHELPER},
-    liquid_transfer_crate::LIQUIDTRANSFER,
     LIQUIDLOCKER,
 };
 
@@ -29,82 +28,77 @@ impl ContractContext<OnChainContractStorage> for LiquidLocker {
     }
 }
 
-impl LIQUIDTRANSFER<OnChainContractStorage> for LiquidLocker {}
 impl LIQUIDHELPER<OnChainContractStorage> for LiquidLocker {}
 impl LIQUIDBASE<OnChainContractStorage> for LiquidLocker {}
 
 impl LIQUIDLOCKER<OnChainContractStorage> for LiquidLocker {}
 impl LiquidLocker {
-    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
-        LIQUIDLOCKER::init(self, Key::from(contract_hash), package_hash);
+    fn constructor(
+        &mut self,
+        trustee_multisig: Key,
+        payment_token: Key,
+        contract_hash: ContractHash,
+        package_hash: ContractPackageHash,
+    ) {
+        LIQUIDLOCKER::init(
+            self,
+            trustee_multisig,
+            payment_token,
+            Key::from(contract_hash),
+            package_hash,
+        );
     }
 }
 
 #[no_mangle]
 fn constructor() {
+    let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
+    let payment_token: Key = runtime::get_named_arg("payment_token");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    LiquidLocker::default().constructor(contract_hash, package_hash);
+    LiquidLocker::default().constructor(
+        trustee_multisig,
+        payment_token,
+        contract_hash,
+        package_hash,
+    );
 }
 
 #[no_mangle]
 fn liquidate_locker() {
     LiquidLocker::default().liquidate_locker();
 }
-
 #[no_mangle]
 fn claim_interest_single() {
     LiquidLocker::default().claim_interest_single();
 }
-
+#[no_mangle]
+fn claim_interest_public() {
+    LiquidLocker::default().claim_interest_public();
+}
 #[no_mangle]
 fn decrease_payment_time() {
     let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
     LiquidLocker::default().decrease_payment_time(new_payment_rate);
 }
-
 #[no_mangle]
 fn increase_payment_rate() {
     let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
     LiquidLocker::default().increase_payment_rate(new_payment_rate);
 }
-
 #[no_mangle]
 fn enable_locker() {
     let prepay_amount: U256 = runtime::get_named_arg("prepay_amount");
     LiquidLocker::default().enable_locker(prepay_amount);
 }
-
-#[no_mangle]
-fn _reset_values() {
-    LiquidLocker::default()._reset_values();
-}
-
-#[no_mangle]
-fn _users_increase() {
-    let token_holder: Key = runtime::get_named_arg("token_holder");
-    let token_amount: U256 = runtime::get_named_arg("token_amount");
-    let total_amount: U256 = runtime::get_named_arg("total_amount");
-    let ret: U256 =
-        LiquidLocker::default()._users_increase(token_holder, token_amount, total_amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
 #[no_mangle]
 fn disable_locker() {
     LiquidLocker::default().disable_locker();
 }
-
-#[no_mangle]
-fn _disable_locker() {
-    LiquidLocker::default()._disable_locker();
-}
-
 #[no_mangle]
 fn rescue_locker() {
     LiquidLocker::default().rescue_locker();
 }
-
 #[no_mangle]
 fn refund_due_disabled() {
     let refund_address: Key = runtime::get_named_arg("refund_address");
@@ -116,54 +110,16 @@ fn refund_due_single() {
     let refund_address: Key = runtime::get_named_arg("refund_address");
     LiquidLocker::default().refund_due_single(refund_address);
 }
-
 #[no_mangle]
 fn donate_funds() {
     let donation_amount: U256 = runtime::get_named_arg("donation_amount");
     LiquidLocker::default().donate_funds(donation_amount);
 }
-
 #[no_mangle]
 fn pay_back_funds() {
     let payment_amount: U256 = runtime::get_named_arg("payment_amount");
     LiquidLocker::default().pay_back_funds(payment_amount);
 }
-
-#[no_mangle]
-fn _claim_interest() {
-    let claim_address: Key = runtime::get_named_arg("claim_address");
-    LiquidLocker::default()._claim_interest(claim_address);
-}
-
-#[no_mangle]
-fn _claim_penalties() {
-    LiquidLocker::default()._claim_penalties();
-}
-
-#[no_mangle]
-fn _split_penalties() {
-    LiquidLocker::default()._split_penalties();
-}
-
-#[no_mangle]
-fn _adjust_balances() {
-    let payment_tokens: U256 = runtime::get_named_arg("payment_tokens");
-    let penalty_tokens: U256 = runtime::get_named_arg("penalty_tokens");
-    LiquidLocker::default()._adjust_balances(payment_tokens, penalty_tokens);
-}
-
-#[no_mangle]
-fn _return_token() {
-    LiquidLocker::default()._return_token();
-}
-
-#[no_mangle]
-fn _refund_tokens() {
-    let refund_amount: U256 = runtime::get_named_arg("refund_amount");
-    let refund_address: Key = runtime::get_named_arg("refund_address");
-    LiquidLocker::default()._refund_tokens(refund_amount, refund_address);
-}
-
 #[no_mangle]
 fn calculate_epoch() {
     let total_value: U256 = runtime::get_named_arg("total_value");
@@ -173,7 +129,6 @@ fn calculate_epoch() {
         LiquidLocker::default().calculate_epoch(total_value, payment_time, payment_rate);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 #[no_mangle]
 fn calculate_paybacks() {
     let total_value: U256 = runtime::get_named_arg("total_value");
@@ -188,28 +143,6 @@ fn get_late_days() {
     let ret = LiquidLocker::default().get_late_days();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
-#[no_mangle]
-fn _days_base() {
-    let days_amount: U256 = runtime::get_named_arg("total_value");
-    let ret = LiquidLocker::default()._days_base(days_amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn _get_penalty_amount() {
-    let total_collected: U256 = runtime::get_named_arg("total_collected");
-    let late_days_amount: U256 = runtime::get_named_arg("late_days_amount");
-    let ret = LiquidLocker::default()._get_penalty_amount(total_collected, late_days_amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn _penalty_amount() {
-    let ret = LiquidLocker::default()._penalty_amount();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
 #[no_mangle]
 fn penalty_amount() {
     let total_collected: U256 = runtime::get_named_arg("total_collected");
@@ -217,7 +150,6 @@ fn penalty_amount() {
     let ret = LiquidLocker::default().penalty_amount(total_collected, late_days_amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 #[no_mangle]
 fn _reached_total() {
     let token_holder: Key = runtime::get_named_arg("token_holder");
@@ -239,7 +171,6 @@ fn make_contribution() {
     let ret = LiquidLocker::default().make_contribution(token_amount, token_holder);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 #[no_mangle]
 fn initialize() {
     let token_id: Vec<U256> = runtime::get_named_arg("token_id");
@@ -265,6 +196,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
+            Parameter::new("trustee_multisig", Key::cl_type()),
+            Parameter::new("payment_token", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -283,13 +216,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("payment_time", CLType::U256),
             Parameter::new("payment_rate", CLType::U256),
         ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_reset_values",
-        vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -316,25 +242,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "_users_increase",
-        vec![
-            Parameter::new("token_holder", CLType::Key),
-            Parameter::new("token_amount", CLType::U256),
-            Parameter::new("total_amount", CLType::U256),
-        ],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "disable_locker",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_disable_locker",
         vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -390,49 +298,8 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "_claim_interest",
-        vec![Parameter::new("claim_address", CLType::Key)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_claim_penalties",
+        "claim_interest_public",
         vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_split_penalties",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_adjust_balances",
-        vec![
-            Parameter::new("payment_tokens", CLType::U256),
-            Parameter::new("penalty_tokens", CLType::U256),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_return_token",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_refund_tokens",
-        vec![
-            Parameter::new("refund_amount", CLType::U256),
-            Parameter::new("refund_address", CLType::Key),
-        ],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -471,50 +338,12 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "_days_base",
-        vec![Parameter::new("days_amount", CLType::U256)],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_get_penalty_amount",
-        vec![
-            Parameter::new("total_collected", CLType::U256),
-            Parameter::new("late_days_amount", CLType::U256),
-        ],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_penalty_amount",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "penalty_amount",
         vec![
             Parameter::new("total_collected", CLType::U256),
             Parameter::new("late_days_amount", CLType::U256),
         ],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_reached_total",
-        vec![Parameter::new("token_holder", CLType::Key)],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "_total_increase",
-        vec![Parameter::new("token_amount", CLType::U256)],
-        Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -533,6 +362,9 @@ fn get_entry_points() -> EntryPoints {
 
 #[no_mangle]
 fn call() {
+    let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
+    let payment_token: Key = runtime::get_named_arg("payment_token");
+
     // Build new package with initial a first version of the contract.
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
     let (contract_hash, _) =
@@ -540,6 +372,8 @@ fn call() {
 
     // Prepare constructor args
     let constructor_args = runtime_args! {
+        "trustee_multisig" => trustee_multisig,
+        "payment_token" => payment_token,
         "contract_hash" => contract_hash,
         "package_hash"=> package_hash
     };

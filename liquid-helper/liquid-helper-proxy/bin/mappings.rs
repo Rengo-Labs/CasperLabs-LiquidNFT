@@ -43,8 +43,8 @@ pub fn self_package_key() -> String {
     format!("package_hash")
 }
 
-pub fn liquid_locker_key() -> String {
-    format!("liquid_locker")
+pub fn liquid_helper_key() -> String {
+    format!("liquid_helper")
 }
 
 pub fn result_key() -> String {
