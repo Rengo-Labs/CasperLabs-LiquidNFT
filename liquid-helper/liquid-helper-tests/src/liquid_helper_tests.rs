@@ -26,7 +26,7 @@ fn get_tokens() {
 
     proxy.get_tokens(owner);
     let res: Vec<U256> = proxy.result();
-    let mut compare: Vec<U256> = Vec::new();
+    let compare: Vec<U256> = Vec::new();
     assert_eq!(compare, res);
 }
 

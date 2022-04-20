@@ -63,7 +63,25 @@ fn constructor() {
         package_hash,
     );
 }
-
+#[no_mangle]
+fn initialize() {
+    let token_id: Vec<U256> = runtime::get_named_arg("token_id");
+    let token_address: Key = runtime::get_named_arg("token_address");
+    let token_owner: Key = runtime::get_named_arg("token_owner");
+    let floor_asked: U256 = runtime::get_named_arg("floor_asked");
+    let total_asked: U256 = runtime::get_named_arg("total_asked");
+    let payment_time: U256 = runtime::get_named_arg("payment_time");
+    let payment_rate: U256 = runtime::get_named_arg("payment_rate");
+    LiquidLocker::default().initialize(
+        token_id,
+        token_address,
+        token_owner,
+        floor_asked,
+        total_asked,
+        payment_time,
+        payment_rate,
+    );
+}
 #[no_mangle]
 fn liquidate_locker() {
     LiquidLocker::default().liquidate_locker();
@@ -134,61 +152,29 @@ fn calculate_paybacks() {
     let total_value: U256 = runtime::get_named_arg("total_value");
     let payment_time: U256 = runtime::get_named_arg("payment_time");
     let payment_rate: U256 = runtime::get_named_arg("payment_rate");
-    let ret = LiquidLocker::default().calculate_paybacks(total_value, payment_time, payment_rate);
+    let ret: (U256, U256, U256) =
+        LiquidLocker::default().calculate_paybacks(total_value, payment_time, payment_rate);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 #[no_mangle]
 fn get_late_days() {
-    let ret = LiquidLocker::default().get_late_days();
+    let ret: U256 = LiquidLocker::default().get_late_days();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn penalty_amount() {
     let total_collected: U256 = runtime::get_named_arg("total_collected");
     let late_days_amount: U256 = runtime::get_named_arg("late_days_amount");
-    let ret = LiquidLocker::default().penalty_amount(total_collected, late_days_amount);
+    let ret: U256 = LiquidLocker::default().penalty_amount(total_collected, late_days_amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-#[no_mangle]
-fn _reached_total() {
-    let token_holder: Key = runtime::get_named_arg("token_holder");
-    let ret = LiquidLocker::default()._reached_total(token_holder);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn _total_increase() {
-    let token_amount = runtime::get_named_arg("token_amount");
-    let ret = LiquidLocker::default()._total_increase(token_amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
 #[no_mangle]
 fn make_contribution() {
-    let token_amount = runtime::get_named_arg("token_amount");
+    let token_amount: U256 = runtime::get_named_arg("token_amount");
     let token_holder: Key = runtime::get_named_arg("token_holder");
-    let ret = LiquidLocker::default().make_contribution(token_amount, token_holder);
+    let ret: (U256, U256) = LiquidLocker::default().make_contribution(token_amount, token_holder);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn initialize() {
-    let token_id: Vec<U256> = runtime::get_named_arg("token_id");
-    let token_address: Key = runtime::get_named_arg("token_address");
-    let token_owner: Key = runtime::get_named_arg("token_owner");
-    let floor_asked: U256 = runtime::get_named_arg("floor_asked");
-    let total_asked: U256 = runtime::get_named_arg("total_asked");
-    let payment_time: U256 = runtime::get_named_arg("payment_time");
-    let payment_rate: U256 = runtime::get_named_arg("payment_rate");
-    LiquidLocker::default().initialize(
-        token_id,
-        token_address,
-        token_owner,
-        floor_asked,
-        total_asked,
-        payment_time,
-        payment_rate,
-    );
 }
 
 fn get_entry_points() -> EntryPoints {
@@ -362,59 +348,85 @@ fn get_entry_points() -> EntryPoints {
 
 #[no_mangle]
 fn call() {
-    let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
-    let payment_token: Key = runtime::get_named_arg("payment_token");
+    // Store contract in the account's named keys. Contract name must be same for all new versions of the contracts
+    let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
 
-    // Build new package with initial a first version of the contract.
-    let (package_hash, access_token) = storage::create_contract_package_at_hash();
-    let (contract_hash, _) =
-        storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+    // If this is the first deployment
+    if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
+        // Build new package.
+        let (package_hash, access_token) = storage::create_contract_package_at_hash();
+        // add a first version to this package
+        let (contract_hash, _): (ContractHash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
 
-    // Prepare constructor args
-    let constructor_args = runtime_args! {
-        "trustee_multisig" => trustee_multisig,
-        "payment_token" => payment_token,
-        "contract_hash" => contract_hash,
-        "package_hash"=> package_hash
-    };
+        let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
+        let payment_token: Key = runtime::get_named_arg("payment_token");
+        let constructor_args = runtime_args! {
+            "trustee_multisig" => trustee_multisig,
+            "payment_token" => payment_token,
+            "package_hash" => package_hash,
+            "contract_hash" => contract_hash,
+        };
 
-    // Add the constructor group to the package hash with a single URef.
-    let constructor_access: URef =
-        storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
-            .unwrap_or_revert()
-            .pop()
+        // Add the constructor group to the package hash with a single URef.
+        let constructor_access: URef =
+            storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
+                .unwrap_or_revert()
+                .pop()
+                .unwrap_or_revert();
+
+        // Call the constructor entry point
+        let _: () =
+            runtime::call_versioned_contract(package_hash, None, "constructor", constructor_args);
+
+        // Remove all URefs from the constructor group, so no one can call it for the second time.
+        let mut urefs = BTreeSet::new();
+        urefs.insert(constructor_access);
+        storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
             .unwrap_or_revert();
 
-    // Call the constructor entry point
-    let _: () =
-        runtime::call_versioned_contract(package_hash, None, "constructor", constructor_args);
+        runtime::put_key(
+            &format!("{}_package_hash", contract_name),
+            package_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_package_hash_wrapped", contract_name),
+            storage::new_uref(package_hash).into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash", contract_name),
+            contract_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash_wrapped", contract_name),
+            storage::new_uref(contract_hash).into(),
+        );
+        runtime::put_key(
+            &format!("{}_package_access_token", contract_name),
+            access_token.into(),
+        );
+    }
+    // If contract package did already exist
+    else {
+        // get the package
+        let package_hash: ContractPackageHash =
+            runtime::get_key(&format!("{}_package_hash", contract_name))
+                .unwrap_or_revert()
+                .into_hash()
+                .unwrap()
+                .into();
+        // create new version and install it
+        let (contract_hash, _): (ContractHash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
 
-    // Remove all URefs from the constructor group, so no one can call it for the second time.
-    let mut urefs = BTreeSet::new();
-    urefs.insert(constructor_access);
-    storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
-        .unwrap_or_revert();
-
-    // Store contract in the account's named keys.
-    let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
-    runtime::put_key(
-        &format!("{}_package_hash", contract_name),
-        package_hash.into(),
-    );
-    runtime::put_key(
-        &format!("{}_package_hash_wrapped", contract_name),
-        storage::new_uref(package_hash).into(),
-    );
-    runtime::put_key(
-        &format!("{}_contract_hash", contract_name),
-        contract_hash.into(),
-    );
-    runtime::put_key(
-        &format!("{}_contract_hash_wrapped", contract_name),
-        storage::new_uref(contract_hash).into(),
-    );
-    runtime::put_key(
-        &format!("{}_package_access_token", contract_name),
-        access_token.into(),
-    );
+        // update contract hash
+        runtime::put_key(
+            &format!("{}_contract_hash", contract_name),
+            contract_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash_wrapped", contract_name),
+            storage::new_uref(contract_hash).into(),
+        );
+    }
 }

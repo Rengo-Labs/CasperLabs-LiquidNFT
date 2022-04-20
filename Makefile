@@ -1,7 +1,6 @@
 src_target = target/wasm32-unknown-unknown/release
 liquid_locker_des_wasm = liquid-locker/liquid-locker-tests/wasm
 liquid_helper_des_wasm = liquid-helper/liquid-helper-tests/wasm
-liquid_transfer_des_wasm = liquid-transfer/liquid-transfer-tests/wasm
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -29,7 +28,7 @@ test-liquid-helper:
 test-liquid-locker:
 	make build-contract-liquid-locker && make copy-wasm-file-liquid-locker && make test-only-liquid-locker
 
-test-all:
+all:
 	make test-liquid-helper && make test-liquid-locker
 
 clean:

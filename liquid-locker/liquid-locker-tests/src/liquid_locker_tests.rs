@@ -81,7 +81,7 @@ fn initialize(owner: AccountHash, instance: &LIQUIDLOCKERInstance, token_owner: 
 
 #[test]
 fn test_deploy() {
-    let (_, owner, _, proxy) = deploy();
+    let (_, _, _, _) = deploy();
 }
 
 #[test]
