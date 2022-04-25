@@ -1,0 +1,32 @@
+{
+  "name": "LiquidNFT-JsClient",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "test:liquidnftinstalled": "ts-node LiquidNFT/test/installed.ts"
+  },
+  "engine": {
+    "node": "16.14.0",
+    "npm": "8.5.3"
+  },
+  "dependencies": {
+    "blakejs": "^1.1.1",
+    "casper-js-sdk": "^2.7.5",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
+    "prettier": "^2.3.2",
+    "ts-node": "^10.1.0",
+    "ts-results": "^3.3.0",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.2.8",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "wepack-cli": "^0.0.1-security"
+  }
+}
