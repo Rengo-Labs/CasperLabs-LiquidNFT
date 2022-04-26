@@ -64,7 +64,7 @@ const liquidNFT = new LIQUIDNFTClient(
 
 const test = async () => {
 
-  //await liquidNFT.setContractHash(LIQUIDNFT_CONTRACT_HASH!);
+  await liquidNFT.setContractHash(LIQUIDNFT_CONTRACT_HASH!);
 
   // // //initialize
   // const initializeDeployHash = await liquidNFT.initialize(

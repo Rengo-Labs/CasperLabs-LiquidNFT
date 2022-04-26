@@ -7,8 +7,10 @@ prepare:
 
 build-contract-liquid-helper:
 	cargo build --release -p liquid-helper -p liquid-helper-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquid-helper.wasm 2>/dev/null | true
 build-contract-liquid-locker:
 	cargo build --release -p liquid-locker -p liquid-locker-proxy -p erc20 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquid-locker.wasm 2>/dev/null | true
 
 test-only-liquid-helper:
 	cargo test -p liquid-helper-tests

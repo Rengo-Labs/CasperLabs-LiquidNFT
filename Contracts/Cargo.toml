@@ -18,3 +18,6 @@ members = [
   "liquid-locker/liquid-locker-proxy",
   "liquid-locker/liquid-locker-tests",
 ]
+[profile.release]
+codegen-units = 1
+lto = true
