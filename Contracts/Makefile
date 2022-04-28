@@ -13,9 +13,9 @@ build-contract-liquid-locker:
 	wasm-strip target/wasm32-unknown-unknown/release/liquid-locker.wasm 2>/dev/null | true
 
 test-only-liquid-helper:
-	cargo test -p liquid-helper-tests
+	cargo test -p liquid-helper-tests -- --nocapture
 test-only-liquid-locker:
-	cargo test -p liquid-locker-tests
+	cargo test -p liquid-locker-tests -- --nocapture
 
 copy-wasm-file-liquid-helper:
 	cp ${src_target}/liquid-helper.wasm ${liquid_helper_des_wasm}
@@ -31,7 +31,7 @@ test-liquid-locker:
 	make build-contract-liquid-locker && make copy-wasm-file-liquid-locker && make test-only-liquid-locker
 
 all:
-	make test-liquid-helper && make test-liquid-locker
+	make test-liquid-helper && make test-liquid-locker -- --nocapture
 
 clean:
 	cargo clean

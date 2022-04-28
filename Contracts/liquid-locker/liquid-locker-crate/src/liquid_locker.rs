@@ -347,12 +347,21 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         for i in token_id {
             let () = runtime::call_versioned_contract(
                 token_address.into_hash().unwrap_or_revert().into(),
+                 None,
+                 "approve",
+                 runtime_args! {
+                     "spender" => Key::from(data::get_contract_package_hash()),
+                     "amount" => i,
+                 },
+             );
+             let ret: Result<(), u32> = runtime::call_versioned_contract(
+                token_address.into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
                 runtime_args! {
-                    "from" => Key::from(data::get_contract_package_hash()),
-                    "to" => LIQUIDHELPER::liquidate_to(self),
-                    "token_id" => i
+                    "owner" => Key::from(data::get_contract_package_hash()),
+                    "recipient" => LIQUIDHELPER::liquidate_to(self),
+                    "amount" => i
                 },
             );
         }
@@ -557,12 +566,21 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         for i in token_id {
             let () = runtime::call_versioned_contract(
                 token_address.into_hash().unwrap_or_revert().into(),
+                 None,
+                 "approve",
+                 runtime_args! {
+                     "spender" => Key::from(data::get_contract_package_hash()),
+                     "amount" => i,
+                 },
+             );
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+               token_address.into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
                 runtime_args! {
-                    "from" => Key::from(data::get_contract_package_hash()),
-                    "to" => locker_owner,
-                    "token_id" => i
+                    "owner" => Key::from(data::get_contract_package_hash()),
+                    "recipient" => locker_owner,
+                    "amount" => i
                 },
             );
         }

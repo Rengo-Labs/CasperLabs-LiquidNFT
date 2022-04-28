@@ -180,6 +180,19 @@ impl LIQUIDLOCKERInstance {
             0,
         );
     }
+    //pay_back_funds
+    pub fn calculate_epoch(&self, sender: AccountHash, total_value: U256,payment_time: U256,payment_rate: U256) {
+            self.0.call_contract(
+                sender,
+                "calculate_epoch",
+                runtime_args! {
+                    "total_value" => total_value,
+                    "payment_time" => payment_time,
+                    "payment_rate" => payment_rate
+                },
+                0,
+            );
+        }
     //liquidate_locker
     pub fn liquidate_locker(&self, sender: AccountHash) {
         self.0
