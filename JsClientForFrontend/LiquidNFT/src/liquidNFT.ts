@@ -15,6 +15,8 @@ import {
   EventStream,
   Keys,
   RuntimeArgs,
+  CLList,
+  CLU256
 } from "casper-js-sdk";
 import { Some, None } from "ts-results";
 import * as blake from "blakejs";
@@ -113,9 +115,9 @@ class LIQUIDNFTClient {
   
   public async  initialize(
     keys: Keys.AsymmetricKey,
-    tokenId: string,
     tokenAddress: string,
-    tokenOwner: string,
+    //tokenOwner: string,
+    tokenOwner: RecipientType,
     floorAsked: string,
     totalAsked: string,
     paymentTime: string,
@@ -126,14 +128,21 @@ class LIQUIDNFTClient {
     const _tokenAddress = new CLByteArray(
 			Uint8Array.from(Buffer.from(tokenAddress, "hex"))
 		);
-    const _tokenOwner = new CLByteArray(
-			Uint8Array.from(Buffer.from(tokenOwner, "hex"))
-		);
+    // const _tokenOwner = new CLByteArray(
+		// 	Uint8Array.from(Buffer.from(tokenOwner, "hex"))
+		// );
+    let list = [];
+    for (let i = 0; i < 5; i++) {
+      const p = new CLU256(0);
+      list.push(p);
+    }
     // Vec<U256> issue
     const runtimeArgs = RuntimeArgs.fromMap({
-      token_id: CLValueBuilder.u256(tokenId),
+      token_id: new CLList(list),
       token_address: utils.createRecipientAddress(_tokenAddress),
-      token_owner: utils.createRecipientAddress(_tokenOwner),
+     /// token_owner: utils.createRecipientAddress(_tokenOwner),
+      //token_owner: new CLKey(_tokenOwner),
+      token_owner: utils.createRecipientAddress(tokenOwner),
       floor_asked: CLValueBuilder.u256(floorAsked),
       total_asked: CLValueBuilder.u256(totalAsked),
       payment_time: CLValueBuilder.u256(paymentTime),
@@ -297,16 +306,18 @@ class LIQUIDNFTClient {
 
   public async  refundDueDisabled(
     keys: Keys.AsymmetricKey,
-    refundAddress: string,
+    //refundAddress: string,
+    refundAddress: RecipientType,
     paymentAmount: string
   ) {
     
-    const _refund_address = new CLByteArray(
-			Uint8Array.from(Buffer.from(refundAddress, "hex"))
-		);
+    // const _refund_address = new CLByteArray(
+		// 	Uint8Array.from(Buffer.from(refundAddress, "hex"))
+		// );
 
     const runtimeArgs = RuntimeArgs.fromMap({
-      refund_address: utils.createRecipientAddress(_refund_address),
+      //refund_address: utils.createRecipientAddress(_refund_address),
+      refund_address: utils.createRecipientAddress(refundAddress),
     });
 
     const deployHash = await contractCall({
@@ -330,6 +341,7 @@ class LIQUIDNFTClient {
   public async  refundDueSingle(
     keys: Keys.AsymmetricKey,
     refundAddress: string,
+    //refundAddress: RecipientType,
     paymentAmount: string
   ) {
     
@@ -338,7 +350,8 @@ class LIQUIDNFTClient {
 		);
 
     const runtimeArgs = RuntimeArgs.fromMap({
-      refund_address: utils.createRecipientAddress(_refund_address),
+       refund_address: utils.createRecipientAddress(_refund_address),
+      //refund_address: utils.createRecipientAddress(refundAddress),
     });
 
     const deployHash = await contractCall({
@@ -617,17 +630,20 @@ class LIQUIDNFTClient {
   public async  makeContribution(
     keys: Keys.AsymmetricKey,
     tokenAmount: string,
-    tokenHolder: string,
+    tokenHolder: RecipientType,
+    //tokenHolder: string,
     paymentAmount: string
   ) {
 
-    const _tokenHolder = new CLByteArray(
-			Uint8Array.from(Buffer.from(tokenHolder, "hex"))
-		);
+    // const _tokenHolder = new CLByteArray(
+    //   	Uint8Array.from(Buffer.from(tokenHolder, "hex"))
+    //   );
     
     const runtimeArgs = RuntimeArgs.fromMap({
       token_amount: CLValueBuilder.u256(tokenAmount),
-      token_owner: utils.createRecipientAddress(_tokenHolder),
+      //token_holder: utils.createRecipientAddress(tokenHolder),
+     //token_holder: utils.createRecipientAddress(_tokenHolder),
+     token_holder: new CLKey(tokenHolder),
       
     });
 
