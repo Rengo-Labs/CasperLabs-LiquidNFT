@@ -7,9 +7,7 @@ use casper_contract::{
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key};
 use contract_utils::{get_key, set_key};
 
-pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
-pub const SELF_PACKAGE_HASH: &str = "self_package_hash";
-pub const RESULT: &str = "result";
+pub use common::keys::*;
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {

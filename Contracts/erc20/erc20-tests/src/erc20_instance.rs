@@ -108,7 +108,7 @@ impl ERC20Instance {
     //             "symbol" => symbol,
     //             "initial_supply" => initial_supply,
     //             "decimals" => decimals,
-    //         },0
+    //         }, 0
     //     ))
     // }
 

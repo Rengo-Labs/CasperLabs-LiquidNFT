@@ -1,21 +1,11 @@
 use crate::data;
 use alloc::vec::Vec;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U256};
+use casper_types::{runtime_args, ContractPackageHash, Key, RuntimeArgs, U256};
 use contract_utils::{ContractContext, ContractStorage};
 use liquid_base_crate::{self, data::*, LIQUIDBASE};
 
-#[repr(u16)]
-pub enum Error {
-    TransferFailed = 65,
-    TransferFromFailed = 66,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
+use common::errors::*;
 
 pub trait LIQUIDHELPER<Storage: ContractStorage>:
     ContractContext<Storage> + LIQUIDBASE<Storage>
@@ -33,7 +23,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
 
     fn ownerless_locker(&self) -> bool {
         let locker_owner: Key = get_globals().locker_owner;
-        locker_owner == LIQUIDBASE::ZERO_ADDRESS(self)
+        locker_owner == zero_address()
     }
 
     fn floor_not_reached(&self) -> bool {
@@ -42,7 +32,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
 
     fn not_single_provider(&self, check_address: Key) -> bool {
         LIQUIDBASE::get_single_provider(self) != check_address
-            && LIQUIDBASE::get_single_provider(self) != LIQUIDBASE::ZERO_ADDRESS(self)
+            && LIQUIDBASE::get_single_provider(self) != zero_address()
     }
 
     fn reached_total(&self, contributor: Key, token_amount: U256) -> bool {
@@ -98,8 +88,8 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
     }
 
     fn liquidate_to(&self) -> Key {
-        if LIQUIDBASE::get_single_provider(self) == LIQUIDBASE::ZERO_ADDRESS(self) {
-            LIQUIDBASE::TRUSTEE_MULTISIG(self)
+        if LIQUIDBASE::get_single_provider(self) == zero_address() {
+            get_trustee_multisig()
         } else {
             LIQUIDBASE::get_single_provider(self)
         }
@@ -109,7 +99,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
         let blocktime: u64 = runtime::get_blocktime().into();
         let sub: U256 = U256::from(blocktime)
             .checked_sub(time_stamp)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::LiquidHelperUnderflowSub0);
         sub
     }
 
@@ -120,7 +110,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
 
     fn _revoke_owner(&self) {
         let mut g = get_globals();
-        g.locker_owner = LIQUIDBASE::ZERO_ADDRESS(self);
+        g.locker_owner = zero_address();
         set_globals(g);
     }
 
@@ -148,7 +138,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
     fn _decrease_total_collected(&self, decrease_amount: U256) {
         let sub: U256 = LIQUIDBASE::get_total_collected(self)
             .checked_sub(decrease_amount)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::LiquidHelperUnderflowSub1);
         LIQUIDBASE::set_total_collected(self, sub);
     }
 
@@ -162,26 +152,20 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
                 "amount" => amount
             },
         );
-
-        if ret.is_err() {
-            runtime::revert(ApiError::from(Error::TransferFailed));
-        }
+        ret.unwrap_or_revert();
     }
 
-    fn _safe_transfer_from(token: Key, owner: Key, recipient: Key, amount: U256) {
+    fn _safe_transfer_from(&self, token: Key, owner: Key, recipient: Key, amount: U256) {
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
-            "transfer",
+            "transfer_from",
             runtime_args! {
                 "owner" => owner,
                 "recipient" => recipient,
                 "amount" => amount
             },
         );
-
-        if ret.is_err() {
-            runtime::revert(ApiError::from(Error::TransferFromFailed));
-        }
+        ret.unwrap_or_revert();
     }
 }

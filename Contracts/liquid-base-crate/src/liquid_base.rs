@@ -1,5 +1,6 @@
 use crate::data::{self, Compensations, Contributions};
 use casper_types::{Key, U256};
+use common::keys::zero_address;
 use contract_utils::{get_key, set_key};
 use contract_utils::{ContractContext, ContractStorage};
 
@@ -8,26 +9,6 @@ pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self) {
         data::Compensations::init();
         data::Contributions::init();
-    }
-
-    fn SET_TRUSTEE_MULTISIG(&self, trustee_multisig: Key) {
-        data::set_trustee_multisig(trustee_multisig);
-    }
-
-    fn TRUSTEE_MULTISIG(&self) -> Key {
-        data::get_trustee_multisig()
-    }
-
-    fn SET_PAYMENT_TOKEN(&self, payment_token: Key) {
-        data::set_payment_token(payment_token);
-    }
-
-    fn PAYMENT_TOKEN(&self) -> Key {
-        data::get_payment_token()
-    }
-
-    fn ZERO_ADDRESS(&self) -> Key {
-        data::zero_address()
     }
 
     // Mappings
@@ -39,17 +20,13 @@ pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
         Contributions::instance()
     }
 
-    // fn Globals(&self) -> Globals {
-    //     Globals::instance()
-    // }
-
     // Variables
     fn set_single_provider(&self, single_provider: Key) {
         set_key(data::SINGLE_PROVIDER, single_provider);
     }
 
     fn get_single_provider(&self) -> Key {
-        get_key(data::SINGLE_PROVIDER).unwrap_or(self.ZERO_ADDRESS())
+        get_key(data::SINGLE_PROVIDER).unwrap_or(zero_address())
     }
 
     //Minimum the owner wants for the loan. If less than this contributors refunded

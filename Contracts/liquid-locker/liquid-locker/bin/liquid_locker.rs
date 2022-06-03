@@ -2,21 +2,24 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, vec, vec::Vec};
+use alloc::{collections::BTreeSet, format, vec::Vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    runtime_args, CLValue, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 
 use liquid_locker_crate::{
     self,
-    liquid_helper_crate::{liquid_base_crate::LIQUIDBASE, LIQUIDHELPER},
-    LIQUIDLOCKER,
+    entry_points::get_entry_points,
+    liquid_helper_crate::{
+        liquid_base_crate::{data::get_payment_token, LIQUIDBASE},
+        LIQUIDHELPER,
+    },
+    LIQUIDLOCKER, LIQUIDTRANSFER,
 };
 
 #[derive(Default)]
@@ -30,6 +33,7 @@ impl ContractContext<OnChainContractStorage> for LiquidLocker {
 
 impl LIQUIDHELPER<OnChainContractStorage> for LiquidLocker {}
 impl LIQUIDBASE<OnChainContractStorage> for LiquidLocker {}
+impl LIQUIDTRANSFER<OnChainContractStorage> for LiquidLocker {}
 
 impl LIQUIDLOCKER<OnChainContractStorage> for LiquidLocker {}
 impl LiquidLocker {
@@ -176,174 +180,10 @@ fn make_contribution() {
     let ret: (U256, U256) = LiquidLocker::default().make_contribution(token_amount, token_holder);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
-fn get_entry_points() -> EntryPoints {
-    let mut entry_points = EntryPoints::new();
-    entry_points.add_entry_point(EntryPoint::new(
-        "constructor",
-        vec![
-            Parameter::new("trustee_multisig", Key::cl_type()),
-            Parameter::new("payment_token", Key::cl_type()),
-            Parameter::new("contract_hash", ContractHash::cl_type()),
-            Parameter::new("package_hash", ContractPackageHash::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "initialize",
-        vec![
-            Parameter::new("token_id", CLType::List(Box::new(CLType::U256))),
-            Parameter::new("token_address", CLType::Key),
-            Parameter::new("token_owner", CLType::Key),
-            Parameter::new("floor_asked", CLType::U256),
-            Parameter::new("total_asked", CLType::U256),
-            Parameter::new("payment_time", CLType::U256),
-            Parameter::new("payment_rate", CLType::U256),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "increase_payment_rate",
-        vec![Parameter::new("new_payment_rate", CLType::U256)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "decrease_payment_time",
-        vec![Parameter::new("new_payment_rate", CLType::U256)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "enable_locker",
-        vec![Parameter::new("prepay_amount", CLType::U256)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "disable_locker",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "rescue_locker",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "refund_due_disabled",
-        vec![Parameter::new("refund_address", CLType::Key)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "refund_due_single",
-        vec![Parameter::new("refund_address", CLType::Key)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "donate_funds",
-        vec![Parameter::new("donation_amount", CLType::U256)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "pay_back_funds",
-        vec![Parameter::new("payment_amount", CLType::U256)],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "liquidate_locker",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claim_interest_single",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claim_interest_public",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "calculate_epoch",
-        vec![
-            Parameter::new("total_value", CLType::U256),
-            Parameter::new("payment_time", CLType::U256),
-            Parameter::new("payment_rate", CLType::U256),
-        ],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "calculate_paybacks",
-        vec![
-            Parameter::new("total_value", CLType::U256),
-            Parameter::new("payment_time", CLType::U256),
-            Parameter::new("payment_rate", CLType::U256),
-        ],
-        CLType::Tuple3([
-            Box::new(CLType::U256),
-            Box::new(CLType::U256),
-            Box::new(CLType::U256),
-        ]),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "get_late_days",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "penalty_amount",
-        vec![
-            Parameter::new("total_collected", CLType::U256),
-            Parameter::new("late_days_amount", CLType::U256),
-        ],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "make_contribution",
-        vec![
-            Parameter::new("token_amount", CLType::U256),
-            Parameter::new("token_holder", CLType::Key),
-        ],
-        CLType::Tuple2([Box::new(CLType::U256), Box::new(CLType::U256)]),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points
+// Variables
+#[no_mangle]
+fn payment_token() {
+    runtime::ret(CLValue::from_t(get_payment_token()).unwrap_or_revert());
 }
 
 #[no_mangle]

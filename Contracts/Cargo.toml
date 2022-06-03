@@ -1,5 +1,11 @@
 [workspace]
 members = [
+  # COMMON
+  "common",
+  # CEP47
+  "cep47/cep47",
+  "cep47/cep47-crate",
+  "cep47/cep47-tests",
   # ERC20
   "erc20/erc20",
   "erc20/erc20-crate",
@@ -7,6 +13,10 @@ members = [
   "erc20/erc20-tests",
   # LIQUID BASE
   "liquid-base-crate",
+  # LIQUID FACTORY
+  "liquid-factory/liquid-factory",
+  "liquid-factory/liquid-factory-crate",
+  "liquid-factory/liquid-factory-tests",
   # LIQUID HELPER
   "liquid-helper/liquid-helper",
   "liquid-helper/liquid-helper-crate",
@@ -17,6 +27,8 @@ members = [
   "liquid-locker/liquid-locker-crate",
   "liquid-locker/liquid-locker-proxy",
   "liquid-locker/liquid-locker-tests",
+  # LIQUID TRANSFER
+  "liquid-transfer-crate",
 ]
 [profile.release]
 codegen-units = 1

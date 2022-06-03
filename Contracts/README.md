@@ -1,15 +1,14 @@
 # CasperLabs-LiquidNFT
 
-Implementation of `Liquid Base`, `Liquid Helper` and `Liquid Locker` Contract for the CasperLabs platform.
+Implementation of following contracts for the CasperLabs platform.
 
-## Steps
-
-There are 3 contracts with 1 crate in this folder
-
-1. Liquid Base Crate
-2. Liquid Helper Contract
-3. Liquid Locker Contract
-4. ERC20 Contract
+1. ERC20 Contract
+2. CEP47 Contract
+3. Liquid Base Crate
+4. Liquid Transfer Crate
+5. Liquid Factory Contract
+6. Liquid Helper Contract
+7. Liquid Locker Contract
 
 ## Table of contents
 
