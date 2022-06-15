@@ -2,6 +2,10 @@
 
 This repo has the code to deploy all the functions of liquidNFT contracts using liquidNFT contract hash
 
+## Prerequisite
+
+Make sure you have created, pasted and funded the keys before testing.
+
 ## Testing
 
 Use the script file in package.json to perform the testing
