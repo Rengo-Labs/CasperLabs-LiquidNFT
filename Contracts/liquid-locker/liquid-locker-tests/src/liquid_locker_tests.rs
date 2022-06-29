@@ -70,35 +70,6 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
         runtime_args! {"to" =>  Key::Hash(contract.package_hash()),"amount"=> U256::from(2146000000)},
         0,
     );
-    // let mut token_ids: Vec<U256> = Vec::default();
-    // token_ids.push(1.into());
-    // token_ids.push(2.into());
-    // token_ids.push(3.into());
-
-    // let mut token_metas: Vec<BTreeMap<String, String>> = Vec::default();
-
-    // let mut meta: BTreeMap<String, String> = BTreeMap::default();
-    // meta.insert("TOKEN-1".into(), "Metadata for token1".into());
-    // token_metas.push(meta);
-
-    // let mut meta: BTreeMap<String, String> = BTreeMap::default();
-    // meta.insert("TOKEN-2".into(), "Metadata for token2".into());
-    // token_metas.push(meta);
-
-    // let mut meta: BTreeMap<String, String> = BTreeMap::default();
-    // meta.insert("TOKEN-3".into(), "Metadata for token3".into());
-    // token_metas.push(meta);
-
-    // cep47.call_contract(
-    //     owner,
-    //     "mint",
-    //     runtime_args! {
-    //         "recipient" => Key::Hash(contract.package_hash()),
-    //         "token_ids" => token_ids.clone(),
-    //         "token_metas" => token_metas.clone()
-    //     },
-    //     0,
-    // );
     (env, owner, contract, proxy)
 }
 
@@ -107,37 +78,43 @@ fn initialize(
     owner: AccountHash,
     instance: &LIQUIDLOCKERInstance,
     token_owner: Key,
+    floor_asked: U256,
+    total_asked: U256,
+    payment_time: U256,
+    payment_rate: U256,
 ) {
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
+    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
+
+    let token_address: Key = Key::Hash(cep47.package_hash());
+
+    let mut token_ids: Vec<U256> = Vec::new();
     let mut token_metas: Vec<BTreeMap<String, String>> = Vec::default();
+
+    token_ids.push(1.into());
+    token_ids.push(2.into());
+
     let mut meta: BTreeMap<String, String> = BTreeMap::default();
     meta.insert("TOKEN-1".into(), "Metadata for token1".into());
     token_metas.push(meta);
+
     let mut meta: BTreeMap<String, String> = BTreeMap::default();
     meta.insert("TOKEN-2".into(), "Metadata for token2".into());
     token_metas.push(meta);
-    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
+
     cep47.call_contract(
         owner,
         "mint",
         runtime_args! {
             "recipient" => token_owner,
-            "token_ids" => token_id.clone(),
+            "token_ids" => token_ids.clone(),
             "token_metas" => token_metas,
         },
         0,
     );
-    let token_address: Key = Key::Hash(cep47.package_hash());
-    let token_owner: Key = token_owner;
-    let floor_asked: U256 = U256::from(1);
-    let total_asked: U256 = U256::from(1);
-    let payment_time: U256 = U256::from(1000);
-    let payment_rate: U256 = U256::from(10000);
+
     instance.initialize(
         owner,
-        token_id,
+        token_ids,
         token_address,
         token_owner,
         floor_asked,
@@ -154,32 +131,17 @@ fn test_deploy() {
 
 #[test]
 fn test_intialize() {
-    let (env, owner, _, proxy) = deploy();
-    let erc20 = deploy_erc20(&env, owner);
-    let token_address: Key = Key::Hash(erc20.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
-    token_id.push(3.into());
-    token_id.push(4.into());
-    token_id.push(5.into());
-    let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
-    let token_owner: Key = Key::from(package_hash);
-    let floor_asked: U256 = U256::from(1);
-    let total_asked: U256 = U256::from(1);
-    let payment_time: U256 = U256::from(1);
-    let payment_rate: U256 = U256::from(1);
-    let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    proxy.initialize(
+    let (env, owner, contract, _) = deploy();
+    initialize(
+        &env,
         owner,
-        token_id,
-        token_address,
-        token_owner,
-        floor_asked,
-        total_asked,
-        payment_time,
-        payment_rate,
-    );
+        &LIQUIDLOCKERInstance::contract_instance(contract),
+        Key::Account(owner),
+        1.into(),
+        1.into(),
+        1000.into(),
+        100.into(),
+    )
 }
 
 #[test]
@@ -188,7 +150,16 @@ fn test_increase_payment_rate() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    initialize(&env, owner, &proxy, token_owner);
+    initialize(
+        &env,
+        owner,
+        &proxy,
+        token_owner,
+        1.into(),
+        1.into(),
+        1000.into(),
+        1000.into(),
+    );
     let new_payment_rate: U256 = U256::from(1000000000);
     proxy.increase_payment_rate(owner, new_payment_rate);
 }
@@ -199,7 +170,16 @@ fn test_decrease_payment_time() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    initialize(&env, owner, &proxy, token_owner);
+    initialize(
+        &env,
+        owner,
+        &proxy,
+        token_owner,
+        1.into(),
+        1.into(),
+        1000.into(),
+        1000.into(),
+    );
     let new_payment_rate: U256 = U256::from(0);
     proxy.decrease_payment_time(owner, new_payment_rate);
 }
@@ -221,35 +201,31 @@ fn test_calculate_epoch() {
     let res: U256 = proxy.result();
     println!("{:?}", res);
 }
+
 #[test]
 fn test_enable_locker() {
     let (env, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let prepay_amount: U256 = U256::from(20);
-    let erc20 = deploy_erc20(&env, owner);
-    let token_address: Key = Key::Hash(erc20.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
-    token_id.push(3.into());
-    token_id.push(4.into());
-    token_id.push(5.into());
+
     let token_owner: Key = Key::from(package_hash);
     let floor_asked: U256 = U256::from(1);
     let total_asked: U256 = U256::from(10000);
     let payment_time: U256 = U256::from(3);
     let payment_rate: U256 = U256::from(300);
-    proxy.initialize(
+
+    initialize(
+        &env,
         owner,
-        token_id,
-        token_address,
+        &proxy,
         token_owner,
         floor_asked,
         total_asked,
         payment_time,
         payment_rate,
     );
+
     proxy.make_contribution(owner, 150.into(), token_owner);
     proxy.enable_locker(owner, prepay_amount);
 }
@@ -304,7 +280,16 @@ fn test_disable_locker() {
 fn test_rescue_locker() {
     let (env, owner, contract, proxy) = deploy();
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    initialize(&env, owner, &proxy, Key::Hash(contract.package_hash()));
+    initialize(
+        &env,
+        owner,
+        &proxy,
+        Key::Hash(contract.package_hash()),
+        1.into(),
+        1.into(),
+        1000.into(),
+        1000.into(),
+    );
     proxy.rescue_locker(owner);
 }
 
@@ -312,14 +297,6 @@ fn test_rescue_locker() {
 fn test_refund_due_disabled() {
     let (env, owner, _, proxy) = deploy();
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    let erc20 = deploy_erc20(&env, owner);
-    let token_address: Key = Key::Hash(erc20.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
-    token_id.push(3.into());
-    token_id.push(4.into());
-    token_id.push(5.into());
     let token_owner: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
@@ -328,10 +305,10 @@ fn test_refund_due_disabled() {
     let total_asked: U256 = U256::from(200);
     let payment_time: U256 = U256::from(1000);
     let payment_rate: U256 = U256::from(10000);
-    proxy.initialize(
+    initialize(
+        &env,
         owner,
-        token_id,
-        token_address,
+        &proxy,
         token_owner,
         floor_asked,
         total_asked,
@@ -349,21 +326,27 @@ fn test_refund_due_single() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    initialize(&env, owner, &proxy, token_owner);
+    initialize(
+        &env,
+        owner,
+        &proxy,
+        token_owner,
+        1.into(),
+        1.into(),
+        1000.into(),
+        1000.into(),
+    );
     let token_amount = U256::from(100);
     proxy.make_contribution(owner, token_amount, Key::Account(owner));
     let refund_address: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
     .unwrap();
-    let erc20 = deploy_erc20(&env, owner);
-    let token_address: Key = Key::Hash(erc20.package_hash());
+    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
+    let token_address: Key = Key::Hash(cep47.package_hash());
     let mut token_id: Vec<U256> = Vec::new();
     token_id.push(1.into());
     token_id.push(2.into());
-    token_id.push(3.into());
-    token_id.push(4.into());
-    token_id.push(5.into());
     let floor_asked: U256 = U256::from(1);
     let total_asked: U256 = U256::from(100000);
     let payment_time: U256 = U256::from(1000);
@@ -389,7 +372,16 @@ fn test_donate_funds() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let token_owner: Key = Key::from(package_hash);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    initialize(&env, owner, &proxy, token_owner);
+    initialize(
+        &env,
+        owner,
+        &proxy,
+        token_owner,
+        1.into(),
+        1.into(),
+        1000.into(),
+        1000.into(),
+    );
     let donation_amount: U256 = U256::from(1);
     proxy.donate_funds(owner, donation_amount);
 }
@@ -398,8 +390,8 @@ fn test_donate_funds() {
 fn test_pay_back_funds() {
     let (env, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
-    let erc20 = deploy_erc20(&env, owner);
-    let token_address: Key = Key::Hash(erc20.package_hash());
+    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
+    let token_address: Key = Key::Hash(cep47.package_hash());
     let mut token_id: Vec<U256> = Vec::new();
     token_id.push(1.into());
     token_id.push(2.into());
@@ -489,7 +481,16 @@ fn test_claim_interest_single() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_owner: Key = Key::from(package_hash);
-    initialize(&env, owner, &proxy, token_owner);
+    initialize(
+        &env,
+        owner,
+        &proxy,
+        token_owner,
+        1.into(),
+        1.into(),
+        1000.into(),
+        1000.into(),
+    );
     let token_amount = U256::from(100);
     proxy.donate_funds(owner, 1000.into());
     proxy.make_contribution(owner, token_amount, token_owner);
@@ -502,8 +503,8 @@ fn test_claim_interest_public() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_amount = U256::from(1000);
-    let erc20 = deploy_erc20(&env, owner);
-    let token_address: Key = Key::Hash(erc20.package_hash());
+    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
+    let token_address: Key = Key::Hash(cep47.package_hash());
     let mut token_id: Vec<U256> = Vec::new();
     token_id.push(1.into());
     token_id.push(2.into());
