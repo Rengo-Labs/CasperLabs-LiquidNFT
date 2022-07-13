@@ -2,7 +2,7 @@ use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDHELPERInstance(TestContract);
 
@@ -10,7 +10,7 @@ impl LIQUIDHELPERInstance {
     pub fn contract_instance(contract: TestContract) -> LIQUIDHELPERInstance {
         LIQUIDHELPERInstance(contract)
     }
-    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
+    pub fn deploy_new(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
             "liquid-helper.wasm",

@@ -13,8 +13,8 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use cep47_crate::{Meta, TokenId, CEP47};
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_cep47::{Meta, TokenId, CEP47};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 
 #[derive(Default)]
 struct NFTToken(OnChainContractStorage);

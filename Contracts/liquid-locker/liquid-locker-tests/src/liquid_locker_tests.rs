@@ -4,11 +4,11 @@ use crate::liquid_locker_instance::LIQUIDLOCKERInstance;
 use casper_types::{
     account::AccountHash, runtime_args, ContractPackageHash, Key, RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 fn deploy_cep47(env: &TestEnv, owner: AccountHash, meta: BTreeMap<String, String>) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "cep47-token.wasm",
         "cep47",
         owner,
@@ -23,15 +23,15 @@ fn deploy_cep47(env: &TestEnv, owner: AccountHash, meta: BTreeMap<String, String
 
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc2020",
         owner,
         runtime_args! {
             "name" => "ERC",
             "symbol" => "ERC20",
-            "decimals" => 18 as u8,
-            "initial_supply" => U256::from(1000000000000000 as u128)
+            "decimals" => 9_u8,
+            "initial_supply" => U256::from(1000000000000000_u128)
         },
         0,
     )
@@ -46,7 +46,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
         "LIQUIDLOCKERPROXY",
         owner,
         Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+            "hash-0000000000000000000000000000000000000000000000000000000000000000",
         )
         .unwrap(),
     );
@@ -73,6 +73,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
     (env, owner, contract, proxy)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn initialize(
     env: &TestEnv,
     owner: AccountHash,
@@ -83,7 +84,7 @@ fn initialize(
     payment_time: U256,
     payment_rate: U256,
 ) {
-    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
+    let cep47 = deploy_cep47(env, owner, BTreeMap::default());
 
     let token_address: Key = Key::Hash(cep47.package_hash());
 
@@ -236,9 +237,7 @@ fn test_disable_locker() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_owner: Key = Key::from(package_hash);
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
+    let token_id: Vec<U256> = vec![1.into(), 2.into()];
     let mut token_metas: Vec<BTreeMap<String, String>> = Vec::default();
     let mut meta: BTreeMap<String, String> = BTreeMap::default();
     meta.insert("TOKEN-1".into(), "Metadata for token1".into());
@@ -298,7 +297,7 @@ fn test_refund_due_disabled() {
     let (env, owner, _, proxy) = deploy();
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
     let token_owner: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     let floor_asked: U256 = U256::from(1);
@@ -339,14 +338,12 @@ fn test_refund_due_single() {
     let token_amount = U256::from(100);
     proxy.make_contribution(owner, token_amount, Key::Account(owner));
     let refund_address: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
     let token_address: Key = Key::Hash(cep47.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
+    let token_id: Vec<U256> = vec![1.into(), 2.into()];
     let floor_asked: U256 = U256::from(1);
     let total_asked: U256 = U256::from(100000);
     let payment_time: U256 = U256::from(1000);
@@ -392,12 +389,7 @@ fn test_pay_back_funds() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
     let token_address: Key = Key::Hash(cep47.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
-    token_id.push(3.into());
-    token_id.push(4.into());
-    token_id.push(5.into());
+    let token_id: Vec<U256> = vec![1.into(), 2.into(), 3.into(), 4.into(), 5.into()];
     let token_owner: Key = Key::from(package_hash);
     let floor_asked: U256 = U256::from(1);
     let total_asked: U256 = U256::from(20000000);
@@ -426,9 +418,7 @@ fn test_liquidate_locker() {
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
     let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
     let token_address: Key = Key::Hash(cep47.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
+    let token_id: Vec<U256> = vec![1.into(), 2.into()];
     let mut token_metas: Vec<BTreeMap<String, String>> = Vec::default();
     let mut meta: BTreeMap<String, String> = BTreeMap::default();
     meta.insert("TOKEN-1".into(), "Metadata for token1".into());
@@ -505,12 +495,7 @@ fn test_claim_interest_public() {
     let token_amount = U256::from(1000);
     let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
     let token_address: Key = Key::Hash(cep47.package_hash());
-    let mut token_id: Vec<U256> = Vec::new();
-    token_id.push(1.into());
-    token_id.push(2.into());
-    token_id.push(3.into());
-    token_id.push(4.into());
-    token_id.push(5.into());
+    let token_id: Vec<U256> = vec![1.into(), 2.into(), 3.into(), 4.into(), 5.into()];
     let token_owner: Key = Key::from(package_hash);
     let floor_asked: U256 = U256::from(1);
     let total_asked: U256 = U256::from(100000);

@@ -54,5 +54,14 @@ clean:
 	rm -rf liquid-locker/liquid-locker-tests/wasm/*.wasm
 	rm -rf Cargo.lock
 
+lint: clippy
+	cargo fmt --all
+
+check-lint: clippy
+	cargo fmt --all -- --check
+
+clippy:
+	cargo clippy --all-targets --all -- -D warnings
+
 git-clear:
 	git rm -rf --cached .

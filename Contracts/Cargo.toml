@@ -2,15 +2,10 @@
 members = [
   # COMMON
   "common",
-  # CEP47
-  "cep47/cep47",
-  "cep47/cep47-crate",
-  "cep47/cep47-tests",
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
+  # MOCK CEP47
+  "mock-cep47",
+  # MOCK ERC20
+  "mock-erc20",
   # LIQUID BASE
   "liquid-base-crate",
   # LIQUID FACTORY

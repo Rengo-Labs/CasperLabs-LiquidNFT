@@ -2,7 +2,7 @@ use core::convert::TryInto;
 
 use casper_contract::contract_api::{runtime, storage};
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
-use contract_utils::{get_key, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 
 pub use common::keys::*;
 
@@ -22,7 +22,7 @@ impl Implementations {
     }
 
     pub fn get(&self, owner: &Key) -> Key {
-        self.dict.get_by_key(owner).unwrap_or(zero_address())
+        self.dict.get_by_key(owner).unwrap_or_else(zero_address)
     }
 
     pub fn set(&self, owner: &Key, value: Key) {
@@ -87,7 +87,7 @@ pub fn set_default_token(default_token: Key) {
 }
 
 pub fn get_default_token() -> Key {
-    get_key(DEFAULT_TOKEN).unwrap_or(zero_address())
+    get_key(DEFAULT_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_locker_count(locker_count: U256) {
@@ -103,7 +103,7 @@ pub fn set_master_address(master_address: Key) {
 }
 
 pub fn get_master_address() -> Key {
-    get_key(MASTER_ADDRESS).unwrap_or(zero_address())
+    get_key(MASTER_ADDRESS).unwrap_or_else(zero_address)
 }
 
 pub fn set_hash(contract_hash: Key) {
@@ -111,7 +111,7 @@ pub fn set_hash(contract_hash: Key) {
 }
 
 pub fn get_hash() -> Key {
-    get_key(SELF_CONTRACT_HASH).unwrap_or(zero_address())
+    get_key(SELF_CONTRACT_HASH).unwrap_or_else(zero_address)
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {

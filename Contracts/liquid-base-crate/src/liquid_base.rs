@@ -1,8 +1,7 @@
 use crate::data::{self, Compensations, Contributions};
 use casper_types::{Key, U256};
+use casperlabs_contract_utils::{get_key, set_key, ContractContext, ContractStorage};
 use common::keys::zero_address;
-use contract_utils::{get_key, set_key};
-use contract_utils::{ContractContext, ContractStorage};
 
 #[allow(non_snake_case)]
 pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
@@ -26,7 +25,7 @@ pub trait LIQUIDBASE<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn get_single_provider(&self) -> Key {
-        get_key(data::SINGLE_PROVIDER).unwrap_or(zero_address())
+        get_key(data::SINGLE_PROVIDER).unwrap_or_else(zero_address)
     }
 
     //Minimum the owner wants for the loan. If less than this contributors refunded
