@@ -2,7 +2,7 @@ use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDFACTORYInstance(TestContract);
 
@@ -45,6 +45,7 @@ impl LIQUIDFACTORYInstance {
             .call_contract(sender, "revoke_master", runtime_args! {}, 0);
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn create_liquid_locker(
         &self,
         sender: AccountHash,

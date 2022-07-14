@@ -10,8 +10,8 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
 use liquid_locker_crate::{
     entry_points::get_entry_points, liquid_helper_crate::liquid_base_crate, LIQUIDLOCKER,
 };
@@ -55,7 +55,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
     }
 
     fn is_locker(&self, lockers_address: &Key) {
-        if !(Lockers::instance().get(lockers_address) == true) {
+        if !Lockers::instance().get(lockers_address) {
             runtime::revert(ApiError::from(Error::InvalidLocker));
         }
     }
@@ -97,7 +97,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
             .unwrap_or_revert();
 
-        if Lockers::instance().get(&Key::from(package_hash)) == false {
+        if !Lockers::instance().get(&Key::from(package_hash)) {
             Lockers::instance().set(&Key::from(package_hash), true);
         }
 
@@ -118,6 +118,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
 
     /// Call into initialize for the locker to begin the LiquidNFT loan process.
     /// Transfer the NFT the user wants use for the loan into the locker.
+    #[allow(clippy::too_many_arguments)]
     fn create_liquid_locker(
         &mut self,
         token_id: Vec<U256>,

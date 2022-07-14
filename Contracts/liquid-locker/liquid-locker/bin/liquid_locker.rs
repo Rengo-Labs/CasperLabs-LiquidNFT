@@ -10,7 +10,7 @@ use casper_contract::{
 use casper_types::{
     runtime_args, CLValue, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 
 use liquid_locker_crate::{
     self,

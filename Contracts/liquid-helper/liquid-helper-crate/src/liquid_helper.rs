@@ -2,7 +2,7 @@ use crate::data;
 use alloc::vec::Vec;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ContractPackageHash, Key, RuntimeArgs, U256};
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use liquid_base_crate::{self, data::*, LIQUIDBASE};
 
 use common::errors::*;
@@ -27,7 +27,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
     }
 
     fn floor_not_reached(&self) -> bool {
-        self.contribution_phase() == false && self.below_floor_asked() == true
+        !self.contribution_phase() && self.below_floor_asked()
     }
 
     fn not_single_provider(&self, check_address: Key) -> bool {

@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, Key, RuntimeArgs, U256};
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 
 pub trait LIQUIDTRANSFER<Storage: ContractStorage>: ContractContext<Storage> {
     fn transfer_nft(&self, token: Key, recipient: Key, token_ids: Vec<U256>) {

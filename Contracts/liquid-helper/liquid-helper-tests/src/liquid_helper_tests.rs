@@ -1,11 +1,11 @@
 use crate::liquid_helper_instance::LIQUIDHELPERInstance;
 use casper_types::{account::AccountHash, Key, U256};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 fn deploy() -> (TestEnv, AccountHash, TestContract, LIQUIDHELPERInstance) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let contract = LIQUIDHELPERInstance::new(&env, "LIQUIDHELPER", owner);
+    let contract = LIQUIDHELPERInstance::deploy_new(&env, "LIQUIDHELPER", owner);
     let proxy = LIQUIDHELPERInstance::proxy(
         &env,
         "LIQUIDHELPERPROXY",
@@ -36,7 +36,7 @@ fn ownerless_locker() {
 
     proxy.ownerless_locker(owner);
     let res: bool = proxy.result();
-    assert_eq!(true, res);
+    assert!(res);
 }
 
 #[test]
@@ -45,21 +45,21 @@ fn floor_not_reached() {
 
     proxy.floor_not_reached(owner);
     let res: bool = proxy.result();
-    assert_eq!(false, res);
+    assert!(!res);
 }
 
 #[test]
 fn not_single_provider() {
     let (_, owner, _, proxy) = deploy();
     let tmp_check_address: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     proxy.not_single_provider(owner, tmp_check_address);
 
     let res: bool = proxy.result();
 
-    assert_eq!(false, res);
+    assert!(!res);
 }
 
 #[test]
@@ -67,13 +67,13 @@ fn reached_total() {
     let (_, owner, _, proxy) = deploy();
     let arg_token_amount: U256 = 1.into();
     let arg_contributor: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     proxy.reached_total(owner, arg_contributor, arg_token_amount);
 
     let res: bool = proxy.result();
-    assert_eq!(true, res);
+    assert!(res);
 }
 
 #[test]
@@ -81,7 +81,7 @@ fn missed_activate() {
     let (_, owner, _, proxy) = deploy();
     proxy.missed_activate(owner);
     let res: bool = proxy.result();
-    assert_eq!(false, res);
+    assert!(!res);
 }
 
 #[test]
@@ -89,7 +89,7 @@ fn missed_deadline() {
     let (_, owner, _, proxy) = deploy();
     proxy.missed_deadline(owner);
     let res: bool = proxy.result();
-    assert_eq!(false, res);
+    assert!(!res);
 }
 
 #[test]
@@ -98,7 +98,7 @@ fn below_floor_asked() {
     proxy.below_floor_asked(owner);
     let res: bool = proxy.result();
 
-    assert_eq!(false, res);
+    assert!(!res);
 }
 
 #[test]
@@ -106,7 +106,7 @@ fn payment_time_not_set() {
     let (_, owner, _, proxy) = deploy();
     proxy.payment_time_not_set(owner);
     let res: bool = proxy.result();
-    assert_eq!(true, res);
+    assert!(res);
 }
 
 #[test]
@@ -115,7 +115,7 @@ fn contribution_phase() {
     proxy.contribution_phase(owner);
     let res: bool = proxy.result();
 
-    assert_eq!(true, res);
+    assert!(res);
 }
 
 #[test]
@@ -133,7 +133,7 @@ fn liquidate_to() {
     proxy.liquidate_to(owner);
     let res_key: Key = proxy.result();
     let compare_key: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     assert_eq!(compare_key, res_key);

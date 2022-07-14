@@ -2,7 +2,7 @@ use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDLOCKERInstance(TestContract);
 
@@ -10,6 +10,7 @@ impl LIQUIDLOCKERInstance {
     pub fn contract_instance(contract: TestContract) -> LIQUIDLOCKERInstance {
         LIQUIDLOCKERInstance(contract)
     }
+    #[allow(clippy::new_ret_no_self)]
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
@@ -55,6 +56,7 @@ impl LIQUIDLOCKERInstance {
         );
     }
     // Initialize Function
+    #[allow(clippy::too_many_arguments)]
     pub fn initialize(
         &self,
         sender: AccountHash,
@@ -181,18 +183,24 @@ impl LIQUIDLOCKERInstance {
         );
     }
     //pay_back_funds
-    pub fn calculate_epoch(&self, sender: AccountHash, total_value: U256,payment_time: U256,payment_rate: U256) {
-            self.0.call_contract(
-                sender,
-                "calculate_epoch",
-                runtime_args! {
-                    "total_value" => total_value,
-                    "payment_time" => payment_time,
-                    "payment_rate" => payment_rate
-                },
-                0,
-            );
-        }
+    pub fn calculate_epoch(
+        &self,
+        sender: AccountHash,
+        total_value: U256,
+        payment_time: U256,
+        payment_rate: U256,
+    ) {
+        self.0.call_contract(
+            sender,
+            "calculate_epoch",
+            runtime_args! {
+                "total_value" => total_value,
+                "payment_time" => payment_time,
+                "payment_rate" => payment_rate
+            },
+            0,
+        );
+    }
     //liquidate_locker
     pub fn liquidate_locker(&self, sender: AccountHash) {
         self.0

@@ -5,8 +5,8 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
 use liquid_helper_crate::liquid_base_crate::{data as liquid_base_data, data::*, LIQUIDBASE};
 use liquid_helper_crate::LIQUIDHELPER;
 use liquid_transfer_crate::LIQUIDTRANSFER;
@@ -32,19 +32,18 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn only_locker_owner(&self) {
-        if !(self.get_caller() == get_globals().locker_owner) {
+        if self.get_caller() != get_globals().locker_owner {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
     }
 
     fn only_during_contribution_phase(&self) {
-        if !(LIQUIDHELPER::contribution_phase(self) == true
-            && LIQUIDHELPER::payment_time_not_set(self) == true)
-        {
+        if !(LIQUIDHELPER::contribution_phase(self) && LIQUIDHELPER::payment_time_not_set(self)) {
             runtime::revert(ApiError::from(Error::NotContributionPhase));
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn initialize(
         &self,
         token_id: Vec<U256>,
@@ -84,7 +83,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         self.only_locker_owner();
         self.only_during_contribution_phase();
 
-        if !(new_payment_rate > get_globals().payment_rate) {
+        if new_payment_rate <= get_globals().payment_rate {
             runtime::revert(ApiError::from(Error::InvalidIncrease));
         }
 
@@ -97,7 +96,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         self.only_locker_owner();
         self.only_during_contribution_phase();
 
-        if !(new_payment_time < get_globals().payment_time) {
+        if new_payment_time >= get_globals().payment_time {
             runtime::revert(ApiError::from(Error::InvalidDecrease));
         }
 
@@ -145,7 +144,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn _reached_total(&mut self, token_holder: Key) -> U256 {
-        if !(LIQUIDBASE::get_single_provider(self) == zero_address()) {
+        if LIQUIDBASE::get_single_provider(self) != zero_address() {
             runtime::revert(ApiError::from(Error::ProviderExists));
         }
 
@@ -163,11 +162,11 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn enable_locker(&mut self, prepay_amount: U256) {
-        if !(LIQUIDHELPER::below_floor_asked(self) == false) {
+        if LIQUIDHELPER::below_floor_asked(self) {
             runtime::revert(ApiError::from(Error::BelowFloor));
         }
 
-        if !(LIQUIDHELPER::payment_time_not_set(self) == true) {
+        if !LIQUIDHELPER::payment_time_not_set(self) {
             runtime::revert(ApiError::from(Error::EnabledLocker));
         }
 
@@ -227,10 +226,10 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     fn disable_locker(&self) {
         self.only_locker_owner();
 
-        if !(self.get_caller() == get_globals().locker_owner) {
+        if self.get_caller() != get_globals().locker_owner {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
-        if !(LIQUIDHELPER::below_floor_asked(self) == true) {
+        if !LIQUIDHELPER::below_floor_asked(self) {
             runtime::revert(ApiError::from(Error::FloorReached));
         }
         self._disable_locker();
@@ -242,15 +241,15 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn rescue_locker(&self) {
-        if !(self.get_caller() == get_trustee_multisig()) {
+        if self.get_caller() != get_trustee_multisig() {
             runtime::revert(ApiError::from(Error::InvalidTrustee));
         }
 
-        if !(LIQUIDHELPER::time_since(self, LIQUIDBASE::get_creation_time(self)) > DEADLINE_TIME) {
+        if LIQUIDHELPER::time_since(self, LIQUIDBASE::get_creation_time(self)) <= DEADLINE_TIME {
             runtime::revert(ApiError::from(Error::NotEnoughTime));
         }
 
-        if !(LIQUIDHELPER::payment_time_not_set(self) == true) {
+        if !LIQUIDHELPER::payment_time_not_set(self) {
             runtime::revert(ApiError::from(Error::AlreadyStarted));
         }
 
@@ -258,9 +257,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn refund_due_disabled(&self, refund_address: Key) {
-        if !(LIQUIDHELPER::ownerless_locker(self) == true
-            || LIQUIDHELPER::floor_not_reached(self) == true)
-        {
+        if !(LIQUIDHELPER::ownerless_locker(self) || LIQUIDHELPER::floor_not_reached(self)) {
             runtime::revert(ApiError::from(Error::EnabledLocker));
         }
 
@@ -272,7 +269,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn refund_due_single(&self, refund_address: Key) {
-        if !(LIQUIDHELPER::not_single_provider(self, refund_address) == true) {
+        if !LIQUIDHELPER::not_single_provider(self, refund_address) {
             runtime::revert(ApiError::from(Error::InvalidSender));
         }
         self._refund_tokens(
@@ -291,7 +288,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn pay_back_funds(&mut self, payment_amount: U256) {
-        if !(LIQUIDHELPER::missed_deadline(self) == false) {
+        if LIQUIDHELPER::missed_deadline(self) {
             runtime::revert(ApiError::from(Error::TooLate));
         }
 
@@ -319,7 +316,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             ))
             .unwrap_or_revert_with(Error::LiquidLockerDivision1);
 
-        if !(purchased_time >= SECONDS_IN_DAY) {
+        if purchased_time < SECONDS_IN_DAY {
             runtime::revert(ApiError::from(Error::MinimumPayoff));
         }
 
@@ -340,9 +337,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn liquidate_locker(&self) {
-        if !(LIQUIDHELPER::missed_activate(self) == true
-            || LIQUIDHELPER::missed_deadline(self) == true)
-        {
+        if !(LIQUIDHELPER::missed_activate(self) || LIQUIDHELPER::missed_deadline(self)) {
             runtime::revert(ApiError::from(Error::TooEarly));
         }
         LIQUIDTRANSFER::transfer_nft(
@@ -436,7 +431,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn claim_interest_single(&self) {
-        if !(LIQUIDBASE::get_single_provider(self) == self.get_caller()) {
+        if LIQUIDBASE::get_single_provider(self) != self.get_caller() {
             runtime::revert(ApiError::from(Error::NotSingleProvider));
         }
 
@@ -444,7 +439,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn claim_interest_public(&self) {
-        if !(LIQUIDBASE::get_single_provider(self) == zero_address()) {
+        if LIQUIDBASE::get_single_provider(self) != zero_address() {
             runtime::revert(ApiError::from(Error::SingleProviderExists));
         }
 
@@ -471,7 +466,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn _claim_penalties(&self) {
-        if !(LIQUIDBASE::get_penalties_balance(self) > LIQUIDBASE::get_claimable_balance(self)) {
+        if LIQUIDBASE::get_penalties_balance(self) <= LIQUIDBASE::get_claimable_balance(self) {
             return;
         }
 

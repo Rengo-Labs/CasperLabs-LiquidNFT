@@ -2,10 +2,8 @@ use casper_types::Key;
 
 // Zero Key
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 // Common Keys
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";

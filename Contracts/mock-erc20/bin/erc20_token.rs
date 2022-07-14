@@ -13,8 +13,8 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
-use erc20_crate::ERC20;
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_erc20::ERC20;
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -27,6 +27,7 @@ impl ContractContext<OnChainContractStorage> for Token {
 
 impl ERC20<OnChainContractStorage> for Token {}
 impl Token {
+    #[allow(clippy::too_many_arguments)]
     fn constructor(
         &mut self,
         name: String,

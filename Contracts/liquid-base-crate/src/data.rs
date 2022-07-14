@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use casper_types::{Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use contract_utils::{get_key, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 
 pub use common::keys::*;
 
@@ -91,7 +91,7 @@ pub fn set_payment_token(payment_token: Key) {
 }
 
 pub fn get_payment_token() -> Key {
-    get_key(PAYMENT_TOKEN).unwrap_or(zero_address())
+    get_key(PAYMENT_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_trustee_multisig(trustee_multisig: Key) {
@@ -99,5 +99,5 @@ pub fn set_trustee_multisig(trustee_multisig: Key) {
 }
 
 pub fn get_trustee_multisig() -> Key {
-    get_key(TRUSTEE_MULTISIG).unwrap_or(zero_address())
+    get_key(TRUSTEE_MULTISIG).unwrap_or_else(zero_address)
 }

@@ -1,20 +1,18 @@
 use std::collections::BTreeMap;
 
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::liquid_factory_instance::LIQUIDFACTORYInstance;
 
 fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 fn deploy_cep47(env: &TestEnv, owner: AccountHash, meta: BTreeMap<String, String>) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "cep47-token.wasm",
         "cep47",
         owner,
@@ -29,14 +27,14 @@ fn deploy_cep47(env: &TestEnv, owner: AccountHash, meta: BTreeMap<String, String
 
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc20",
         owner,
         runtime_args! {
             "name" => "ERC",
             "symbol" => "ERC20",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(0)
         },
         0,
@@ -96,9 +94,7 @@ fn test_create_liquid_locker() {
     let payment_rate: U256 = 1.into();
     let payment_token: Key = Key::Hash(erc20.package_hash());
 
-    let mut token_ids: Vec<U256> = Vec::default();
-    token_ids.push(1.into());
-    token_ids.push(2.into());
+    let token_ids: Vec<U256> = vec![1.into(), 2.into()];
 
     let mut token_metas: Vec<BTreeMap<String, String>> = Vec::default();
 
@@ -230,9 +226,7 @@ fn test_payback_to_locker() {
     let payment_rate: U256 = 1.into();
     let payment_token: Key = Key::Hash(erc20.package_hash());
 
-    let mut token_ids: Vec<U256> = Vec::default();
-    token_ids.push(1.into());
-    token_ids.push(2.into());
+    let token_ids: Vec<U256> = vec![1.into(), 2.into()];
 
     let mut token_metas: Vec<BTreeMap<String, String>> = Vec::default();
 
