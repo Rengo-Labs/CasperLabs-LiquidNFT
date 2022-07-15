@@ -62,7 +62,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
 
     /// @dev Clone the byte code from one contract into a new contract. Uses solidity assembly.
     /// This is a lot cheaper in gas than deploying a new contract.
-    fn _generate_locker(&self, payment_token: Key) -> Key {
+    fn _generate_locker(&self, payment_token: Key) -> (Key, Key) {
         // Factory
         let salt: String = data::get_counter().to_string();
         let name: String = "Locker-".to_string() + &salt;
@@ -102,7 +102,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         }
 
         // New deployed locker address
-        Key::from(package_hash)
+        (Key::from(contract_hash), Key::from(package_hash))
     }
 
     /// @dev Transfer master permission
@@ -128,10 +128,11 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         payment_time: U256,
         payment_rate: U256,
         payment_token: Key,
-    ) -> Key {
-        let locker_address = self._generate_locker(payment_token);
+    ) -> (Key, Key) {
+        let (locker_contract_address, locker_package_address) =
+            self._generate_locker(payment_token);
         let () = runtime::call_versioned_contract(
-            locker_address.into_hash().unwrap_or_revert().into(),
+            locker_package_address.into_hash().unwrap_or_revert().into(),
             None,
             "initialize",
             runtime_args! {
@@ -147,26 +148,32 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         LIQUIDTRANSFER::transfer_from_nft(
             self,
             self.get_caller(),
-            locker_address,
+            locker_package_address,
             token_address,
             token_id,
         );
         LIQUIDFACTORY::emit(
             self,
             &LiquidFactoryEvent::NewLocker {
-                locker_address,
+                locker_address: locker_package_address,
                 owners_address: self.get_caller(),
                 tokens_address: token_address,
             },
         );
-        locker_address
+        (locker_contract_address, locker_package_address)
     }
 
     /// Creating an empty locker without any liquidity
-    fn create_empty_locker(&mut self, payment_token: Key) -> Key {
-        let locker_address = self._generate_locker(payment_token);
-        LIQUIDFACTORY::emit(self, &LiquidFactoryEvent::NewEmptyLocker { locker_address });
-        locker_address
+    fn create_empty_locker(&mut self, payment_token: Key) -> (Key, Key) {
+        let (locker_contract_address, locker_package_address) =
+            self._generate_locker(payment_token);
+        LIQUIDFACTORY::emit(
+            self,
+            &LiquidFactoryEvent::NewEmptyLocker {
+                locker_address: locker_package_address,
+            },
+        );
+        (locker_contract_address, locker_package_address)
     }
 
     /// @dev Call contributeToLocker. Factory acts as a middle man between the user and the locker.

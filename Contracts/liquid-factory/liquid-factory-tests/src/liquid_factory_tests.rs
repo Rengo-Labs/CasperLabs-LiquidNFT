@@ -176,9 +176,9 @@ fn test_contribute_to_locker() {
     let payment_amount: U256 = 10.into();
 
     instance.create_empty_locker(owner, payment_token);
-    let lockers_address: Key = instance.result();
+    let (_, lockers_package_address): (Key, Key) = instance.result();
 
-    instance.contribute_to_locker(owner, lockers_address, payment_amount);
+    instance.contribute_to_locker(owner, lockers_package_address, payment_amount);
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn test_donate_to_locker() {
 
     let payment_token: Key = Key::Hash(erc20.package_hash());
     instance.create_empty_locker(owner, payment_token);
-    let lockers_address: Key = instance.result();
+    let (_, lockers_package_address): (Key, Key) = instance.result();
     let donation_amount: U256 = 1.into();
 
     erc20.call_contract(
@@ -210,7 +210,7 @@ fn test_donate_to_locker() {
         0,
     );
 
-    instance.donate_to_locker(owner, lockers_address, donation_amount);
+    instance.donate_to_locker(owner, lockers_package_address, donation_amount);
 }
 
 #[test]
@@ -269,8 +269,8 @@ fn test_payback_to_locker() {
         payment_rate,
         payment_token,
     );
-    let lockers_address: Key = instance.result();
+    let (_, lockers_package_address): (Key, Key) = instance.result();
     let payment_amount: U256 = 0.into();
 
-    instance.payback_to_locker(owner, lockers_address, payment_amount);
+    instance.payback_to_locker(owner, lockers_package_address, payment_amount);
 }

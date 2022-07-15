@@ -123,7 +123,7 @@ fn create_liquid_locker_js_client() {
     let payment_rate: U256 = runtime::get_named_arg("payment_rate");
     let payment_token: Key = runtime::get_named_arg("payment_token");
 
-    let ret: Key = LiquidFactory::default().create_liquid_locker(
+    let ret: (Key, Key) = LiquidFactory::default().create_liquid_locker(
         token_id,
         token_address,
         floor_asked,
@@ -139,7 +139,7 @@ fn create_liquid_locker_js_client() {
 fn create_empty_locker() {
     let payment_token: Key = runtime::get_named_arg("payment_token");
 
-    let ret: Key = LiquidFactory::default().create_empty_locker(payment_token);
+    let ret: (Key, Key) = LiquidFactory::default().create_empty_locker(payment_token);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -147,7 +147,7 @@ fn create_empty_locker() {
 fn create_empty_locker_js_client() {
     let payment_token: Key = runtime::get_named_arg("payment_token");
 
-    let ret: Key = LiquidFactory::default().create_empty_locker(payment_token);
+    let ret: (Key, Key) = LiquidFactory::default().create_empty_locker(payment_token);
     set_result(ret);
 }
 
@@ -373,7 +373,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("payment_rate", U256::cl_type()),
             Parameter::new("payment_token", Key::cl_type()),
         ],
-        Key::cl_type(),
+        CLType::Tuple2([Box::new(CLType::Key), Box::new(CLType::Key)]),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -395,7 +395,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "create_empty_locker",
         vec![Parameter::new("payment_token", Key::cl_type())],
-        Key::cl_type(),
+        CLType::Tuple2([Box::new(CLType::Key), Box::new(CLType::Key)]),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
