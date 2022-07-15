@@ -89,6 +89,7 @@ impl LIQUIDFACTORYInstance {
         sender: AccountHash,
         lockers_address: Key,
         payment_amount: U256,
+        time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -97,7 +98,7 @@ impl LIQUIDFACTORYInstance {
                 "lockers_address" => lockers_address,
                 "payment_amount" => payment_amount
             },
-            0,
+            time,
         );
     }
 

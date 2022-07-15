@@ -162,7 +162,8 @@ fn init() -> (
 /// Contribution phase limit == 5 days (432000 seconds)
 
 #[test]
-fn should_be_able_to_contribute_before_contribution_phase_end() {
+#[should_panic]
+fn should_not_be_able_to_contribute_after_contribution_phase_end() {
     let (
         env,
         owner,
@@ -173,5 +174,5 @@ fn should_be_able_to_contribute_before_contribution_phase_end() {
         lockers_package_address,
     ) = init();
     let payment_amount: U256 = 100_000.into();
-    factory_instance.contribute_to_locker(owner, lockers_package_address, payment_amount, 400_000);
+    factory_instance.contribute_to_locker(owner, lockers_package_address, payment_amount, 500_000);
 }
