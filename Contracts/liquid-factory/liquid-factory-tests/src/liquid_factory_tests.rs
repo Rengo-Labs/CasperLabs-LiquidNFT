@@ -174,4 +174,13 @@ fn should_be_able_to_contribute_before_contribution_phase_end() {
     ) = init();
     let payment_amount: U256 = 100_000.into();
     factory_instance.contribute_to_locker(owner, lockers_package_address, payment_amount, 400_000);
+    let (total_increase, users_increase): (U256, U256) = factory_instance.result();
+    assert_eq!(
+        total_increase, payment_amount,
+        "Total contribution not increased"
+    );
+    assert_eq!(
+        users_increase, payment_amount,
+        "User contribution not increased"
+    );
 }
