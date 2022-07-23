@@ -148,9 +148,11 @@ fn init() -> (
         payment_time,
         payment_rate,
         payment_token,
+        0,
     );
 
-    let (lockers_contract_address, lockers_package_address): (Key, Key) = factory_instance.result();
+    let (lockers_contract_address, lockers_package_address): (Key, Key) =
+        factory_instance.query("result");
 
     (
         env,
@@ -167,6 +169,8 @@ fn init() -> (
 
 #[test]
 fn should_be_able_to_contribute_before_contribution_phase_end() {
+    const TIME: u64 = 400_000;
+
     let (
         _env,
         accounts,
@@ -181,9 +185,9 @@ fn should_be_able_to_contribute_before_contribution_phase_end() {
         accounts[0],
         lockers_package_address,
         payment_amount,
-        400_000,
+        TIME,
     );
-    let (total_increase, users_increase): (U256, U256) = factory_instance.result();
+    let (total_increase, users_increase): (U256, U256) = factory_instance.query("result");
     assert_eq!(
         total_increase, payment_amount,
         "Total contribution not increased"
@@ -195,22 +199,36 @@ fn should_be_able_to_contribute_before_contribution_phase_end() {
 }
 
 #[test]
-fn test_deploy() {
-    let (_, _, _, _) = deploy();
-}
-
-#[test]
 fn test_update_master() {
-    let (_, owner, instance, _) = deploy();
-
-    instance.update_master(owner, Key::Account(owner));
+    let (env, owner, instance, _) = deploy();
+    assert_eq!(
+        Key::Account(owner),
+        instance.query("master_address"),
+        "Owner is not master"
+    );
+    let new_master: Key = Key::Account(env.next_user());
+    instance.update_master(owner, new_master);
+    assert_eq!(
+        new_master,
+        instance.query("master_address"),
+        "Master not updated"
+    );
 }
 
 #[test]
 fn test_revoke_master() {
     let (_, owner, instance, _) = deploy();
-
+    assert_eq!(
+        Key::Account(owner),
+        instance.query("master_address"),
+        "Owner is not master"
+    );
     instance.revoke_master(owner);
+    assert_eq!(
+        zero_address(),
+        instance.query("master_address"),
+        "Master not revoked"
+    );
 }
 
 #[test]
@@ -220,10 +238,10 @@ fn test_create_liquid_locker() {
     let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
 
     let token_address: Key = Key::Hash(cep47.package_hash());
-    let floor_asked: U256 = 1.into();
-    let total_asked: U256 = 1.into();
-    let payment_time: U256 = 1.into();
-    let payment_rate: U256 = 1.into();
+    let floor_asked: U256 = 1_000_000_000.into();
+    let total_asked: U256 = 10_000_000_000u64.into();
+    let payment_time: U256 = 86400.into();
+    let payment_rate: U256 = 100.into();
     let payment_token: Key = Key::Hash(erc20.package_hash());
 
     let token_ids: Vec<U256> = vec![1.into(), 2.into()];
@@ -238,6 +256,8 @@ fn test_create_liquid_locker() {
     meta.insert("TOKEN-2".into(), "Metadata for token2".into());
     token_metas.push(meta);
 
+    const TIME: u64 = 10;
+
     cep47.call_contract(
         owner,
         "mint",
@@ -246,7 +266,7 @@ fn test_create_liquid_locker() {
             "token_ids" => token_ids.clone(),
             "token_metas" => token_metas,
         },
-        0,
+        TIME,
     );
 
     cep47.call_contract(
@@ -256,9 +276,10 @@ fn test_create_liquid_locker() {
             "spender" => Key::from(instance.package_hash()),
             "token_ids" => token_ids.clone(),
         },
-        0,
+        TIME,
     );
 
+    let creation_time: u64 = 100_000;
     instance.create_liquid_locker(
         owner,
         token_ids,
@@ -268,6 +289,20 @@ fn test_create_liquid_locker() {
         payment_time,
         payment_rate,
         payment_token,
+        creation_time,
+    );
+
+    let (lockers_contract_address, lockers_package_address): (Key, Key) = instance.query("result");
+
+    assert_ne!(
+        lockers_contract_address,
+        zero_address(),
+        "Locker contract hash not generated"
+    );
+    assert_ne!(
+        lockers_package_address,
+        zero_address(),
+        "Locker contract package hash not generated"
     );
 }
 
@@ -278,11 +313,26 @@ fn test_create_empty_locker() {
     let payment_token: Key = Key::Hash(erc20.package_hash());
 
     instance.create_empty_locker(owner, payment_token);
+
+    let (lockers_contract_address, lockers_package_address): (Key, Key) = instance.query("result");
+
+    assert_ne!(
+        lockers_contract_address,
+        zero_address(),
+        "Locker contract hash not generated"
+    );
+    assert_ne!(
+        lockers_package_address,
+        zero_address(),
+        "Locker contract package hash not generated"
+    );
 }
 
 #[test]
 fn test_contribute_to_locker() {
     let (_, owner, instance, erc20) = deploy();
+
+    const TIME: u64 = 10;
 
     erc20.call_contract(
         owner,
@@ -291,7 +341,7 @@ fn test_contribute_to_locker() {
             "to" => Key::Account(owner),
             "amount" => U256::from(1000)
         },
-        0,
+        TIME,
     );
 
     erc20.call_contract(
@@ -301,16 +351,18 @@ fn test_contribute_to_locker() {
             "spender" => Key::from(instance.package_hash()),
             "amount" => U256::from(1000)
         },
-        0,
+        TIME,
     );
 
     let payment_token: Key = Key::Hash(erc20.package_hash());
-    let payment_amount: U256 = 10.into();
+    let payment_amount: U256 = 100.into();
 
     instance.create_empty_locker(owner, payment_token);
-    let (_, lockers_package_address): (Key, Key) = instance.result();
+    let (_, lockers_package_address): (Key, Key) = instance.query("result");
 
-    instance.contribute_to_locker(owner, lockers_package_address, payment_amount, 0);
+    instance.contribute_to_locker(owner, lockers_package_address, payment_amount, TIME);
+
+    assert_eq!((payment_amount, U256::default()), instance.query("result"));
 }
 
 #[test]
@@ -319,8 +371,10 @@ fn test_donate_to_locker() {
 
     let payment_token: Key = Key::Hash(erc20.package_hash());
     instance.create_empty_locker(owner, payment_token);
-    let (_, lockers_package_address): (Key, Key) = instance.result();
-    let donation_amount: U256 = 1.into();
+    let (_, lockers_package_address): (Key, Key) = instance.query("result");
+    let donation_amount: U256 = 10.into();
+
+    const TIME: u64 = 10;
 
     erc20.call_contract(
         owner,
@@ -329,7 +383,7 @@ fn test_donate_to_locker() {
             "to" => Key::Account(owner),
             "amount" => U256::from(1000)
         },
-        0,
+        TIME,
     );
 
     erc20.call_contract(
@@ -342,7 +396,27 @@ fn test_donate_to_locker() {
         0,
     );
 
+    erc20.call_contract(
+        owner,
+        "balance_of_js_client",
+        runtime_args! { "owner" => Key::Account(owner) },
+        TIME,
+    );
+
+    assert_eq!(U256::from(1000), erc20.query_named_key("balance".into()));
     instance.donate_to_locker(owner, lockers_package_address, donation_amount);
+
+    erc20.call_contract(
+        owner,
+        "balance_of_js_client",
+        runtime_args! { "owner" => Key::Account(owner) },
+        0,
+    );
+    assert_eq!(
+        U256::from(1000) - donation_amount,
+        erc20.query_named_key("balance".into()),
+        "Doantion not performed"
+    );
 }
 
 #[test]
@@ -357,18 +431,22 @@ fn test_payback_to_locker() {
         lockers_package_address,
     ) = init();
 
+    const TIME: u64 = 400_000;
+
     factory_instance.contribute_to_locker(
         accounts[0],
         lockers_package_address,
         3_000_000_000u64.into(),
-        400_000,
+        TIME,
     );
     factory_instance.contribute_to_locker(
         accounts[1],
         lockers_package_address,
         1_000_000_000u64.into(),
-        400_000,
+        TIME,
     );
+
+    const DAYS_IN_SEC: u64 = 86400;
 
     call_contract_with_hash(
         &env,
@@ -378,14 +456,14 @@ fn test_payback_to_locker() {
         runtime_args! {
             "prepay_amount" => U256::from(1_200)
         },
-        86400 * 5,
+        DAYS_IN_SEC * 5,
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        86400 * 5,
+        DAYS_IN_SEC * 5,
     );
     let old_balance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(old_balance, 1_000_199_998_800u64.into());
@@ -394,14 +472,14 @@ fn test_payback_to_locker() {
         accounts[0],
         lockers_package_address,
         5_000_000_000u64.into(),
-        86400 * 5,
+        DAYS_IN_SEC * 5,
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        86400 * 5,
+        DAYS_IN_SEC * 5,
     );
     let new_nalance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(

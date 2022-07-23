@@ -56,6 +56,7 @@ impl LIQUIDFACTORYInstance {
         payment_time: U256,
         payment_rate: U256,
         payment_token: Key,
+        time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -69,7 +70,7 @@ impl LIQUIDFACTORYInstance {
                 "payment_rate" => payment_rate,
                 "payment_token" => payment_token
             },
-            0,
+            time,
         );
     }
 
@@ -138,8 +139,8 @@ impl LIQUIDFACTORYInstance {
     }
 
     // Result methods
-    pub fn result<T: CLTyped + FromBytes>(&self) -> T {
-        self.0.query_named_key("result".to_string())
+    pub fn query<T: CLTyped + FromBytes>(&self, key: &str) -> T {
+        self.0.query_named_key(key.into())
     }
 
     pub fn package_hash(&self) -> ContractPackageHash {

@@ -144,9 +144,11 @@ fn init() -> (
         payment_time,
         payment_rate,
         payment_token,
+        0,
     );
 
-    let (lockers_contract_address, lockers_package_address): (Key, Key) = factory_instance.result();
+    let (lockers_contract_address, lockers_package_address): (Key, Key) =
+        factory_instance.query("result");
 
     (
         env,
