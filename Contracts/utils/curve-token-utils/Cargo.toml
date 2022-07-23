@@ -1,20 +1,18 @@
 [package]
-name = "liquid-factory-tests"
-version = "0.2.1"
-authors = ["Bassam Monib <bassam.munib@scytalelabs.com>"]
+name = "curve-token-utils"
+version = "0.1.0"
 edition = "2018"
+authors = ["Nouman Nadeem<nouman.nadeem.zafar@scytalelabs.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
-casper-engine-test-support = "2.1.0"
-# casperlabs-test-env = "0.1.0"
-test-env = { path = "../../utils/test-env" }
+casper_types_derive = "0.1.0"
 casperlabs-contract-utils = "0.1.0"
+renvm-sig = "0.1.1"
 hex = "0.4.3"
-blake2 = "0.9.1"
 
 [features]
 default = ["casper-contract/std", "casper-types/std", "casper-contract/test-support"]

@@ -13,7 +13,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{set_key, ContractContext, OnChainContractStorage};
 use casperlabs_erc20::ERC20;
 
 #[derive(Default)]
@@ -225,6 +225,13 @@ fn balance_of() {
     let owner: Key = runtime::get_named_arg("owner");
     let ret: U256 = Token::default().balance_of(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn balance_of_js_client() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let ret: U256 = Token::default().balance_of(owner);
+    set_key("balance", ret);
 }
 
 /// This function is to return the Nonce of owner against the address that user provided
@@ -535,6 +542,14 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of_js_client",
+        vec![Parameter::new("owner", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "nonce",
         vec![Parameter::new("owner", Key::cl_type())],

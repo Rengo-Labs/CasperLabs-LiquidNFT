@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
-use casperlabs_test_env::{TestContract, TestEnv};
+use test_env::{TestContract, TestEnv};
 
 use crate::liquid_factory_instance::LIQUIDFACTORYInstance;
 
@@ -165,12 +165,12 @@ fn init() -> (
 #[should_panic]
 fn should_not_be_able_to_contribute_after_contribution_phase_end() {
     let (
-        env,
+        _env,
         owner,
         factory_instance,
-        erc20,
-        cep47,
-        lockers_contract_address,
+        _erc20,
+        _cep47,
+        _lockers_contract_address,
         lockers_package_address,
     ) = init();
     let payment_amount: U256 = 100_000.into();

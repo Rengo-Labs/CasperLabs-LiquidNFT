@@ -2,7 +2,7 @@ use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
-use casperlabs_test_env::{TestContract, TestEnv};
+use test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDFACTORYInstance(TestContract);
 
@@ -124,6 +124,7 @@ impl LIQUIDFACTORYInstance {
         sender: AccountHash,
         lockers_address: Key,
         payment_amount: U256,
+        time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -132,7 +133,7 @@ impl LIQUIDFACTORYInstance {
                 "lockers_address" => lockers_address,
                 "payment_amount" => payment_amount
             },
-            0,
+            time,
         );
     }
 
