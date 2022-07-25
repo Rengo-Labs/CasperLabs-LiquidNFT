@@ -122,7 +122,7 @@ fn contribution_phase() {
 fn payback_timestamp() {
     let (_, owner, _, proxy) = deploy();
     proxy.payback_timestamp(owner);
-    let compare: U256 = (432000).into();
+    let compare: U256 = (432000000).into();
     let res: U256 = proxy.result();
     assert_eq!(compare, res);
 }
@@ -156,7 +156,7 @@ fn starting_timestamp() {
     let (_, owner, _, proxy) = deploy();
     proxy.starting_timestamp(owner);
     let res: U256 = proxy.result();
-    let compare: U256 = (432000).into();
+    let compare: U256 = (432000000).into();
 
     assert_eq!(compare, res);
 }

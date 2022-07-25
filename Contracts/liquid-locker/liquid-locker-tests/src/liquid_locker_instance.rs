@@ -136,7 +136,7 @@ impl LIQUIDLOCKERInstance {
     //rescue_locker
     pub fn rescue_locker(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "rescue_locker", runtime_args! {}, 10000000);
+            .call_contract(sender, "rescue_locker", runtime_args! {}, 10000000000);
     }
     //refund_due_disabled
     pub fn refund_due_disabled(&self, sender: AccountHash, refund_address: Key) {
@@ -204,7 +204,7 @@ impl LIQUIDLOCKERInstance {
     //liquidate_locker
     pub fn liquidate_locker(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "liquidate_locker", runtime_args! {}, 100000000);
+            .call_contract(sender, "liquidate_locker", runtime_args! {}, 100000000000);
     }
     //claim_interest_single
     pub fn claim_interest_single(&self, sender: AccountHash) {

@@ -78,7 +78,7 @@ fn init() -> (
     let token_address: Key = Key::Hash(cep47.package_hash());
     let floor_asked: U256 = 1_000_000_000.into();
     let total_asked: U256 = 2_000_000_000.into();
-    let payment_time: U256 = 86400.into();
+    let payment_time: U256 = 86400000.into();
     let payment_rate: U256 = 100_000.into();
     let payment_token: Key = Key::Hash(erc20.package_hash());
 
@@ -176,5 +176,8 @@ fn should_not_be_able_to_contribute_after_contribution_phase_end() {
         lockers_package_address,
     ) = init();
     let payment_amount: U256 = 100_000.into();
-    factory_instance.contribute_to_locker(owner, lockers_package_address, payment_amount, 500_000);
+
+    const TIME: u64 = 500_000_000;
+
+    factory_instance.contribute_to_locker(owner, lockers_package_address, payment_amount, TIME);
 }

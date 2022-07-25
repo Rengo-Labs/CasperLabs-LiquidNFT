@@ -78,7 +78,7 @@ fn init() -> (
     let token_address: Key = Key::Hash(cep47.package_hash());
     let floor_asked: U256 = 1_000_000_000.into();
     let total_asked: U256 = 5_000_000_000u64.into();
-    let payment_time: U256 = 86400.into();
+    let payment_time: U256 = 86400000.into();
     let payment_rate: U256 = 100.into();
     let payment_token: Key = Key::Hash(erc20.package_hash());
 
@@ -431,7 +431,7 @@ fn test_payback_to_locker() {
         lockers_package_address,
     ) = init();
 
-    const TIME: u64 = 400_000;
+    const TIME: u64 = 400_000_000;
 
     factory_instance.contribute_to_locker(
         accounts[0],
@@ -446,7 +446,7 @@ fn test_payback_to_locker() {
         TIME,
     );
 
-    const DAYS_IN_SEC: u64 = 86400;
+    const DAYS_IN_MILLI_SEC: u64 = 86400000;
 
     call_contract_with_hash(
         &env,
@@ -454,37 +454,37 @@ fn test_payback_to_locker() {
         accounts[0],
         "enable_locker",
         runtime_args! {
-            "prepay_amount" => U256::from(1_200)
+            "prepay_amount" => U256::from(1_200_000)
         },
-        DAYS_IN_SEC * 5,
+        DAYS_IN_MILLI_SEC * 5,
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        DAYS_IN_SEC * 5,
+        DAYS_IN_MILLI_SEC * 5,
     );
     let old_balance: U256 = erc20.query_named_key("balance".into());
-    assert_eq!(old_balance, 1_000_199_998_800u64.into());
+    assert_eq!(old_balance, 1_000_198_800_000u64.into());
 
     factory_instance.payback_to_locker(
         accounts[0],
         lockers_package_address,
         5_000_000_000u64.into(),
-        DAYS_IN_SEC * 5,
+        DAYS_IN_MILLI_SEC * 5,
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        DAYS_IN_SEC * 5,
+        DAYS_IN_MILLI_SEC * 5,
     );
     let new_nalance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(
         new_nalance,
-        (1_000_199_998_800u64 - 5_000_000_000u64).into(),
+        (1_000_198_800_000u64 - 5_000_000_000u64).into(),
         "Payback not done"
     );
 }

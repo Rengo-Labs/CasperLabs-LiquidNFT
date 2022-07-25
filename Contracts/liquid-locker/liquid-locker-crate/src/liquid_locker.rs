@@ -316,7 +316,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             ))
             .unwrap_or_revert_with(Error::LiquidLockerDivision1);
 
-        if purchased_time < SECONDS_IN_DAY {
+        if purchased_time < MILLI_SECONDS_IN_DAY {
             runtime::revert(ApiError::from(Error::MinimumPayoff));
         }
 
@@ -384,12 +384,18 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             U256::from(blocktime)
                 .checked_sub(LIQUIDBASE::get_next_due_time(self))
                 .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub6)
-                .checked_div(SECONDS_IN_DAY)
+                .checked_div(MILLI_SECONDS_IN_DAY)
                 .unwrap_or_revert_with(Error::LiquidLockerDivision3)
         } else {
             0.into()
         }
     }
+
+    /*
+    LIQUIDBASE::get_total_collected(self),
+    get_globals().payment_time,
+    get_globals().payment_rate,
+    */
 
     fn calculate_paybacks(
         &self,

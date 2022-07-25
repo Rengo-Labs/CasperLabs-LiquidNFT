@@ -6,9 +6,9 @@ use casperlabs_contract_utils::{get_key, set_key, Dict};
 pub use common::keys::*;
 
 pub const FEE: U256 = U256([20, 0, 0, 0]);
-pub const DEADLINE_TIME: U256 = U256([604800, 0, 0, 0]);
-pub const CONTRIBUTION_TIME: U256 = U256([432000, 0, 0, 0]);
-pub const SECONDS_IN_DAY: U256 = U256([86400, 0, 0, 0]);
+pub const DEADLINE_TIME: U256 = U256([604800000, 0, 0, 0]);
+pub const CONTRIBUTION_TIME: U256 = U256([432000000, 0, 0, 0]);
+pub const MILLI_SECONDS_IN_DAY: U256 = U256([86400000, 0, 0, 0]);
 
 #[derive(Debug, Clone, CLTyped, ToBytes, FromBytes)]
 pub struct Globals {

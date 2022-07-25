@@ -67,7 +67,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
     erc20.call_contract(
         owner,
         "mint",
-        runtime_args! {"to" =>  Key::Hash(contract.package_hash()),"amount"=> U256::from(2146000000)},
+        runtime_args! {"to" =>  Key::Hash(contract.package_hash()),"amount"=> U256::from(2146000000000u64)},
         0,
     );
     (env, owner, contract, proxy)
@@ -387,29 +387,29 @@ fn test_donate_funds() {
 fn test_pay_back_funds() {
     let (env, owner, _, proxy) = deploy();
     let package_hash: ContractPackageHash = proxy.query_named_key("package_hash".to_string());
-    let cep47 = deploy_cep47(&env, owner, BTreeMap::default());
-    let token_address: Key = Key::Hash(cep47.package_hash());
-    let token_id: Vec<U256> = vec![1.into(), 2.into(), 3.into(), 4.into(), 5.into()];
-    let token_owner: Key = Key::from(package_hash);
-    let floor_asked: U256 = U256::from(1);
-    let total_asked: U256 = U256::from(20000000);
-    let payment_time: U256 = U256::from(10000);
-    let payment_rate: U256 = U256::from(1);
     let proxy = LIQUIDLOCKERInstance::contract_instance(proxy);
-    proxy.initialize(
+    let prepay_amount: U256 = U256::from(2000);
+
+    let token_owner: Key = Key::from(package_hash);
+    let floor_asked: U256 = U256::from(1000);
+    let total_asked: U256 = U256::from(950000000);
+    let payment_time: U256 = U256::from(99900000);
+    let payment_rate: U256 = U256::from(30);
+
+    initialize(
+        &env,
         owner,
-        token_id,
-        token_address,
+        &proxy,
         token_owner,
         floor_asked,
         total_asked,
         payment_time,
         payment_rate,
     );
-    proxy.make_contribution(owner, 200000000.into(), token_owner);
-    proxy.enable_locker(owner, 10.into());
-    let payment_amount: U256 = U256::from(100000000);
-    proxy.pay_back_funds(owner, payment_amount);
+
+    proxy.make_contribution(owner, 2146000000000u64.into(), token_owner);
+    proxy.enable_locker(owner, prepay_amount);
+    proxy.pay_back_funds(owner, 2146000000000u64.into());
 }
 
 #[test]
