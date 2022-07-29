@@ -64,3 +64,4 @@ clippy:
 
 git-clear:
 	git rm -rf --cached .
+	git add .
