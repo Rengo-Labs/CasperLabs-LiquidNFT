@@ -2,8 +2,8 @@
 
 Implementation of following contracts for the CasperLabs platform.
 
-1. ERC20 Contract
-2. CEP47 Contract
+1. ERC20 Mock Contract
+2. CEP47 Mock Contract
 3. Liquid Base Crate
 4. Liquid Transfer Crate
 5. Liquid Factory Contract
