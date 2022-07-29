@@ -225,7 +225,6 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
 
     fn disable_locker(&self) {
         self.only_locker_owner();
-
         if self.get_caller() != get_globals().locker_owner {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
@@ -391,12 +390,6 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         }
     }
 
-    /*
-    LIQUIDBASE::get_total_collected(self),
-    get_globals().payment_time,
-    get_globals().payment_rate,
-    */
-
     fn calculate_paybacks(
         &self,
         total_value: U256,
@@ -556,7 +549,6 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
 
     fn _refund_tokens(&self, refund_amount: U256, refund_address: Key) {
         LIQUIDBASE::Contributions(self).set(&refund_address, 0.into());
-
         LIQUIDHELPER::_safe_transfer(self, get_payment_token(), refund_address, refund_amount);
     }
 

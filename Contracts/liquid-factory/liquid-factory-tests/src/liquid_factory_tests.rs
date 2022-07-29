@@ -168,36 +168,6 @@ fn init() -> (
 }
 
 #[test]
-fn should_be_able_to_contribute_before_contribution_phase_end() {
-    const TIME: u64 = 400_000;
-    let (
-        _env,
-        accounts,
-        factory_instance,
-        _erc20,
-        _cep47,
-        _lockers_contract_address,
-        lockers_package_address,
-    ) = init();
-    let payment_amount: U256 = 100_000.into();
-    factory_instance.contribute_to_locker(
-        accounts[0],
-        lockers_package_address,
-        payment_amount,
-        TIME,
-    );
-    let (total_increase, users_increase): (U256, U256) = factory_instance.query("result");
-    assert_eq!(
-        total_increase, payment_amount,
-        "Total contribution not increased"
-    );
-    assert_eq!(
-        users_increase, payment_amount,
-        "User contribution not increased"
-    );
-}
-
-#[test]
 fn test_update_master() {
     let (env, owner, instance, _) = deploy();
     assert_eq!(
