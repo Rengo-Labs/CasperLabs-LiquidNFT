@@ -16,7 +16,8 @@ import {
   Keys,
   RuntimeArgs,
   CLList,
-  CLU256
+  CLU256,
+  encodeBase16
 } from "casper-js-sdk";
 import { Some, None } from "ts-results";
 import * as blake from "blakejs";
@@ -25,6 +26,12 @@ import { LIQUIDNFTEvents } from "./constants";
 import * as utils from "./utils";
 import { RecipientType, IPendingDeploy } from "./types";
 import {createRecipientAddress } from "./utils";
+const serialize = require('serialize-javascript');
+
+
+function deserialize(serializedJavascript){  
+    return eval('(' + serializedJavascript + ')');
+}
 
 class LIQUIDNFTClient {
   private contractName: string = "LIQUIDNFT";
@@ -96,28 +103,278 @@ class LIQUIDNFTClient {
     }, {});
   }
 
-  // public async balanceOf(account: string) {
-  //   try {
-      
-  //     const result = await utils.contractDictionaryGetter(
-  //       this.nodeAddress,
-  //       account,
-  //       this.namedKeys.balances
-  //     );
-  //     const maybeValue = result.value().unwrap();
-  //     return maybeValue.value().toString();
 
-  //   } catch (error) {
-  //     return "0";
-  //   }
+ 
+
+  public async result() {
+    const result = await contractSimpleGetter(
+      this.nodeAddress,
+      this.contractHash,
+      ["result"]
+    );
+    const serializedResult = serialize({obj: result.value()});
+    let deserializedResult= (deserialize(serializedResult)).obj;
+    const propertyValues:number[]= Object.values(deserializedResult.data);
+    let convertedValue=encodeBase16(Uint8Array.from(propertyValues));
+    return convertedValue;
+  }
+
+ 
+
+//NEW FACTORY FUNCTIONS
+
+public async  updateMaster(
+  keys: Keys.AsymmetricKey,
+  newMaster: RecipientType,
+  paymentAmount: string
+) {
+  
+  const runtimeArgs = RuntimeArgs.fromMap({
+    new_master: utils.createRecipientAddress(newMaster),
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "update_master",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
     
-  // }
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+public async  revokeMaster(
+  keys: Keys.AsymmetricKey,
+  paymentAmount: string
+) {
+  
+  const runtimeArgs = RuntimeArgs.fromMap({
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "revoke_master",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
+    
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+public async  createLiquidLockerJsClient(
+  keys: Keys.AsymmetricKey,
+  ids: string[],
+  tokenAddress: string,
+  floorAsked: string,
+  totalAsked: string,
+  paymentTime: string,
+  paymentRate: string,
+  paymentToken: string,
+  //paymentToken: RecipientType, 
+  paymentAmount: string,
+) {
+  
+  const _tokenAddress = new CLByteArray(
+    Uint8Array.from(Buffer.from(tokenAddress, "hex"))
+  );
+  const _paymentToken = new CLByteArray(
+    Uint8Array.from(Buffer.from(paymentToken, "hex"))
+  );
+  const runtimeArgs = RuntimeArgs.fromMap({
+    token_id: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
+    token_address: utils.createRecipientAddress(_tokenAddress),
+    floor_asked: CLValueBuilder.u256(floorAsked),
+    total_asked: CLValueBuilder.u256(totalAsked), 
+    payment_time: CLValueBuilder.u256(paymentTime),
+    payment_rate: CLValueBuilder.u256(paymentRate),
+    payment_token: new CLKey(_paymentToken),
+    //paymentToken: utils.createRecipientAddress(paymentToken),
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "create_liquid_locker_js_client",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
+    
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+public async  createEmptyLockerJsClient(
+  keys: Keys.AsymmetricKey,
+  paymentToken: string,
+  //paymentToken: RecipientType, 
+  paymentAmount: string
+) {
+  
+  const _paymentToken = new CLByteArray(
+    Uint8Array.from(Buffer.from(paymentToken, "hex"))
+  );
+  const runtimeArgs = RuntimeArgs.fromMap({
+    payment_token: new CLKey(_paymentToken),
+    //paymentToken: utils.createRecipientAddress(paymentToken),
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "create_empty_locker_js_client",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
+    
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+
+
+public async  contributeToLockerJsClient(
+  keys: Keys.AsymmetricKey,
+  lockersAddress: string,
+  //lockersAddress: RecipientType,
+  paymentAmountArgs: string, 
+  paymentAmount: string
+) {
+  
+  const _lockersAddress = new CLByteArray(
+    Uint8Array.from(Buffer.from(lockersAddress, "hex"))
+  );
+  const runtimeArgs = RuntimeArgs.fromMap({
+    lockers_address: new CLKey(_lockersAddress),
+    //lockers_address: utils.createRecipientAddress(lockersAddress),
+    payment_amount: CLValueBuilder.u256(paymentAmountArgs), 
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "contribute_to_locker_js_client",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
+    
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+public async  donateToLocker(
+  keys: Keys.AsymmetricKey,
+  lockersAddress: string,
+  //lockersAddress: RecipientType,
+  donationAmount: string, 
+  paymentAmount: string
+) {
+  
+  const _lockersAddress = new CLByteArray(
+    Uint8Array.from(Buffer.from(lockersAddress, "hex"))
+  );
+  const runtimeArgs = RuntimeArgs.fromMap({
+    lockers_address: new CLKey(_lockersAddress),
+    //lockers_address: utils.createRecipientAddress(lockersAddress),
+    donation_amount: CLValueBuilder.u256(donationAmount), 
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "donate_to_locker",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
+    
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+public async  paybackToLocker(
+  keys: Keys.AsymmetricKey,
+  lockersAddress: string,
+  //lockersAddress: RecipientType,
+  paymentAmountArgs: string, 
+  paymentAmount: string
+) {
+  
+  const _lockersAddress = new CLByteArray(
+    Uint8Array.from(Buffer.from(lockersAddress, "hex"))
+  );
+  const runtimeArgs = RuntimeArgs.fromMap({
+    lockers_address: new CLKey(_lockersAddress),
+    //lockers_address: utils.createRecipientAddress(lockersAddress),
+    payment_amount: CLValueBuilder.u256(paymentAmountArgs), 
+  });
+
+  const deployHash = await contractCall({
+    chainName: this.chainName,
+    contractHash: this.contractHash,
+    entryPoint: "payback_to_locker",
+    keys,
+    nodeAddress: this.nodeAddress,
+    paymentAmount,
+    runtimeArgs,
+  });
+
+  if (deployHash !== null) {
+    
+    return deployHash;
+  } else {
+    throw Error("Invalid Deploy");
+  }
+}
+
+
+
+
   
   public async  initialize(
     keys: Keys.AsymmetricKey,
+    ids: string[],
     tokenAddress: string,
-    //tokenOwner: string,
-    tokenOwner: RecipientType,
+    tokenOwner: string,
+    //tokenOwner: RecipientType,
     floorAsked: string,
     totalAsked: string,
     paymentTime: string,
@@ -128,23 +385,23 @@ class LIQUIDNFTClient {
     const _tokenAddress = new CLByteArray(
 			Uint8Array.from(Buffer.from(tokenAddress, "hex"))
 		);
-    // const _tokenOwner = new CLByteArray(
-		// 	Uint8Array.from(Buffer.from(tokenOwner, "hex"))
-		// );
+    const _tokenOwner = new CLByteArray(
+			Uint8Array.from(Buffer.from(tokenOwner, "hex"))
+		);
     let list = [];
     for (let i = 0; i < 5; i++) {
       const p = new CLU256(0);
       list.push(p);
     }
-    // Vec<U256> issue
     const runtimeArgs = RuntimeArgs.fromMap({
-      token_id: new CLList(list),
+      //token_id: new CLList(list),
+      token_id: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
       token_address: utils.createRecipientAddress(_tokenAddress),
      /// token_owner: utils.createRecipientAddress(_tokenOwner),
-      //token_owner: new CLKey(_tokenOwner),
-      token_owner: utils.createRecipientAddress(tokenOwner),
+      token_owner: new CLKey(_tokenOwner),
+      //token_owner: utils.createRecipientAddress(tokenOwner),
       floor_asked: CLValueBuilder.u256(floorAsked),
-      total_asked: CLValueBuilder.u256(totalAsked),
+      total_asked: CLValueBuilder.u256(totalAsked), 
       payment_time: CLValueBuilder.u256(paymentTime),
       payment_rate: CLValueBuilder.u256(paymentRate)
     });
@@ -630,20 +887,20 @@ class LIQUIDNFTClient {
   public async  makeContribution(
     keys: Keys.AsymmetricKey,
     tokenAmount: string,
-    tokenHolder: RecipientType,
-    //tokenHolder: string,
+    //tokenHolder: RecipientType,
+    tokenHolder: string,
     paymentAmount: string
   ) {
 
-    // const _tokenHolder = new CLByteArray(
-    //   	Uint8Array.from(Buffer.from(tokenHolder, "hex"))
-    //   );
+    const _tokenHolder = new CLByteArray(
+      	Uint8Array.from(Buffer.from(tokenHolder, "hex"))
+      );
     
     const runtimeArgs = RuntimeArgs.fromMap({
       token_amount: CLValueBuilder.u256(tokenAmount),
       //token_holder: utils.createRecipientAddress(tokenHolder),
-     //token_holder: utils.createRecipientAddress(_tokenHolder),
-     token_holder: new CLKey(tokenHolder),
+     token_holder: utils.createRecipientAddress(_tokenHolder),
+     //token_holder: new CLKey(tokenHolder),
       
     });
 
