@@ -1,7 +1,5 @@
 target
 Cargo.lock
-cep47/cep47-tests/wasm/*.wasm
-erc20/erc20-tests/wasm/*.wasm
 liquid-factory/liquid-factory-tests/wasm/*.wasm
 liquid-locker/liquid-locker-tests/wasm/*.wasm
 liquid-helper/liquid-helper-tests/wasm/*.wasm

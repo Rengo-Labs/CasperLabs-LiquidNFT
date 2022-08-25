@@ -161,8 +161,6 @@ fn init() -> (
     )
 }
 
-/// Contribution phase limit == 5 days (432000 seconds)
-
 #[test]
 #[should_panic]
 fn should_not_be_able_to_contribute_after_contribution_phase_end() {

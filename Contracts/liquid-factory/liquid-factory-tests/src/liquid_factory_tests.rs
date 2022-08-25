@@ -5,6 +5,8 @@ use test_env::{call_contract_with_hash, TestContract, TestEnv};
 
 use crate::liquid_factory_instance::LIQUIDFACTORYInstance;
 
+const DAYS_IN_MILLI_SEC: u64 = 86400000;
+
 fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
         .unwrap()
@@ -163,39 +165,6 @@ fn init() -> (
         lockers_contract_address,
         lockers_package_address,
     )
-}
-
-/// Contribution phase limit == 5 days (432000 seconds)
-
-#[test]
-fn should_be_able_to_contribute_before_contribution_phase_end() {
-    const TIME: u64 = 400_000;
-
-    let (
-        _env,
-        accounts,
-        factory_instance,
-        _erc20,
-        _cep47,
-        _lockers_contract_address,
-        lockers_package_address,
-    ) = init();
-    let payment_amount: U256 = 100_000.into();
-    factory_instance.contribute_to_locker(
-        accounts[0],
-        lockers_package_address,
-        payment_amount,
-        TIME,
-    );
-    let (total_increase, users_increase): (U256, U256) = factory_instance.query("result");
-    assert_eq!(
-        total_increase, payment_amount,
-        "Total contribution not increased"
-    );
-    assert_eq!(
-        users_increase, payment_amount,
-        "User contribution not increased"
-    );
 }
 
 #[test]
@@ -445,8 +414,6 @@ fn test_payback_to_locker() {
         1_000_000_000u64.into(),
         TIME,
     );
-
-    const DAYS_IN_MILLI_SEC: u64 = 86400000;
 
     call_contract_with_hash(
         &env,
