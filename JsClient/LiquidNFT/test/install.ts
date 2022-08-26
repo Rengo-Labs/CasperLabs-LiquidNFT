@@ -32,8 +32,10 @@ const test = async () => {
 
   const installDeployHash = await liquidNFT.install(
     KEYS,
-    KEYS.publicKey,
-    PAYMENTTOKEN_PACKAGE_HASH!,
+    // KEYS.publicKey,
+    '1'!,
+     'b51327aefad7ce360da57e01995e04aec28d66e53dd830af7a149e51f09fd2f8'!,
+     '0000000000000000000000000000000000000000000000000000000000000000',
     LIQUIDNFT_CONTRACT_NAME!,
     LIQUIDNFT_INSTALL_PAYMENT_AMOUNT!,
     LIQUIDNFT_WASM_PATH!

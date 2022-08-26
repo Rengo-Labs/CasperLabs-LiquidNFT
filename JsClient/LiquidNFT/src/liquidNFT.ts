@@ -25,19 +25,24 @@ class LIQUIDNFTClient {
 
   public async install(
     keys: Keys.AsymmetricKey,
-    trusteeMultisig: RecipientType,
-    paymentToken: string,
+    defaultCount: string,
+    defaultToken: string,
+    defaultTarget: string,
     contractName: string,
     paymentAmount: string,
     wasmPath: string
   ) {
     
-    const _paymentToken = new CLByteArray(
-			Uint8Array.from(Buffer.from(paymentToken, "hex"))
+    const _defaultToken = new CLByteArray(
+			Uint8Array.from(Buffer.from(defaultToken, "hex"))
+		);
+    const _defaultTarget = new CLByteArray(
+			Uint8Array.from(Buffer.from(defaultTarget, "hex"))
 		);
     const runtimeArgs = RuntimeArgs.fromMap({
-      trustee_multisig: utils.createRecipientAddress(trusteeMultisig),
-      payment_token: utils.createRecipientAddress(_paymentToken),
+      default_count: CLValueBuilder.u256(defaultCount),
+      default_token: utils.createRecipientAddress(_defaultToken),
+      default_target: utils.createRecipientAddress(_defaultTarget),
       contract_name: CLValueBuilder.string(contractName),
     });
 
