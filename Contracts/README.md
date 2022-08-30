@@ -16,16 +16,21 @@ Implementation of following contracts for the CasperLabs platform.
   - [Install the prerequisites](#install-the-prerequisites)
   - [Creating Keys](#creating-keys)
   - [Usage](#usage)
-    - [Install](#install)
+    - [Note](#note)
     - [Build Individual Smart Contract](#build-individual-smart-contract)
-    - [Build All Smart Contracts](#build-all-smart-contracts)
-    - [Individual Test Cases](#individual-test-cases)
-    - [All Test Cases](#all-test-cases)
-  - [Known contract hashes](#known-contract-hashes)
+    - [Test individual Smart Contract](#test-individual-smart-contract)
+    - [Run All Smart Contracts](#run-all-smart-contracts)
+    - [Deploying Liquid Helper contract manually](#deploying-liquid-helper-contract-manually)
+    - [Entry Point Methods](#LiquidHelper-entry-point-methods)
+    - [Deploying Liquid Locker contract manually](#deploying-liquid-locker-contract-manually)
+    - [Entry Point Methods](#LiquidLocker-entry-point-methods)
+  
 
 ### Install the prerequisites
 
 You can install the required software by issuing the following commands. If you are on an up-to-date Casper node, you probably already have all of the prerequisites installed so you can skip this step.
+
+#### Note: If any command fails try again by restarting the terminal to reset the enviornment variable.
 
 ```bash
 # Update package repositories
@@ -70,6 +75,8 @@ casper-client <command> --help
 
 ### Creating Keys
 
+#### Note: Choose the name of directory where generated keys will be stored.
+
 ```bash
 # Create keys
 casper-client keygen <TARGET DIRECTORY>
@@ -79,7 +86,7 @@ casper-client keygen <TARGET DIRECTORY>
 
 To run the Contracts make sure you are in the root folder.
 
-#### Install
+#### Note
 
 Make sure `wasm32-unknown-unknown` is installed.
 
@@ -98,6 +105,7 @@ You can run this commands to build individual smart contracts.
 make build-contract-liquid-helper
 make build-contract-liquid-locker
 ```
+### Note: High processing power is required to run test cases.
 
 #### Test individual Smart Contract
 
@@ -108,7 +116,7 @@ make test-liquid-helper
 make test-liquid-locker
 ```
 
-#### Run ALL Smart Contracts
+#### Run All Smart Contracts
 
 Run this command to build & test all smart contract.
 
@@ -131,7 +139,7 @@ sudo casper-client put-deploy \
     --session-arg="contract_name:string='contract_name'"
 ```
 
-## Entry Point methods <a id="LiquidHelper-entry-point-methods"></a>
+## Entry Point Methods <a id="LiquidHelper-entry-point-methods"></a>
 
 Following are the LiquidityHelper's entry point methods.
 
