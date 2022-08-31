@@ -105,7 +105,11 @@ You can run this commands to build individual smart contracts.
 make build-contract-liquid-helper
 make build-contract-liquid-locker
 ```
-### Note: High processing power is required to run test cases.
+### Note: High processing power is required to run test cases otherwise you may face errors like
+```
+error: test failed
+Caused by: process didn't exit successfully: `/home/.../.../ (signal: 9, SIGKILL: kill)
+```
 
 #### Test individual Smart Contract
 
