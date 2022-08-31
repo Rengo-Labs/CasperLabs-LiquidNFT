@@ -21,5 +21,6 @@ npm run test:liquidnftinstall
 
 ```
 
-* CONFIGURE .env BEFORE TESTING
+CONFIGURE .env BEFORE TESTING
 
+#### Note: .env file is in JSClient folder
