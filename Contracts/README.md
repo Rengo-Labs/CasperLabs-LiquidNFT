@@ -179,7 +179,17 @@ Depending on your preference, it may be more convenient to just go to the cspr.l
 ```
 https://testnet.cspr.live/deploy/<DEPLOY_HASH>
 ```
-
+#### Sequence Diagram of Contribute to Locker
+```
+https://drive.google.com/file/d/1V4bJELB1duOq6-s7WI0VMZHS9rhzbsyL/view?usp=sharing
+```
+#### Contribute to Locker Flow
+1. First we need to deply ERC20 Contract.
+2. Call mint entry point using Erc20 Contract.
+3. Deploy LiquidFactory Contract.
+4. Call the approve function of Erc20 and give approval to liquid factory.
+5. Call the create_empty_locker function of liquid factory.
+6. At Last, call the contribute_to_locker function of liquid factory.
 ## Entry Point methods <a id="LiquidFactory-entry-point-methods"></a>
 
 Following are the LiquidFactory's entry point methods.
