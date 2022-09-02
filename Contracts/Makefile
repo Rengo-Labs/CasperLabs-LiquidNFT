@@ -4,7 +4,7 @@ src_target = target/wasm32-unknown-unknown/release
 liquid_factory_des_wasm = liquid-factory/liquid-factory-tests/wasm
 liquid_locker_des_wasm = liquid-locker/liquid-locker-tests/wasm
 liquid_helper_des_wasm = liquid-helper/liquid-helper-tests/wasm
-js_client_des_wasm =  ../JsClient/LiquidNFT/wasm
+js_client_des_wasm =  ../JsClients/LiquidNFT/LiquidNFT/wasm
 
 prepare:
 	rustup target add wasm32-unknown-unknown
