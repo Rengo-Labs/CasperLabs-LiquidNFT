@@ -5,6 +5,7 @@ liquid_factory_des_wasm = liquid-factory/liquid-factory-tests/wasm
 liquid_locker_des_wasm = liquid-locker/liquid-locker-tests/wasm
 liquid_helper_des_wasm = liquid-helper/liquid-helper-tests/wasm
 js_client_des_wasm =  ../JsClients/LiquidNFT/LiquidNFT/wasm
+js_client_cep47_des_wasm = ../JsClients/casper-cep47/wasm 
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -41,6 +42,8 @@ copy-wasm-file-js-client:
 	cp ${src_target}/liquid-locker.wasm ${js_client_des_wasm}
 	cp ${src_target}/cep47-token.wasm ${js_client_des_wasm}
 	cp ${src_target}/erc20-token.wasm ${js_client_des_wasm}
+	cp ${src_target}/cep47-token.wasm ${js_client_cep47_des_wasm}
+	
 
 test-liquid-factory:
 	make build-contract-liquid-factory && make copy-wasm-file-liquid-factory && make test-only-liquid-factory
