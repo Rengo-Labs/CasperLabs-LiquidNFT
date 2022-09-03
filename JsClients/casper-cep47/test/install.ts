@@ -10,16 +10,19 @@ import {
   CLPublicKeyType,
 } from "casper-js-sdk";
 
+import * as fs from 'fs';
+
+
 const {
   NODE_ADDRESS,
   EVENT_STREAM_ADDRESS,
   CHAIN_NAME,
-  WASM_PATH,
+  //WASM_PATH,
   MASTER_KEY_PAIR_PATH,
-  TOKEN_NAME,
-  TOKEN_SYMBOL,
+  //TOKEN_NAME,
+  //TOKEN_SYMBOL,
   CONTRACT_HASH,
-  INSTALL_PAYMENT_AMOUNT,
+  //INSTALL_PAYMENT_AMOUNT,
   MINT_ONE_PAYMENT_AMOUNT,
   MINT_COPIES_PAYMENT_AMOUNT,
   BURN_ONE_PAYMENT_AMOUNT,
@@ -28,36 +31,60 @@ const {
   MINT_COPIES_COUNT,
   MINT_MANY_META_SIZE,
   MINT_MANY_META_COUNT,
-  CONTRACT_NAME
+  //CONTRACT_NAME
 } = process.env;
 
-const TOKEN_META = new Map(parseTokenMeta(process.env.TOKEN_META!));
-
+const TOKEN_NAME = "LNFT test";
+const TOKEN_META = new  Map<string,string>().set("company name","Scytalelabs");
+const TOKEN_SYMBOL = "LNFT";
+const CONTRACT_NAME = "LNFT";
+const INSTALL_PAYMENT_AMOUNT = "200000000000";
+const WASM_PATH = "wasm/cep47-token.wasm";
 const KEYS = Keys.Ed25519.parseKeyFiles(
   `${MASTER_KEY_PAIR_PATH}/public_key.pem`,
   `${MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-const test = async () => {
+
+function getDeploymentCount() {
+  return fs.readFileSync('deploymentCount','utf8');
+}
+
+function updateDeploymentCount() {
+  let val:bigint = BigInt(fs.readFileSync('deploymentCount','utf8'));
+  let newVal = val + BigInt(1);
+  fs.writeFileSync('deploymentCount',newVal.toString(),{encoding:'utf8',flag:'w'});
+}
+
+const deployContract = async (tokenName: string = TOKEN_NAME,
+                    tokenSymbol: string = TOKEN_SYMBOL, 
+                    tokenMeta: Map<string,string> = TOKEN_META,
+                    contractName: string = CONTRACT_NAME,
+                    installPaymentAmount: string = INSTALL_PAYMENT_AMOUNT,
+                    wasmPath: string = WASM_PATH
+                    ) => {
   const cep47 = new CEP47Client(
     NODE_ADDRESS!,
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
+  
+  contractName = contractName + getDeploymentCount();
+  updateDeploymentCount();
 
   const installDeployHash = await cep47.install(
     KEYS,
-    TOKEN_NAME!,
-    TOKEN_SYMBOL!,
-    TOKEN_META!,
-    CONTRACT_NAME!,
-    INSTALL_PAYMENT_AMOUNT!,
-    WASM_PATH!
+    tokenName,
+    tokenSymbol,
+    tokenMeta,
+    contractName,
+    installPaymentAmount,
+    wasmPath
   );
 
   console.log(`... Contract installation deployHash: ${installDeployHash}`);
 
-  await getDeploy(NODE_ADDRESS!, installDeployHash);
+  const response = await getDeploy(NODE_ADDRESS!, installDeployHash);
 
   console.log(`... Contract installed successfully.`);
 
@@ -68,17 +95,50 @@ const test = async () => {
 
   const contractHash = await utils.getAccountNamedKeyValue(
     accountInfo,
-    `${CONTRACT_NAME!}_contract`
+    `${contractName!}_contract_hash`
   );
 
   console.log(`... Contract Hash: ${contractHash}`);
 
   const packageHash = await utils.getAccountNamedKeyValue(
     accountInfo,
-    `${CONTRACT_NAME!}_package_hash`
+    `${contractName!}_package_hash`
   );
 
   console.log(`... Package Hash: ${packageHash}`);
 };
 
-test();
+function deployContractWithParams(){
+  switch(process.argv.length) {
+    case 2:{
+      deployContract();
+      break;
+    }
+    case 3: {
+      deployContract(process.argv[2]);
+      break;
+    }
+    case 4: {
+      deployContract(process.argv[2],process.argv[3]);
+      break;
+    }
+    case 5:{
+      deployContract(process.argv[2],process.argv[3], new Map(parseTokenMeta(process.argv[4]!)));
+      break;
+    }
+    case 6: {
+      deployContract(process.argv[2],process.argv[3],new Map(parseTokenMeta(process.argv[4]!)),process.argv[5])
+      break;
+    }
+    case 7: {
+      deployContract(process.argv[2],process.argv[3],new Map(parseTokenMeta(process.argv[4]!)),process.argv[5],process.argv[6]);
+      break;
+    }
+    case 8: {
+      deployContract(process.argv[2],process.argv[3],new Map(parseTokenMeta(process.argv[4]!)),process.argv[5],process.argv[6],process.argv[7]);
+      break;
+    }
+  }
+}
+
+deployContractWithParams();

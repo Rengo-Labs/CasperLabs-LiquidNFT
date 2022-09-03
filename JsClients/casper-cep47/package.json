@@ -6,6 +6,8 @@
   "scripts": {
     "install": "ts-node test/install.ts",
     "test:installed": "ts-node test/installed.ts",
+    "test:mint": "ts-node test/mintToken.ts",
+    "test:approve": "ts-node test/approveToken.ts",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build && npm run test",
     "build": "tsc",
@@ -15,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.7.14",
     "dotenv": "^10.0.0",
     "prettier": "^2.3.2",
     "ts-node": "^10.1.0",
