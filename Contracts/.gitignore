@@ -1,3 +1,4 @@
+keys
 target
 Cargo.lock
 liquid-factory/liquid-factory-tests/wasm/*.wasm

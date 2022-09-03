@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test:install": "ts-node test/install.ts",
+    "install": "ts-node test/install.ts",
     "test:installed": "ts-node test/installed.ts",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build && npm run test",
