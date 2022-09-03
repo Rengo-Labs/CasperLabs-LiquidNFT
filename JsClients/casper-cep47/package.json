@@ -6,6 +6,8 @@
   "scripts": {
     "install": "ts-node test/install.ts",
     "test:installed": "ts-node test/installed.ts",
+    "test:mint": "ts-node test/mintToken.ts",
+    "test:approve": "ts-node test/approveToken.ts",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build && npm run test",
     "build": "tsc",

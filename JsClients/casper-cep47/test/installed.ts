@@ -51,23 +51,109 @@ const test = async () => {
 
 
   // // We don't need hash- prefix so i'm removing it
-   await cep47.setContractHash('b1f63891a63fa3a25276ba195eb99a1fe3d916ae4764caba56115a7cbfc9196e');
+   await cep47.setContractHash('191add2109008ffc3ffb5034864340d1f12e28ca41882c3fc874ff78a825f514');
 
+  // const name = await cep47.name();
+  // console.log(`... Contract name: ${name}`);
+
+  // const symbol = await cep47.symbol();
+  // console.log(`... Contract symbol: ${symbol}`);
+
+  // const meta = await cep47.meta();
+  // console.log(`... Contract meta: ${JSON.stringify(meta)}`);
+
+  // let totalSupply = await cep47.totalSupply();
+  // console.log(`... Total supply: ${totalSupply}`);
+
+  // const mintDeployHash = await cep47.mintOne(
+  //   KEYS,
+  //   KEYS.publicKey,
+  //   //'7c03afbdf6ee6f78e22b124575772b3e94b9927eeb33dd8a1253beb6a310d25a',
+  //   null,
+  //   new Map([["name", "jan"]]),
+  //   MINT_ONE_PAYMENT_AMOUNT!,
+  //   //900000
+  // );
+  // console.log("... Mint deploy hash: ", mintDeployHash);
+
+  // await getDeploy(NODE_ADDRESS!, mintDeployHash);
+  // console.log("... Token minted successfully");
+
+  // let tokensOf = await cep47.getTokensOf(KEYS.publicKey);
+  // console.log(`Tokens of faucet account`, tokensOf);
+
+  // totalSupply = await cep47.totalSupply();
+  // console.log(`... Total supply: ${totalSupply}`);
+
+  // tokensOf = await cep47.getTokensOf(KEYS.publicKey);
+  // console.log(tokensOf);
+
+  // let issuerOfToken = await cep47.getIssuerOf(tokensOf[0]);
+  // console.log(`... Issuer of token ${tokensOf[0]} is ${issuerOfToken}`);
+
+  // const mintManyDeployHash = await cep47.mintMany(
+  //   KEYS,
+  //   KEYS.publicKey,
+  //   [
+  //     new Map([["name", "one"]]),
+  //     new Map([["name", "two"]]),
+  //     new Map([["name", "three"]]),
+  //     new Map([["name", "four"]]),
+  //     new Map([["name", "five"]]),
+  //   ],
+  //   null,
+  //   MINT_COPIES_PAYMENT_AMOUNT!
+  // );
+  // console.log("... Mint Many deploy hash: ", mintManyDeployHash);
+
+  // await getDeploy(NODE_ADDRESS!, mintManyDeployHash);
+  // console.log("... Many tokens minted successfully");
+
+  // totalSupply = await cep47.totalSupply();
+  // console.log(`... Total supply: ${totalSupply}`);
+
+  // const mintCopiesDeployHash = await cep47.mintCopies(
+  //   KEYS,
+  //   KEYS.publicKey,
+  //   new Map([["name", "copied"]]),
+  //   ["A6", "A7", "A8", "A9", "A10"],
+  //   5,
+  //   MINT_COPIES_PAYMENT_AMOUNT!
+  // );
+  // console.log("... Mint Copies deploy hash: ", mintCopiesDeployHash);
+
+  // await getDeploy(NODE_ADDRESS!, mintCopiesDeployHash);
+  // console.log("... Copy tokens minted successfully");
+
+  // //mint
+  // const mintDeployHash = await cep47.mint(
+  //   //'7c03afbdf6ee6f78e22b124575772b3e94b9927eeb33dd8a1253beb6a310d25a',
+  //   KEYS.publicKey,
+  //   null,
+  //   new Map([["name", "copied"]]),
+  //   MINT_ONE_PAYMENT_AMOUNT!,
+  //   KEYS.publicKey,
+  //   KEYS,
+  // );
+  // console.log("... Mint deploy hash: ", mintDeployHash);
+
+  // await getDeploy(NODE_ADDRESS!, mintDeployHash);
+  // console.log("... Token minted successfully.");
 
 
 
   //mint
-  const mintDeployHash = await cep47.mint(
-    KEYS,
-    //"c1957f3b89a76399480b9d8914ecc90edc879fa7e40f6df0eabfb9eef66316bc",
-    KEYS.publicKey,
-    ["1"],
-    [new Map([['TOKEN-61', 'Metadata for token-61']]),new Map([['TOKEN-71', 'Metadata for token-71']])],
-    MINT_ONE_PAYMENT_AMOUNT!
-  );
-  console.log("... Mint deploy hash: ", mintDeployHash);
-  await getDeploy(NODE_ADDRESS!, mintDeployHash);
-  console.log("... Token minted successfully.");
+  // const mintDeployHash = await cep47.mint(
+  //   KEYS,
+  //   //"c1957f3b89a76399480b9d8914ecc90edc879fa7e40f6df0eabfb9eef66316bc",
+  //   KEYS.publicKey,
+  //   ["81","91"],
+  //   [new Map([['TOKEN-61', 'Metadata for token-61']]),new Map([['TOKEN-71', 'Metadata for token-71']])],
+  //   MINT_ONE_PAYMENT_AMOUNT!
+  // );
+  // console.log("... Mint deploy hash: ", mintDeployHash);
+  // await getDeploy(NODE_ADDRESS!, mintDeployHash);
+  // console.log("... Token minted successfully.");
 
   //aprove
    const approveDeployHash = await cep47.approve(
@@ -184,3 +270,51 @@ const test = async () => {
 };
 
 test();
+
+const mintToken = async () => {
+  const cep47 = new CEP47Client(
+    NODE_ADDRESS!,
+    CHAIN_NAME!,
+    EVENT_STREAM_ADDRESS!
+  );
+
+  await cep47.setContractHash('191add2109008ffc3ffb5034864340d1f12e28ca41882c3fc874ff78a825f514');
+
+   const mintDeployHash = await cep47.mint(
+    KEYS,
+    //"c1957f3b89a76399480b9d8914ecc90edc879fa7e40f6df0eabfb9eef66316bc",
+    KEYS.publicKey,
+    ["81","91"],
+    [new Map([['TOKEN-61', 'Metadata for token-61']]),new Map([['TOKEN-71', 'Metadata for token-71']])],
+    MINT_ONE_PAYMENT_AMOUNT!
+  );
+  console.log("... Mint deploy hash: ", mintDeployHash);
+  await getDeploy(NODE_ADDRESS!, mintDeployHash);
+  console.log("... Token minted successfully.");
+
+}
+
+const approveToken = async () => {
+  const cep47 = new CEP47Client(
+    NODE_ADDRESS!,
+    CHAIN_NAME!,
+    EVENT_STREAM_ADDRESS!
+  );
+
+  await cep47.setContractHash('191add2109008ffc3ffb5034864340d1f12e28ca41882c3fc874ff78a825f514');
+
+  const approveDeployHash = await cep47.approve(
+    KEYS,
+    //PACKAGE_HASH!,
+    '841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8',
+    ["81","91"],
+    MINT_ONE_PAYMENT_AMOUNT!
+  );
+  console.log("... Approve deploy hash: ", approveDeployHash);
+
+  await getDeploy(NODE_ADDRESS!, approveDeployHash);
+  console.log("... Token approved successfully");
+
+}
+
+export{mintToken,approveToken};
