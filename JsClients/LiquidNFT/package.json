@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test:liquidnftinstall": "ts-node LiquidNFT/test/install.ts"
+    "install": "ts-node LiquidNFT/test/install.ts"
   },
   "engine": {
     "node": "16.14.0",
