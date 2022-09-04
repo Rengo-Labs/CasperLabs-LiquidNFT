@@ -275,48 +275,94 @@ const getContractHash = () => {
   return contractHash;
 }
 
-const mintOneToken = async (tokenIDsArray: Array<string>,metadata:Map<string,string>[]) => {
-  const cep47 = new CEP47Client(
-    NODE_ADDRESS!,
-    CHAIN_NAME!,
-    EVENT_STREAM_ADDRESS!
-  );
+class Cep47 {
+  contractHash: string;
+  cep47Client: CEP47Client;
+  Ready: Promise<any>;
+  constructor() {
+    let _contractHash = fs.readFileSync('contractHash','utf8');
+    this.contractHash = _contractHash.split("-").pop()!;
 
-  await cep47.setContractHash(getContractHash());
+    this.cep47Client = new CEP47Client(
+      NODE_ADDRESS!,
+      CHAIN_NAME!,
+      EVENT_STREAM_ADDRESS!
+    );
+  }
   
-  const mintDeployHash = await cep47.mint(
-    KEYS,
-    KEYS.publicKey,
-    tokenIDsArray,
-    metadata,
-    MINT_ONE_PAYMENT_AMOUNT!,
-  );
-  console.log("... Mint deploy hash: ", mintDeployHash);
-  await getDeploy(NODE_ADDRESS!, mintDeployHash);
-  console.log("... Token minted successfully.");
 
+  mint = async (tokenIDsArray: Array<string>,metadata:Map<string,string>[]) => {
+        
+    await this.cep47Client.setContractHash(this.contractHash!);
+
+    let mintDeployHash = await this.cep47Client.mint(
+      KEYS,
+      KEYS.publicKey,
+      tokenIDsArray,
+      metadata,
+      MINT_ONE_PAYMENT_AMOUNT!);
+    
+    console.log("... Mint deploy hash: ", mintDeployHash);
+    await getDeploy(NODE_ADDRESS!, mintDeployHash);
+    console.log("... Token minted successfully.");
+  }
+
+
+  approve = async (spenderContractHash: string, tokenIdsArray: Array<string>) => {
+      
+    await this.cep47Client.setContractHash(this.contractHash!);
+
+    const approveDeployHash = await this.cep47Client.approve(
+      KEYS!,
+      spenderContractHash!,
+      tokenIdsArray!,
+      MINT_ONE_PAYMENT_AMOUNT!
+    );
+    console.log("... Approve deploy hash: ", approveDeployHash);
+  
+    await getDeploy(NODE_ADDRESS!, approveDeployHash);
+    console.log("... Token approved successfully");
+  
+  }
 }
 
-const approveToken = async (spenderContractHash: string, tokenIdsArray: Array<string>) => {
-  const cep47 = new CEP47Client(
-    NODE_ADDRESS!,
-    CHAIN_NAME!,
-    EVENT_STREAM_ADDRESS!
-  );
+// let cep47 = {
+//   mint : async (tokenIDsArray: Array<string>,metadata:Map<string,string>[]) => {
+    
+    
+//     const mintDeployHash = await cep47.mint(
+//       KEYS,
+//       KEYS.publicKey,
+//       tokenIDsArray,
+//       metadata,
+//       MINT_ONE_PAYMENT_AMOUNT!,
+//     );
+//     console.log("... Mint deploy hash: ", mintDeployHash);
+//     await getDeploy(NODE_ADDRESS!, mintDeployHash);
+//     console.log("... Token minted successfully.");
   
-  await cep47.setContractHash(getContractHash());
+//   },
+//   approve : async (spenderContractHash: string, tokenIdsArray: Array<string>) => {
+//     const cep47 = new CEP47Client(
+//       NODE_ADDRESS!,
+//       CHAIN_NAME!,
+//       EVENT_STREAM_ADDRESS!
+//     );
+    
+//     await cep47.setContractHash(getContractHash());
+  
+//     const approveDeployHash = await cep47.approve(
+//       KEYS!,
+//       spenderContractHash!,
+//       tokenIdsArray!,
+//       MINT_ONE_PAYMENT_AMOUNT!
+//     );
+//     console.log("... Approve deploy hash: ", approveDeployHash);
+  
+//     await getDeploy(NODE_ADDRESS!, approveDeployHash);
+//     console.log("... Token approved successfully");
+  
+//   }
+//}
 
-  const approveDeployHash = await cep47.approve(
-    KEYS!,
-    spenderContractHash!,
-    tokenIdsArray!,
-    MINT_ONE_PAYMENT_AMOUNT!
-  );
-  console.log("... Approve deploy hash: ", approveDeployHash);
-
-  await getDeploy(NODE_ADDRESS!, approveDeployHash);
-  console.log("... Token approved successfully");
-
-}
-
-export{mintOneToken,approveToken};
+export{Cep47};
