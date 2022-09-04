@@ -11,6 +11,7 @@ import {
 } from "casper-js-sdk";
 
 import * as fs from 'fs';
+import { ContractPackageJson } from "casper-js-sdk/dist/lib/StoredValue";
 
 
 const {
@@ -97,6 +98,7 @@ const deployContract = async (tokenName: string = TOKEN_NAME,
     accountInfo,
     `${contractName!}_contract_hash`
   );
+  fs.writeFileSync('contractHash',contractHash,{encoding:'utf8',flag:'w'});
 
   console.log(`... Contract Hash: ${contractHash}`);
 
@@ -104,7 +106,7 @@ const deployContract = async (tokenName: string = TOKEN_NAME,
     accountInfo,
     `${contractName!}_package_hash`
   );
-
+  fs.writeFileSync('packageHash',packageHash,{encoding:'utf8',flag:'w'});
   console.log(`... Package Hash: ${packageHash}`);
 };
 

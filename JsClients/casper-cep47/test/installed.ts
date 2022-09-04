@@ -10,6 +10,7 @@ import {
   CLAccountHash,
   CLPublicKeyType,
 } from "casper-js-sdk";
+import * as fs from 'fs';
 
 const { CEP47Events } = constants;
 
@@ -42,16 +43,17 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-const test = async () => {
-  const cep47 = new CEP47Client(
-    NODE_ADDRESS!,
-    CHAIN_NAME!,
-    EVENT_STREAM_ADDRESS!
-  );
+// const test = async () => {
+//   const cep47 = new CEP47Client(
+//     NODE_ADDRESS!,
+//     CHAIN_NAME!,
+//     EVENT_STREAM_ADDRESS!
+//   );
 
 
-  // // We don't need hash- prefix so i'm removing it
-   await cep47.setContractHash('191add2109008ffc3ffb5034864340d1f12e28ca41882c3fc874ff78a825f514');
+  
+
+  
 
   // const name = await cep47.name();
   // console.log(`... Contract name: ${name}`);
@@ -65,16 +67,7 @@ const test = async () => {
   // let totalSupply = await cep47.totalSupply();
   // console.log(`... Total supply: ${totalSupply}`);
 
-  // const mintDeployHash = await cep47.mintOne(
-  //   KEYS,
-  //   KEYS.publicKey,
-  //   //'7c03afbdf6ee6f78e22b124575772b3e94b9927eeb33dd8a1253beb6a310d25a',
-  //   null,
-  //   new Map([["name", "jan"]]),
-  //   MINT_ONE_PAYMENT_AMOUNT!,
-  //   //900000
-  // );
-  // console.log("... Mint deploy hash: ", mintDeployHash);
+  
 
   // await getDeploy(NODE_ADDRESS!, mintDeployHash);
   // console.log("... Token minted successfully");
@@ -156,17 +149,18 @@ const test = async () => {
   // console.log("... Token minted successfully.");
 
   //aprove
-   const approveDeployHash = await cep47.approve(
-    KEYS,
-    //PACKAGE_HASH!,
-    '841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8',
-    ["81","91"],
-    MINT_ONE_PAYMENT_AMOUNT!
-  );
-  console.log("... Approve deploy hash: ", approveDeployHash);
+  
+  // const approveDeployHash = await cep47.approve(
+  //   KEYS,
+  //   //PACKAGE_HASH!,
+  //   '841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8',
+  //   ["81","91"],
+  //   MINT_ONE_PAYMENT_AMOUNT!
+  // );
+  // console.log("... Approve deploy hash: ", approveDeployHash);
 
-  await getDeploy(NODE_ADDRESS!, approveDeployHash);
-  console.log("... Token approved successfully");
+  // await getDeploy(NODE_ADDRESS!, approveDeployHash);
+  // console.log("... Token approved successfully");
 
 
   // let balance = await cep47.balanceOf(KEYS.publicKey);
@@ -267,26 +261,35 @@ const test = async () => {
   // // let tokensOfAccountOne = await cep47.getTokensOf(receiverAccount);
   // console.log(`... Tokens of  ${receiverAccount.toAccountHashStr()}`);
   // console.log(`... Tokens: ${JSON.stringify(tokensOfAccountOne, null, 2)}`);
-};
+// };
 
-test();
+// test();
+// const getContractHash = () => {
+ 
+//   return contractHash;
+// }
 
-const mintToken = async () => {
+const getContractHash = () => {
+  let contractHash:string = fs.readFileSync('contractHash','utf8');
+  contractHash = contractHash.split("-").pop()!;
+  return contractHash;
+}
+
+const mintOneToken = async (tokenIDsArray: Array<string>,metadata:Map<string,string>[]) => {
   const cep47 = new CEP47Client(
     NODE_ADDRESS!,
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
 
-  await cep47.setContractHash('191add2109008ffc3ffb5034864340d1f12e28ca41882c3fc874ff78a825f514');
-
-   const mintDeployHash = await cep47.mint(
+  await cep47.setContractHash(getContractHash());
+  
+  const mintDeployHash = await cep47.mint(
     KEYS,
-    //"c1957f3b89a76399480b9d8914ecc90edc879fa7e40f6df0eabfb9eef66316bc",
     KEYS.publicKey,
-    ["81","91"],
-    [new Map([['TOKEN-61', 'Metadata for token-61']]),new Map([['TOKEN-71', 'Metadata for token-71']])],
-    MINT_ONE_PAYMENT_AMOUNT!
+    tokenIDsArray,
+    metadata,
+    MINT_ONE_PAYMENT_AMOUNT!,
   );
   console.log("... Mint deploy hash: ", mintDeployHash);
   await getDeploy(NODE_ADDRESS!, mintDeployHash);
@@ -294,20 +297,19 @@ const mintToken = async () => {
 
 }
 
-const approveToken = async () => {
+const approveToken = async (spenderContractHash: string, tokenIdsArray: Array<string>) => {
   const cep47 = new CEP47Client(
     NODE_ADDRESS!,
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
-
-  await cep47.setContractHash('191add2109008ffc3ffb5034864340d1f12e28ca41882c3fc874ff78a825f514');
+  
+  await cep47.setContractHash(getContractHash());
 
   const approveDeployHash = await cep47.approve(
-    KEYS,
-    //PACKAGE_HASH!,
-    '841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8',
-    ["81","91"],
+    KEYS!,
+    spenderContractHash!,
+    tokenIdsArray!,
     MINT_ONE_PAYMENT_AMOUNT!
   );
   console.log("... Approve deploy hash: ", approveDeployHash);
@@ -317,4 +319,4 @@ const approveToken = async () => {
 
 }
 
-export{mintToken,approveToken};
+export{mintOneToken,approveToken};
