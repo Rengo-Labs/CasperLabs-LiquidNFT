@@ -8,7 +8,7 @@ cep47.mint(tokenIds,arrayOfMaps);
 /*
     "mintOne description"   :   "use it to mint only one NFT with given ID, 
                                 fails with user error 3 if id is repeated",
-    "mintOne syntax"        :   "npm run mintOne <tokenId> <key> <value>",
-    "mintOne example"       :   "npm run mintOne 1 name AwesomeNFT"
+    "mintOne syntax"        :   "npm run mintOneToken <tokenId> <key> <value>",
+    "mintOne example"       :   "npm run mintOneToken 1 name AwesomeNFT"
 */
 
