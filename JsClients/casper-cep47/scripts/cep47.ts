@@ -43,32 +43,13 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-// const test = async () => {
-//   const cep47 = new CEP47Client(
-//     NODE_ADDRESS!,
-//     CHAIN_NAME!,
-//     EVENT_STREAM_ADDRESS!
-//   );
 
 
   
 
   
 
-  // const name = await cep47.name();
-  // console.log(`... Contract name: ${name}`);
-
-  // const symbol = await cep47.symbol();
-  // console.log(`... Contract symbol: ${symbol}`);
-
-  // const meta = await cep47.meta();
-  // console.log(`... Contract meta: ${JSON.stringify(meta)}`);
-
-  // let totalSupply = await cep47.totalSupply();
-  // console.log(`... Total supply: ${totalSupply}`);
-
   
-
   // await getDeploy(NODE_ADDRESS!, mintDeployHash);
   // console.log("... Token minted successfully");
 
@@ -163,9 +144,7 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   // console.log("... Token approved successfully");
 
 
-  // let balance = await cep47.balanceOf(KEYS.publicKey);
-  // console.log(`... Balance of account ${KEYS.publicKey.toAccountHashStr()}`);
-  // console.log(`... Balance: ${balance}`);
+  
 
   // tokensOf = await cep47.getTokensOf(KEYS.publicKey);
   // console.log(`... Tokens of  ${KEYS.publicKey.toAccountHashStr()}`);
@@ -324,6 +303,52 @@ class Cep47 {
     console.log("... Token approved successfully");
   
   }
+
+  totalSupply = async() => {
+    await this.cep47Client.setContractHash(this.contractHash!);
+    let _totalSupply = await this.cep47Client.totalSupply();
+    console.log(`... Total supply: ${_totalSupply}`);
+    return _totalSupply;
+  } 
+  
+  name = async() => {
+    await this.cep47Client.setContractHash(this.contractHash!);
+    const _name = await this.cep47Client.name();
+    console.log(`... Contract name: ${_name}`);
+    return _name;
+  }
+
+  symbol = async() => {
+    await this.cep47Client.setContractHash(this.contractHash!);
+    const _symbol = await this.cep47Client.symbol();
+    console.log(`... Contract symbol: ${_symbol}`);
+    return _symbol;
+  }
+
+  meta = async() => {
+    await this.cep47Client.setContractHash(this.contractHash!);
+    const _meta = await this.cep47Client.meta();
+    console.log(`... Contract meta: ${JSON.stringify(_meta)}`);
+    return _meta;
+  }
+  
+  balanceOf = async(publicKeyPemPath: string, secretKeyPemPath: string) => {
+    
+    await this.cep47Client.setContractHash(this.contractHash!);
+
+    const _KEYS = Keys.Ed25519.parseKeyFiles(
+      publicKeyPemPath,
+      secretKeyPemPath
+    );
+    
+    let _balance = await this.cep47Client.balanceOf(_KEYS.publicKey);
+    console.log(`... Balance of account ${_KEYS.publicKey.toAccountHashStr()}`);
+    console.log(`... Balance: ${_balance}`);
+    return _balance;
+  }
+  
+
+  
 }
 
 // let cep47 = {
