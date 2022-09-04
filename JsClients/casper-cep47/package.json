@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "install": "ts-node test/install.ts",
+    "install": "ts-node scripts/install.ts",
     "test:installed": "ts-node scripts/installed.ts",
     "mintOneToken": "ts-node scripts/mintOneToken.ts",
     "approveToken": "ts-node scripts/approveToken.ts",
