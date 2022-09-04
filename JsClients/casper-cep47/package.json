@@ -6,12 +6,22 @@
   "scripts": {
     "install": "ts-node test/install.ts",
     "test:installed": "ts-node test/installed.ts",
-    "test:mint": "ts-node test/mintToken.ts",
-    "test:approve": "ts-node test/approveToken.ts",
+    "mintOne": "ts-node test/mintOneToken.ts",
+    "approveToken": "ts-node test/approveToken.ts",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build && npm run test",
     "build": "tsc",
     "test": "echo \"No test specified\" && exit 0"
+  },
+  "Script mintOne comments": {
+    "Description" : "use it to mint only one NFT with given ID, fails with user error 3 if id is repeated",
+    "Syntax" : "npm run mintOne <tokenId> <key> <value>",
+    "Example" : "npm run mintOne 1 name AwesomeNFT"
+  },
+  "Script approveToken comments": {
+    "Description" : "use it to approve one token for a given package-hash",
+    "Syntax" : "npm run approveToken <package-hash> <tokenId>",
+    "Example" : "npm run approveToken 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 0"
   },
   "keywords": [],
   "author": "",
