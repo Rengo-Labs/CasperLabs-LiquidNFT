@@ -7,7 +7,7 @@
     "install": "ts-node scripts/install.ts",
     "test:installed": "ts-node scripts/installed.ts",
     "mintOneToken": "ts-node scripts/mintOneToken.ts",
-    "approveToken": "ts-node scripts/approveToken.ts",
+    "approveOneToken": "ts-node scripts/approveOneToken.ts",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build && npm run test",
     "build": "tsc",
