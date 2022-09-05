@@ -1,51 +1,20 @@
 import { config } from "dotenv";
 config();
-import { LIQUIDNFTClient ,utils} from "../src";
-import { getDeploymentCount,updateDeploymentCount,getKeys,sleep, getDeploy } from "./utils";
+import LIQUIDNFTClientForFunctions from "../../../../JsClientsForFrontend/LiquidNFT/src/liquidNFT";
+import { getDeploy } from "./utils";
 
 import {
-  CLValueBuilder,
   Keys,
-  CLPublicKey,
-  CLAccountHash,
-  CLPublicKeyType,
-  Contracts,
-  CLByteArray
 } from "casper-js-sdk";
+
 import * as fs from 'fs';
-
-
 
 const {
   NODE_ADDRESS,
   EVENT_STREAM_ADDRESS,
   CHAIN_NAME,
-  LIQUIDNFT_INSTALL_PAYMENT_AMOUNT,
-  LIQUIDNFT_WASM_PATH,
   LIQUIDNFT_MASTER_KEY_PAIR_PATH,
-  LIQUIDNFT_CONTRACT_NAME,
-  LIQUIDNFT_CONTRACT_HASH,
-  LIQUIDNFT_PACKAGE_HASH,
   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT,
-  TOKENID,
-  TOKENADDRESS,
-  TOKENOWNER,
-  FLOORASKED,
-  TOTALASKED,
-  PAYMENTTIME,
-  PAYMENTRATE,
-  NEWPAYMENTRATE,
-  PREPAYAMOUNT,
-  REFUNDADDRESS,
-  DONATIONAMOUNT,
-  PAYMENTAMOUNTARGS,
-  TOTALVALUE,
-  TOTALCOLLECTED,
-  LATEDAYSAMOUNT,
-  TOKENAMOUNT,
-  TOKENHOLDER,
-  PAYMENTTOKEN,
-  LOCKERSADDRESS,
 } = process.env;
 
 
@@ -54,540 +23,319 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${LIQUIDNFT_MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-function splitdata(data:string)
-{
-    var temp=data.split('(');
-    var result=temp[1].split(')');
-    return result[0];
-}
-
-const liquidNFT = new LIQUIDNFTClient(
-  NODE_ADDRESS!,
-  CHAIN_NAME!,
-  EVENT_STREAM_ADDRESS!
-);
-
-const test = async () => {
-
-  await liquidNFT.setContractHash(LIQUIDNFT_CONTRACT_HASH!);
- // await liquidNFT.setContractHash('e64594d4b422533759416a02a489decab37a214bed2768ebb2bab8fdd63f0071');
-
-  //    const result = await liquidNFT.result();
-  //  console.log(`... Contract name: ${result}`);
-
-  // const result = await liquidNFT.result();
-  // console.log(`... Result Key Value: ${result}`);
-
-//FACTORY FUNCTIONS
-
-//updateMaster
-  // const updateMasterDeployHash = await liquidNFT.updateMaster(
-  //   KEYS,
-  //   ///NEWMASTER!,
-  //   KEYS.publicKey,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... updateMaster deploy hash: ", updateMasterDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, updateMasterDeployHash);
-  // console.log("... updateMaster function called successfully");
-
-
-  //revokeMaster
-  // const revokeMasterDeployHash = await liquidNFT.revokeMaster(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... revokeMaster deploy hash: ", revokeMasterDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, revokeMasterDeployHash);
-  // console.log("... revokeMaster function called successfully");
-
-
-  //   // // //createLiquidLocker
-  // const createLiquidLockerJsClientDeployHash = await liquidNFT.createLiquidLockerJsClient(
-  //   KEYS,
-  //   ["68","78"],
-  //   TOKENADDRESS!,
-  //   //KEYS.publicKey!,
-  //   FLOORASKED!,
-  //   TOTALASKED!,
-  //   PAYMENTTIME!,
-  //   PAYMENTRATE!,
-  //   PAYMENTTOKEN!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... createLiquidLockerJsClient deploy hash: ", createLiquidLockerJsClientDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, createLiquidLockerJsClientDeployHash);
-  // console.log("... createLiquidLockerJsClient function called successfully");
-
-
-  //createEmptyLockerJsClient
-  // const createEmptyLockerJsClientDeployHash = await liquidNFT.createEmptyLockerJsClient(
-  //   KEYS,
-  //   PAYMENTTOKEN!,
-  //   //KEYS.publicKey,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... createEmptyLockerJsClient deploy hash: ", createEmptyLockerJsClientDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, createEmptyLockerJsClientDeployHash);
-  // console.log("... createEmptyLockerJsClient function called successfully");
-
-
-  //contributeToLocker
-  // const contributeToLockerJsClientDeployHash = await liquidNFT.contributeToLockerJsClient(
-  //   KEYS,
-  //   LOCKERSADDRESS!,
-  //   //KEYS.publicKey,
-  //   PAYMENTAMOUNTARGS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... contributeToLockerJsClient deploy hash: ", contributeToLockerJsClientDeployHash);
-  
-  // await getDeploy(NODE_ADDRESS!, contributeToLockerJsClientDeployHash);
-  // console.log("... contributeToLocker function called successfully");
-
-
-  //donateToLocker
-  // const donateToLockerDeployHash = await liquidNFT.donateToLocker(
-  //   KEYS,
-  //   LOCKERSADDRESS!,
-  //   //KEYS.publicKey,
-  //   DONATIONAMOUNT,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... donateToLocker deploy hash: ", donateToLockerDeployHash);
-  
-  // await getDeploy(NODE_ADDRESS!, donateToLockerDeployHash);
-  // console.log("... donateToLocker function called successfully");  
-
-
-  //paybackToLocker
-  const paybackToLockerDeployHash = await liquidNFT.paybackToLocker(
-    KEYS,
-    LOCKERSADDRESS!,
-    //KEYS.publicKey,
-    PAYMENTAMOUNTARGS!,
-    LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  );
-  console.log("... paybackToLocker deploy hash: ", paybackToLockerDeployHash);
-  
-  await getDeploy(NODE_ADDRESS!, paybackToLockerDeployHash);
-  console.log("... paybackToLocker function called successfully");
-
-
-
-//   // // //initialize
-  // const initializeDeployHash = await liquidNFT.initialize(
-  //   KEYS,
-  //   ["67","77"],
-  //   TOKENADDRESS!,
-  //   TOKENOWNER!,
-  //   //KEYS.publicKey!,
-  //   FLOORASKED!,
-  //   TOTALASKED!,
-  //   PAYMENTTIME!,
-  //   PAYMENTRATE!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... Initialize deploy hash: ", initializeDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, initializeDeployHash);
-  // console.log("... Initialize function called successfully");
-
-
-  
-//   //   //makeContribution
-  // const makeContributionDeployHash = await liquidNFT.makeContribution(
-  //   KEYS,
-  //   TOKENAMOUNT!,
-  //   //KEYS.publicKey,
-  //   TOKENHOLDER!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... MakeContribution deploy hash: ", makeContributionDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, makeContributionDeployHash);
-  // console.log("... MakeContribution function called successfully");
-
-//increasePaymentRate
-  // const increasePaymentRateDeployHash = await liquidNFT.increasePaymentRate(
-  //   KEYS,
-  //   NEWPAYMENTRATE!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... IncreasePaymentRate deploy hash: ", increasePaymentRateDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, increasePaymentRateDeployHash);
-  // console.log("... IncreasePaymentRate function called successfully");
-
-
-//   //decreasePaymentTime
-  // const decreasePaymentTimeDeployHash = await liquidNFT.decreasePaymentTime(
-  //   KEYS,
-  //   NEWPAYMENTRATE!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... DecreasePaymentTime deploy hash: ", decreasePaymentTimeDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, decreasePaymentTimeDeployHash);
-  // console.log("... DecreasePaymentTime function called successfully");
-
-
-// // //enableLocker
-  // const enableLockerDeployHash = await liquidNFT.enableLocker(
-  //   KEYS,
-  //   PREPAYAMOUNT!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... EnableLocker deploy hash: ", enableLockerDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, enableLockerDeployHash);
-  // console.log("... EnableLocker function called successfully");
-
-
-  //disableLocker
-  // const disableLockerDeployHash = await liquidNFT.disableLocker(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... DisableLocker deploy hash: ", disableLockerDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, disableLockerDeployHash);
-  // console.log("... DisableLocker function called successfully");
-
-
-//   //rescueLocker
-  // const rescueLockerDeployHash = await liquidNFT.rescueLocker(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... RescueLocker deploy hash: ", rescueLockerDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, rescueLockerDeployHash);
-  // console.log("... RescueLocker function called successfully");
-
-
-//   //refundDueDisabled
-  // const refundDueDisabledDeployHash = await liquidNFT.refundDueDisabled(
-  //   KEYS,
-  //   //REFUNDADDRESS!,
-  //   KEYS.publicKey,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... RefundDueDisabled deploy hash: ", refundDueDisabledDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, refundDueDisabledDeployHash);
-  // console.log("... RefundDueDisabled function called successfully");
-
-
-//   //refundDueSingle
-//   const refundDueSingleDeployHash = await liquidNFT.refundDueSingle(
-//     KEYS,
-//     REFUNDADDRESS!,
-//     //KEYS.publicKey,
-//     LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-//   );
-//   console.log("... RefundDueSingle deploy hash: ", refundDueSingleDeployHash);
-
-//   await getDeploy(NODE_ADDRESS!, refundDueSingleDeployHash);
-//   console.log("... RefundDueSingle function called successfully");
-
-
-//   //donateFunds
-  // const donateFundsDeployHash = await liquidNFT.donateFunds(
-  //   KEYS,
-  //   DONATIONAMOUNT!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... DonateFunds deploy hash: ", donateFundsDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, donateFundsDeployHash);
-  // console.log("... DonateFunds function called successfully");
-
-
-// //   //payBackFunds
-  // const payBackFundsDeployHash = await liquidNFT.payBackFunds(
-  //   KEYS,
-  //   PAYMENTAMOUNTARGS!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... PayBackFunds deploy hash: ", payBackFundsDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, payBackFundsDeployHash);
-  // console.log("... PayBackFunds function called successfully");
-
-
-//   //liquidateLocker
-  // const liquidateLockerDeployHash = await liquidNFT.liquidateLocker(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... LiquidateLocker deploy hash: ", liquidateLockerDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, liquidateLockerDeployHash);
-  // console.log("... LiquidateLocker function called successfully");
-
-
-//   //claimInterestSingle
-  // const claimInterestSingleDeployHash = await liquidNFT.claimInterestSingle(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... ClaimInterestSingle deploy hash: ", claimInterestSingleDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, claimInterestSingleDeployHash);
-  // console.log("... ClaimInterestSingle function called successfully");
-
-
-//   //claimInterestPublic
-  // const claimInterestPublicDeployHash = await liquidNFT.claimInterestPublic(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... ClaimInterestPublic deploy hash: ", claimInterestPublicDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, claimInterestPublicDeployHash);
-  // console.log("... ClaimInterestPublic function called successfully");
-
-
-//   //calculateEpoch
-  // const calculateEpochDeployHash = await liquidNFT.calculateEpoch(
-  //   KEYS,
-  //   TOTALVALUE!,
-  //   PAYMENTTIME!,
-  //   PAYMENTRATE!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... CalculateEpoch deploy hash: ", calculateEpochDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, calculateEpochDeployHash);
-  // console.log("... CalculateEpoch function called successfully");
-
-
-//   //calculatePaybacks
-//   const calculatePaybacksDeployHash = await liquidNFT.calculatePaybacks(
-//     KEYS,
-//     TOTALVALUE!,
-//     PAYMENTTIME!,
-//     PAYMENTRATE!,
-//     LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-//   );
-//   console.log("... calculatePaybacks deploy hash: ", calculatePaybacksDeployHash);
-
-//   await getDeploy(NODE_ADDRESS!, calculatePaybacksDeployHash);
-//   console.log("... calculatePaybacks function called successfully");
-
-
-//   //getLateDays
-  // const getLateDaysDeployHash = await liquidNFT.getLateDays(
-  //   KEYS,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... GetLateDays deploy hash: ", getLateDaysDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, getLateDaysDeployHash);
-  // console.log("... GetLateDays function called successfully");
-
-
-//   //penaltyAmount
-  // const penaltyAmountDeployHash = await liquidNFT.penaltyAmount(
-  //   KEYS,
-  //   TOTALCOLLECTED!,
-  //   LATEDAYSAMOUNT!,
-  //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  // );
-  // console.log("... PenaltyAmount deploy hash: ", penaltyAmountDeployHash);
-
-  // await getDeploy(NODE_ADDRESS!, penaltyAmountDeployHash);
-  // console.log("... PenaltyAmount function called successfully");
-
-
-//   // //makeContribution
-//   // const makeContributionDeployHash = await liquidNFT.makeContribution(
-//   //   KEYS,
-//   //   TOKENAMOUNT!,
-//   //   KEYS.publicKey,
-//   //   LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-//   // );
-//   // console.log("... MakeContribution deploy hash: ", makeContributionDeployHash);
-
-//   // await getDeploy(NODE_ADDRESS!, makeContributionDeployHash);
-//   // console.log("... MakeContribution function called successfully");
-
-
-};
-
-test();
-
 class LiquidNFT {
   contractHash: string;
-  liquidNFT: LIQUIDNFTClient;
-  Ready: Promise<any>;
+  liquidNFT: LIQUIDNFTClientForFunctions;
   constructor() {
     let _contractHash = fs.readFileSync('contractHash','utf8');
     this.contractHash = _contractHash.split("-").pop()!;
-
-    this.liquidNFT = new LIQUIDNFTClient(
+    this.liquidNFT = new LIQUIDNFTClientForFunctions(
       NODE_ADDRESS!,
       CHAIN_NAME!,
       EVENT_STREAM_ADDRESS!
     );
   }
   
-  
-  /*
-@dev
-params: default token
-provide the payment tokenERC20 package hash
-*/
-
-
-
-  
-  //   // // //createLiquidLocker
-  createLiquidLockerJsClient = async(
+  //initialize
+  initialize = async(
     tokenIdsArray: Array<string>,
     cep47PackageHash: string,
-    floorAsked: string,
+    tokenOwner: string,
+    floorAsked:string,
     totalAsked: string,
     paymentTime: string,
     paymentRate: string,
-    erc20PackageHash: string,
   )=>{
-  const createLiquidLockerJsClientDeployHash = await liquidNFT.createLiquidLockerJsClient(
-    KEYS,
-    tokenIdsArray!,
-    cep47PackageHash!,
-    floorAsked!,
-    totalAsked!,
-    paymentTime!,
-    paymentRate!,
-    erc20PackageHash!,
-    LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  );
-  console.log("... createLiquidLockerJsClient deploy hash: ", createLiquidLockerJsClientDeployHash);
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const initializeDeployHash = await this.liquidNFT.initialize(
+      KEYS,
+      tokenIdsArray!,
+      cep47PackageHash!,
+      tokenOwner!,
+      floorAsked!,
+      totalAsked!,
+      paymentTime!,
+      paymentRate!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("... initialize deploy hash: ", initializeDeployHash);
 
-  await getDeploy(NODE_ADDRESS!, createLiquidLockerJsClientDeployHash);
-  console.log("... createLiquidLockerJsClient function called successfully");
+    await getDeploy(NODE_ADDRESS!, initializeDeployHash);
+    console.log("... initialize function called successfully");
+  }
+
+  //makeContribution
+  makeContribution = async(
+    tokenAmount:string,
+    tokenHolder: string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const makeContributionDeployHash = await this.liquidNFT.makeContribution(
+      KEYS,
+      tokenAmount!,
+      tokenHolder!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("... makeContribution deploy hash: ", makeContributionDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, makeContributionDeployHash);
+    console.log("... makeContribution function called successfully");
+  }
+
+  //increasePaymentRate
+  increasePaymentRate = async(
+    newPaymentRate:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const increasePaymentRateDeployHash = await this.liquidNFT.increasePaymentRate(
+      KEYS,
+      newPaymentRate!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("... increasePaymentRate deploy hash: ", increasePaymentRateDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, increasePaymentRateDeployHash);
+    console.log("... increasePaymentRate function called successfully");
+  }
+
+  //decreasePaymentTime
+  decreasePaymentTime = async(
+    newPaymentRate:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const decreasePaymentTimeDeployHash = await this.liquidNFT.decreasePaymentTime(
+      KEYS,
+      newPaymentRate!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("... decreasePaymentTime deploy hash: ", decreasePaymentTimeDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, decreasePaymentTimeDeployHash);
+    console.log("... decreasePaymentTime function called successfully");
   }
 
 
-  //createEmptyLockerJsClient
-  createEmptyLocker =async (erc20PackageHash: string) => {
-  const createEmptyLockerJsClientDeployHash = await liquidNFT.createEmptyLockerJsClient(
-    KEYS,
-    erc20PackageHash!,
-    LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  );
-  console.log("... createEmptyLockerJsClient deploy hash: ", createEmptyLockerJsClientDeployHash);
+  //enableLocker
+  enableLocker = async(
+    prePaymentAmount:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const enableLockerDeployHash = await this.liquidNFT.enableLocker(
+      KEYS,
+      prePaymentAmount!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("... enableLocker deploy hash: ", enableLockerDeployHash);
 
-  await getDeploy(NODE_ADDRESS!, createEmptyLockerJsClientDeployHash);
-  console.log("... createEmptyLockerJsClient function called successfully");
+    await getDeploy(NODE_ADDRESS!, enableLockerDeployHash);
+    console.log("... enableLocker function called successfully");
   }
 
+  //disableLocker
+  disableLocker = async()=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const disableLockerDeployHash = await this.liquidNFT.disableLocker(
+      KEYS,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("... disableLocker deploy hash: ", disableLockerDeployHash);
 
-  //contributeToLocker
-  contributeToLocker = async (lockerPackageHash: string, paymentAmount: string) => {
-  const contributeToLockerJsClientDeployHash = await liquidNFT.contributeToLockerJsClient(
-    KEYS,
-    lockerPackageHash!,
-    paymentAmount!,
-    LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  );
-  console.log("... contributeToLockerJsClient deploy hash: ", contributeToLockerJsClientDeployHash);
-  
-  await getDeploy(NODE_ADDRESS!, contributeToLockerJsClientDeployHash);
-  console.log("... contributeToLocker function called successfully");
+    await getDeploy(NODE_ADDRESS!, disableLockerDeployHash);
+    console.log("... disableLocker function called successfully");
   }
 
+  //rescueLocker
+  rescueLocker = async()=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const rescueLockerDeployHash = await this.liquidNFT.rescueLocker(
+      KEYS,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...rescueLocker deploy hash: ", rescueLockerDeployHash);
 
-  //donateToLocker
-  donateToLocker =async (lockerPackageHash: string, donationAmount:string) => {
-  const donateToLockerDeployHash = await liquidNFT.donateToLocker(
-    KEYS,
-    lockerPackageHash!,
-    donationAmount!,
-    LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  );
-  console.log("... donateToLocker deploy hash: ", donateToLockerDeployHash);
-  
-  await getDeploy(NODE_ADDRESS!, donateToLockerDeployHash);
-  console.log("... donateToLocker function called successfully");  
+    await getDeploy(NODE_ADDRESS!, rescueLockerDeployHash);
+    console.log("... rescueLocker function called successfully");
   }
 
+  //liquidateLocker
+  liquidateLocker = async()=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const liquidateLockerDeployHash = await this.liquidNFT.liquidateLocker(
+      KEYS,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...liquidateLocker deploy hash: ", liquidateLockerDeployHash);
 
-
-
-
-  //paybackToLocker
-  paybackToLocker =async (lockerPackageHash:string,paymentAmount:string ) => {
-  const paybackToLockerDeployHash = await liquidNFT.paybackToLocker(
-    KEYS,
-    lockerPackageHash!,
-    paymentAmount!,
-    LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-  );
-  console.log("... paybackToLocker deploy hash: ", paybackToLockerDeployHash);
-  
-  await getDeploy(NODE_ADDRESS!, paybackToLockerDeployHash);
-  console.log("... paybackToLocker function called successfully");
+    await getDeploy(NODE_ADDRESS!, liquidateLockerDeployHash);
+    console.log("... liquidateLocker function called successfully");
   }
 
-  lockerHashes = async() => {
-    const result = await liquidNFT.result();
-  console.log(`... Result Key Value: ${result}`);
+  //refundDueDisabled
+  refundDueDisabled = async(
+    refundAddress:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const refundDueDisabledDeployHash = await this.liquidNFT.refundDueDisabled(
+      KEYS,
+      refundAddress!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...refundDueDisabled deploy hash: ", refundDueDisabledDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, refundDueDisabledDeployHash);
+    console.log("... refundDueDisabled function called successfully");
   }
 
+  //refundDueSingle
+  refundDueSingle = async(
+    refundAddress:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const refundDueSingleDeployHash = await this.liquidNFT.refundDueSingle(
+      KEYS,
+      refundAddress!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...refundDueSingle deploy hash: ", refundDueSingleDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, refundDueSingleDeployHash);
+    console.log("... refundDueSingle function called successfully");
+  }
+
+  //donateFunds
+  donateFunds = async(
+    donationAmount:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const donateFundsDeployHash = await this.liquidNFT.donateFunds(
+      KEYS,
+      donationAmount!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...donateFunds deploy hash: ", donateFundsDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, donateFundsDeployHash);
+    console.log("... donateFunds function called successfully");
+  }
+
+  //payBackFunds
+  payBackFunds = async(
+    paymentAmount:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const payBackFundsDeployHash = await this.liquidNFT.payBackFunds(
+      KEYS,
+      paymentAmount!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...payBackFunds deploy hash: ", payBackFundsDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, payBackFundsDeployHash);
+    console.log("... payBackFunds function called successfully");
+  }
+
+  //claimInterestSingle
+  claimInterestSingle = async()=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const claimInterestSingleDeployHash = await this.liquidNFT.claimInterestSingle(
+      KEYS,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...claimInterestSingle deploy hash: ", claimInterestSingleDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, claimInterestSingleDeployHash);
+    console.log("... claimInterestSingle function called successfully");
+  }
+
+  //claimInterestPublic
+  claimInterestPublic = async()=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const claimInterestPublicDeployHash = await this.liquidNFT.claimInterestPublic(
+      KEYS,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...claimInterestPublic deploy hash: ", claimInterestPublicDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, claimInterestPublicDeployHash);
+    console.log("... claimInterestPublic function called successfully");
+  }
+
+  //calculateEpoch
+  calculateEpoch = async(
+    totalValue:string,
+    paymentRate:string,
+    paymentTime:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const calculateEpochDeployHash = await this.liquidNFT.calculateEpoch(
+      KEYS,
+      totalValue!,
+      paymentRate!,
+      paymentTime!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...calculateEpoch deploy hash: ", calculateEpochDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, calculateEpochDeployHash);
+    console.log("... calculateEpoch function called successfully");
+  }
+
+  //calculatePaybacks
+  calculatePaybacks  = async(
+    totalValue:string,
+    paymentRate:string,
+    paymentTime:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const calculatePaybacksDeployHash = await this.liquidNFT.calculatePaybacks(
+      KEYS,
+      totalValue!,
+      paymentRate!,
+      paymentTime!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...calculatePaybacks deploy hash: ", calculatePaybacksDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, calculatePaybacksDeployHash);
+    console.log("... calculatePaybacks function called successfully");
+  }
+
+  //getLateDays
+  getLateDays  = async()=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const getLateDaysDeployHash = await this.liquidNFT.getLateDays(
+      KEYS,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...getLateDays deploy hash: ", getLateDaysDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, getLateDaysDeployHash);
+    console.log("... getLateDays function called successfully");
+  }
+
+  //penaltyAmount
+  penaltyAmount  = async(
+    totalCollected:string,
+    lateDaysAmount:string
+  )=>{
+    await this.liquidNFT.setContractHash(this.contractHash!);
+    const penaltyAmountDeployHash = await this.liquidNFT.penaltyAmount(
+      KEYS,
+      totalCollected!,
+      lateDaysAmount!,
+      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
+    );
+    console.log("...penaltyAmount deploy hash: ", penaltyAmountDeployHash);
+
+    await getDeploy(NODE_ADDRESS!, penaltyAmountDeployHash);
+    console.log("... penaltyAmount function called successfully");
+  }
 
 }
 
-export const deployContract = async (defaultToken: string) => {
-  const liquidNFT = new LIQUIDNFTClient(
-    NODE_ADDRESS!,
-    CHAIN_NAME!,
-    EVENT_STREAM_ADDRESS!
-  );
-
-  let contractName = LIQUIDNFT_CONTRACT_NAME + getDeploymentCount();
-  updateDeploymentCount();
-  const installDeployHash = await liquidNFT.install(
-    KEYS,
-    // KEYS.publicKey,
-    '1'!,
-     defaultToken!,
-     '0000000000000000000000000000000000000000000000000000000000000000',
-    contractName!,
-    LIQUIDNFT_INSTALL_PAYMENT_AMOUNT!,
-    LIQUIDNFT_WASM_PATH!
-  );
-
-  console.log(`... Contract installation deployHash: ${installDeployHash}`);
-
-  await getDeploy(NODE_ADDRESS!, installDeployHash);
-
-  console.log(`... Contract installed successfully.`);
-
-  let accountInfo = await utils.getAccountInfo(NODE_ADDRESS!, KEYS.publicKey);
-
-  console.log(`... Account Info: `);
-  console.log(JSON.stringify(accountInfo, null, 2));
-
-  const contractHash = await utils.getAccountNamedKeyValue(
-    accountInfo,
-    `${LIQUIDNFT_CONTRACT_NAME!}_contract_hash`
-  );
-
-  console.log(`... Contract Hash: ${contractHash}`);
-
-  const packageHash = await utils.getAccountNamedKeyValue(
-    accountInfo,
-    `${LIQUIDNFT_CONTRACT_NAME!}_package_hash`
-  );
-
-  console.log(`... Package Hash: ${packageHash}`);
-};
-
 export{LiquidNFT};
+
+
+
+
+

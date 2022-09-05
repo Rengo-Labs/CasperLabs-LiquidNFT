@@ -1,0 +1,68 @@
+{
+  "name": "LiquidNFT-Factory-JsClient",
+  "version": "0.0.0",
+  "scripts": {
+    "deployContract": "ts-node LiquidNFT-Factory/scripts/deployContract.ts",
+    "createLiquidLocker": "ts-node LiquidNFT-Factory/scripts/createLiquidLocker.ts",
+    "createEmptyLocker": "ts-node LiquidNFT-Factory/scripts/createEmptyLocker.ts",
+    "contributeToLocker": "ts-node LiquidNFT-Factory/scripts/contributeToLocker.ts",
+    "donateToLocker": "ts-node LiquidNFT-Factory/scripts/donateToLocker.ts",
+    "updateMaster": "ts-node LiquidNFT-Factory/scripts/updateMaster.ts",
+    "revokeMaster": "ts-node LiquidNFT-Factory/scripts/revokeMaster.ts",
+    "lockerHashes": "ts-node LiquidNFT-Factory/scripts/lockerHashes.ts"
+  },
+  "Script createLiquidLocker comments": {
+    "Description" : "use it to create liquidLocker",
+    "Syntax" : "npm run createLiquidLocker <tokenId> <cep47PackageHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate> <erc20PackageHash>",
+    "Example" : "npm run createLiquidLocker 1 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 1000000000 5000000000 86400000 100 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
+  },
+  "Script createEmptyLocker comments": {
+    "Description" : "use it to create liquidLocker",
+    "Syntax" : "npm run createEmptyLocker <erc20PackageHash>",
+    "Example" : "npm run createEmptyLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8"
+  },
+  "Script contributeToLocker comments": {
+    "Description" : "use it to contribute to Locker",
+    "Syntax" : "npm run contributeToLocker <lockerPackageHash> <paymentAmount>",
+    "Example" : "npm run contributeToLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 100"
+  },
+  "Script donateToLocker comments": {
+    "Description" : "use it to donate to Locker",
+    "Syntax" : "npm run donateToLocker <lockerPackageHash> <donationAmount>",
+    "Example" : "npm run donateToLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 100"
+  },
+  "Script updateMaster comments": {
+    "Description" : "use it to updateMaster",
+    "Syntax" : "npm run updateMaster <newMasterAccountHash> ",
+    "Example" : "npm run updateMaster 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
+  },
+  "Script revokeMaster comments": {
+    "Description" : "use it to revokeMaster",
+    "Syntax" : "npm run revokeMaster",
+    "Example" : "npm run revokeMaster"
+  },
+  "Script lockerHashes comments": {
+    "Description" : "use it to get package and contract hash of locker",
+    "Syntax" : "npm run lockerHashes",
+    "Example" : "npm run lockerHashes"
+  },
+
+  "engine": {
+    "node": "16.14.0",
+    "npm": "8.10.0"
+  },
+  
+  "dependencies": {
+    "casper-js-sdk": "^2.9.1",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
+    "fs": "0.0.1-security",
+    "prettier": "^2.3.2",
+    "ts-node": "^10.1.0",
+    "ts-results": "^3.3.0",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3"
+  }
+}
