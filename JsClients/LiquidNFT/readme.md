@@ -1,6 +1,6 @@
 # CasperLabs-LiquidNFT-jsClient
 
-This repo has the script code to deploy liquidNFT contract Functions
+This folder has the script code to deploy liquidNFT contract Functions
 
 ## Requirement
 

@@ -1,6 +1,6 @@
 # CasperLabs-LiquidNFT-jsClient
 
-This repo has the fs filesystem code to read wasm and deploy liquidNFT Factory contract and its functions
+This folder has the fs filesystem code to read wasm and deploy liquidNFT Factory contract and its functions
 
 ## Requirement
 
