@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 config();
-import { LIQUIDNFTClient ,utils, constants} from "../src";
+import { LIQUIDNFTClient ,utils} from "../src";
 import { getDeploymentCount,updateDeploymentCount,getKeys,sleep, getDeploy } from "./utils";
 
 import {
@@ -14,7 +14,7 @@ import {
 } from "casper-js-sdk";
 import * as fs from 'fs';
 
-const { LIQUIDNFTEvents } = constants;
+
 
 const {
   NODE_ADDRESS,
@@ -444,51 +444,7 @@ params: default token
 provide the payment tokenERC20 package hash
 */
 
-deployContract = async (defaultToken: string) => {
-  const liquidNFT = new LIQUIDNFTClient(
-    NODE_ADDRESS!,
-    CHAIN_NAME!,
-    EVENT_STREAM_ADDRESS!
-  );
 
-  let contractName = LIQUIDNFT_CONTRACT_NAME + getDeploymentCount();
-  updateDeploymentCount();
-  const installDeployHash = await liquidNFT.install(
-    KEYS,
-    // KEYS.publicKey,
-    '1'!,
-     defaultToken!,
-     '0000000000000000000000000000000000000000000000000000000000000000',
-    contractName!,
-    LIQUIDNFT_INSTALL_PAYMENT_AMOUNT!,
-    LIQUIDNFT_WASM_PATH!
-  );
-
-  console.log(`... Contract installation deployHash: ${installDeployHash}`);
-
-  await getDeploy(NODE_ADDRESS!, installDeployHash);
-
-  console.log(`... Contract installed successfully.`);
-
-  let accountInfo = await utils.getAccountInfo(NODE_ADDRESS!, KEYS.publicKey);
-
-  console.log(`... Account Info: `);
-  console.log(JSON.stringify(accountInfo, null, 2));
-
-  const contractHash = await utils.getAccountNamedKeyValue(
-    accountInfo,
-    `${LIQUIDNFT_CONTRACT_NAME!}_contract_hash`
-  );
-
-  console.log(`... Contract Hash: ${contractHash}`);
-
-  const packageHash = await utils.getAccountNamedKeyValue(
-    accountInfo,
-    `${LIQUIDNFT_CONTRACT_NAME!}_package_hash`
-  );
-
-  console.log(`... Package Hash: ${packageHash}`);
-};
 
   
   //   // // //createLiquidLocker
@@ -587,5 +543,51 @@ deployContract = async (defaultToken: string) => {
 
 
 }
+
+export const deployContract = async (defaultToken: string) => {
+  const liquidNFT = new LIQUIDNFTClient(
+    NODE_ADDRESS!,
+    CHAIN_NAME!,
+    EVENT_STREAM_ADDRESS!
+  );
+
+  let contractName = LIQUIDNFT_CONTRACT_NAME + getDeploymentCount();
+  updateDeploymentCount();
+  const installDeployHash = await liquidNFT.install(
+    KEYS,
+    // KEYS.publicKey,
+    '1'!,
+     defaultToken!,
+     '0000000000000000000000000000000000000000000000000000000000000000',
+    contractName!,
+    LIQUIDNFT_INSTALL_PAYMENT_AMOUNT!,
+    LIQUIDNFT_WASM_PATH!
+  );
+
+  console.log(`... Contract installation deployHash: ${installDeployHash}`);
+
+  await getDeploy(NODE_ADDRESS!, installDeployHash);
+
+  console.log(`... Contract installed successfully.`);
+
+  let accountInfo = await utils.getAccountInfo(NODE_ADDRESS!, KEYS.publicKey);
+
+  console.log(`... Account Info: `);
+  console.log(JSON.stringify(accountInfo, null, 2));
+
+  const contractHash = await utils.getAccountNamedKeyValue(
+    accountInfo,
+    `${LIQUIDNFT_CONTRACT_NAME!}_contract_hash`
+  );
+
+  console.log(`... Contract Hash: ${contractHash}`);
+
+  const packageHash = await utils.getAccountNamedKeyValue(
+    accountInfo,
+    `${LIQUIDNFT_CONTRACT_NAME!}_package_hash`
+  );
+
+  console.log(`... Package Hash: ${packageHash}`);
+};
 
 export{LiquidNFT};

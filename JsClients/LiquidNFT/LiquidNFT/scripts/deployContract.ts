@@ -1,6 +1,5 @@
-import {LiquidNFT} from "./lnft";
-let liquidNFT = new LiquidNFT();
-liquidNFT.deployContract(process.argv[2]!);
+import {deployContract} from "./lnft";
+deployContract(process.argv[2]!);
 
 /*
     "Script donateToLocker comments": {

@@ -1,9 +1,8 @@
 {
   "name": "LiquidNFT-JsClient",
   "version": "0.0.0",
-  "private": true,
   "scripts": {
-    "install": "ts-node LiquidNFT/scripts/install.ts"
+    "deploy": "ts-node LiquidNFT/scripts/deployContract.ts"
   },
   "engine": {
     "node": "16.14.0",

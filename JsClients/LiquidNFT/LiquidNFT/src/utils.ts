@@ -7,7 +7,7 @@ import {
   CLPublicKey,
 } from "casper-js-sdk";
 
-import fs from "fs";
+import * as fs from "fs";
 
 import { RecipientType } from "./types";
 
