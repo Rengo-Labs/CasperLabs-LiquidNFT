@@ -7,6 +7,8 @@ import {
   Keys,
 } from "casper-js-sdk";
 
+import * as fs from 'fs';
+
 const {
   NODE_ADDRESS,
   EVENT_STREAM_ADDRESS,
@@ -23,20 +25,38 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${LIQUIDNFT_MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-const test = async () => {
+function getDeploymentCount() {
+  return fs.readFileSync('deploymentCount','utf8');
+}
+
+function updateDeploymentCount() {
+  let val:bigint = BigInt(fs.readFileSync('deploymentCount','utf8'));
+  let newVal = val + BigInt(1);
+  fs.writeFileSync('deploymentCount',newVal.toString(),{encoding:'utf8',flag:'w'});
+}
+
+/*
+@dev
+params: default token
+provide the payment tokenERC20 package hash
+*/
+
+const deployContract = async (defaultToken: string) => {
   const liquidNFT = new LIQUIDNFTClient(
     NODE_ADDRESS!,
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
 
+  let contractName = LIQUIDNFT_CONTRACT_NAME + getDeploymentCount();
+  updateDeploymentCount();
   const installDeployHash = await liquidNFT.install(
     KEYS,
     // KEYS.publicKey,
     '1'!,
-     'b51327aefad7ce360da57e01995e04aec28d66e53dd830af7a149e51f09fd2f8'!,
+     defaultToken!,
      '0000000000000000000000000000000000000000000000000000000000000000',
-    LIQUIDNFT_CONTRACT_NAME!,
+    contractName!,
     LIQUIDNFT_INSTALL_PAYMENT_AMOUNT!,
     LIQUIDNFT_WASM_PATH!
   );
@@ -67,4 +87,4 @@ const test = async () => {
   console.log(`... Package Hash: ${packageHash}`);
 };
 
-test();
+//deployContract();
