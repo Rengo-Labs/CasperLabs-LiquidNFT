@@ -8,3 +8,7 @@ liquidNFTfactory.lockerHashes();
         "Syntax" : "npm run lockerHashes",
     },
 */
+
+/*Flow to call this function 
+createEmptyLocker OR  createLiquidLocker function is required to call before calling this function
+*/

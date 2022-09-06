@@ -17,9 +17,9 @@
     "Example" : "npm run createLiquidLocker 1 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 1000000000 5000000000 86400000 100 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
   },
   "Script createEmptyLocker comments": {
-    "Description" : "use it to create liquidLocker",
+    "Description" : "use it to create empty liquidLocker",
     "Syntax" : "npm run createEmptyLocker <erc20PackageHash>",
-    "Example" : "npm run createEmptyLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8"
+    "Example" : "npm run createEmptyLocker 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
   },
   "Script contributeToLocker comments": {
     "Description" : "use it to contribute to Locker",
@@ -30,6 +30,11 @@
     "Description" : "use it to donate to Locker",
     "Syntax" : "npm run donateToLocker <lockerPackageHash> <donationAmount>",
     "Example" : "npm run donateToLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 100"
+  },
+  "Script paybackToLocker comments": {
+    "Description" : "use it to payback funds to Locker",
+    "Syntax" : "npm run paybackToLocker <lockerPackageHash> <paymentAmount>",
+    "Example" : "npm run paybackToLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 100"
   },
   "Script updateMaster comments": {
     "Description" : "use it to updateMaster",

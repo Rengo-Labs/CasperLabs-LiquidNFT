@@ -12,7 +12,7 @@
     "enableLocker": "ts-node LiquidNFT/scripts/enableLocker.ts",
     "getLateDays": "ts-node LiquidNFT/scripts/getLateDays.ts",
     "increasePaymentRate": "ts-node LiquidNFT/scripts/increasePaymentRate.ts",
-    "decreasePaymentRate": "ts-node LiquidNFT/scripts/decreasePaymentRate.ts",
+    "decreasePaymentTime": "ts-node LiquidNFT/scripts/decreasePaymentTime.ts",
     "initialize": "ts-node LiquidNFT/scripts/initialize.ts",
     "makeContribution": "ts-node LiquidNFT/scripts/makeContribution.ts",
     "liquidateLocker": "ts-node LiquidNFT/scripts/liquidateLocker.ts",
@@ -24,12 +24,12 @@
   "Script calculateEpoch comments": {
     "Description" : "use it to calculate epoch",
     "Syntax" : "npm run calculateEpoch <totalValue> <paymentRate> <paymentTime>",
-    "Example" : "npm run calculateEpoch "
+    "Example" : "npm run calculateEpoch 100 100 100"
   },
   "Script calculatePaybacks comments": {
     "Description" : "use it to calculate paybacks",
     "Syntax" : "npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>",
-    "Example" : "npm run calculatePaybacks "
+    "Example" : "npm run calculatePaybacks 100 100 100"
   },
   "Script claimInterestPublic comments": {
     "Description" : "use it to claim interest public of the locker",
@@ -42,9 +42,9 @@
     "Example" : "npm run claimInterestSingle"
   },
   "Script decreasePaymentTime comments": {
-    "Description" : "use it to decrease Payment Rate to the locker",
+    "Description" : "use it to decrease payment time to the locker",
     "Syntax" : "npm run decreasePaymentTime <newPaymentRate>",
-    "Example" : "npm run decreasePaymentTime "
+    "Example" : "npm run decreasePaymentTime 100"
   },
   "Script disableLocker comments": {
     "Description" : "use it to disable the locker",
@@ -54,12 +54,12 @@
   "Script donateFunds comments": {
     "Description" : "use it to donate funds to the locker",
     "Syntax" : "npm run donateFunds <donationAmount>",
-    "Example" : "npm run donateFunds "
+    "Example" : "npm run donateFunds 100"
   },
   "Script enableLocker comments": {
     "Description" : "use it to enable the locker",
     "Syntax" : "npm run enableLocker <prePaymentAmount>",
-    "Example" : "npm run enableLocker "
+    "Example" : "npm run enableLocker 100"
   },
   "Script getLateDays comments": {
     "Description" : "use it to get late days ",
@@ -69,7 +69,7 @@
   "Script increasePaymentRate comments": {
     "Description" : "use it to increase Payment Rate to the locker",
     "Syntax" : "npm run increasePaymentRate <newPaymentRate>",
-    "Example" : "npm run increasePaymentRate "
+    "Example" : "npm run increasePaymentRate 100"
   },
   "Script initialize comments": {
     "Description" : "use it to initialize locker",
@@ -84,17 +84,17 @@
   "Script makeContribution comments": {
     "Description" : "use it to make contribution to locker",
     "Syntax" : "npm run makeContribution <tokenAmount> <tokenHolder>",
-    "Example" : "npm run makeContribution "
+    "Example" : "npm run makeContribution 100 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script payBackFunds comments": {
     "Description" : "use it to pay back funds to the locker",
     "Syntax" : "npm run payBackFunds <paymentAmount>",
-    "Example" : "npm run payBackFunds "
+    "Example" : "npm run payBackFunds 100"
   },
   "Script penaltyAmount comments": {
     "Description" : "use it to check penaltyAmount",
     "Syntax" : "npm run penaltyAmount <totalCollected> <lateDaysAmount>",
-    "Example" : "npm run penaltyAmount "
+    "Example" : "npm run penaltyAmount 100 100"
   },
   "Script refundDueDisabled comments": {
     "Description" : "use it to disable due refund",

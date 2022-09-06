@@ -20,6 +20,8 @@ const {
   LIQUIDNFT_FACTORY_CONTRACT_NAME,
   LIQUIDNFT_FACTORY_INSTALL_PAYMENT_AMOUNT,
   LIQUIDNFT_FACTORY_FUNCTIONS_PAYMENT_AMOUNT,
+  LIQUIDNFT_FACTORY_CREATEEMPTYLOCKER_FUNCTIONS_PAYMENT_AMOUNT,
+  LIQUIDNFT_FACTORY_CREATELOCKER_FUNCTIONS_PAYMENT_AMOUNT
 } = process.env;
 
 
@@ -108,7 +110,7 @@ class LiquidNFTFactory {
       paymentTime!,
       paymentRate!,
       erc20PackageHash!,
-      LIQUIDNFT_FACTORY_FUNCTIONS_PAYMENT_AMOUNT!
+      LIQUIDNFT_FACTORY_CREATELOCKER_FUNCTIONS_PAYMENT_AMOUNT!
     );
     console.log("... createLiquidLockerJsClient deploy hash: ", createLiquidLockerJsClientDeployHash);
 
@@ -120,7 +122,13 @@ class LiquidNFTFactory {
   lockerHashes =async () => {
     await this.liquidNFTFactory.setContractHash(this.contractHash!);
     const result = await this.liquidNFTFactory.result();
-    console.log(`... Result Key Value: ${result}`);
+
+    fs.writeFileSync('.././LiquidNFT/contractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+    console.log("... Contract Hash:", result.contractHash);
+
+    fs.writeFileSync('.././LiquidNFT/packageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+    console.log("... Package Hash:", result.packageHash);
+
   }
 
   //createEmptyLockerJsClient
@@ -129,7 +137,7 @@ class LiquidNFTFactory {
     const createEmptyLockerJsClientDeployHash = await this.liquidNFTFactory.createEmptyLockerJsClient(
       KEYS,
       erc20PackageHash!,
-      LIQUIDNFT_FACTORY_FUNCTIONS_PAYMENT_AMOUNT!
+      LIQUIDNFT_FACTORY_CREATEEMPTYLOCKER_FUNCTIONS_PAYMENT_AMOUNT!
     );
     console.log("... createEmptyLockerJsClient deploy hash: ", createEmptyLockerJsClientDeployHash);
 

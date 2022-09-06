@@ -9,6 +9,6 @@ liquidNFT.penaltyAmount(
     "Script penaltyAmount comments": {
         "Description" : "use it to check penaltyAmount",
         "Syntax" : "npm run penaltyAmount <totalCollected> <lateDaysAmount>",
-        "Example" : "npm run penaltyAmount "
+        "Example" : "npm run penaltyAmount 100 100"
     },
 */
