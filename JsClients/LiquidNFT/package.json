@@ -59,7 +59,7 @@
   "Script enableLocker comments": {
     "Description" : "use it to enable the locker",
     "Syntax" : "npm run enableLocker <prePaymentAmount>",
-    "Example" : "npm run enableLocker 100"
+    "Example" : "npm run enableLocker 500"
   },
   "Script getLateDays comments": {
     "Description" : "use it to get late days ",
