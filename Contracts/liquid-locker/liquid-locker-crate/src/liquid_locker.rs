@@ -212,10 +212,12 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         LIQUIDBASE::set_next_due_time(
             self,
             LIQUIDHELPER::starting_timestamp(self)
-                .checked_add(prepay_amount)
-                .unwrap_or_revert()
-                .checked_div(epoch_payback)
-                .unwrap_or_revert_with(Error::LiquidLockerDivision0),
+                .checked_add(
+                    (prepay_amount
+                        .checked_div(epoch_payback)
+                        .unwrap_or_revert_with(Error::LiquidLockerDivision0)),
+                )
+                .unwrap_or_revert(),
         );
 
         self.emit(&LiquidLockerEvent::PaymentMade {
