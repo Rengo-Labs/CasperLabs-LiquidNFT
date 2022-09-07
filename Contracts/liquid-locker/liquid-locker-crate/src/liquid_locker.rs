@@ -172,7 +172,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
 
         let (total_payback, epoch_payback, teams_payback): (U256, U256, U256) = self
             .calculate_paybacks(
-                LIQUIDBASE::get_total_collected(self),
+                LIQUIDBASE::get_total_collected(self), 
                 get_globals().payment_time,
                 get_globals().payment_rate,
             );
@@ -211,11 +211,11 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
 
         LIQUIDBASE::set_next_due_time(
             self,
-            LIQUIDHELPER::starting_timestamp(self)
-                .checked_add(prepay_amount)
-                .unwrap_or_revert()
-                .checked_div(epoch_payback)
-                .unwrap_or_revert_with(Error::LiquidLockerDivision0),
+            prepay_amount
+            .checked_div(epoch_payback)   
+            .unwrap_or_revert_with(Error::LiquidLockerDivision0)
+            .checked_add(LIQUIDHELPER::starting_timestamp(self))
+            .unwrap_or_revert()
         );
 
         self.emit(&LiquidLockerEvent::PaymentMade {

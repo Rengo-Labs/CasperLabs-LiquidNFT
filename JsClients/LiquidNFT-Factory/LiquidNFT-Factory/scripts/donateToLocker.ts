@@ -13,6 +13,9 @@ liquidNFTfactory.donateToLocker(process.argv[2],process.argv[3]);
 /*Flow to call this function 
 Firstly, if you have not done that yet,lock NFT in the locker using funtions createliquidLockerJsClient
 OR createEmptyLocker 
+IMPORTANT NOTE: paymentTime and paymentRate values should be in proportion to each other
+(Neither too big nor too low, else you will get user errors in other functions)
+
 Secondly, Mint erc20 tokens against Onwer in erc20 JsClient using mint function (which you want to donate)
 Thirdly, Approve erc20 tokens against LiquidNFT Factory Package Hash in erc20 JsClient using approve
 function(which you want to donate)
