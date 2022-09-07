@@ -56,8 +56,7 @@ all:
 	make build-contract-liquid-factory && make build-contract-liquid-helper && make build-contract-liquid-locker && make copy-wasm-file-js-client && make generate-key
 
 test-all:
-	make test-liquid-factory 
-# && make test-liquid-helper && make test-liquid-locker
+	make test-liquid-factory && make test-liquid-helper && make test-liquid-locker
 
 clean:
 	cargo clean
