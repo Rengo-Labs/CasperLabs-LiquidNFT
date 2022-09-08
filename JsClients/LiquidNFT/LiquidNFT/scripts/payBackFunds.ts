@@ -8,6 +8,6 @@ liquidNFT.payBackFunds(
     "Script payBackFunds comments": {
         "Description" : "use it to pay back funds to the locker",
         "Syntax" : "npm run payBackFunds <paymentAmount>",
-        "Example" : "npm run payBackFunds "
+        "Example" : "npm run payBackFunds 100"
     },
 */

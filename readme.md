@@ -101,4 +101,4 @@ You should import the keys that were generated in the previous step
 
 Now head over to <br />
 [Readme for Contracts](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/Contracts/README.md) <br />
-[Readme for JSClients](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClient/readme.md)
+[Readme for JSClients](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/readme.md)

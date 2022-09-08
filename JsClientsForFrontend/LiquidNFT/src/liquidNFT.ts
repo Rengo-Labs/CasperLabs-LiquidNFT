@@ -583,7 +583,6 @@ class LIQUIDNFTClientForFunctions {
   public async  makeContribution(
     keys: Keys.AsymmetricKey,
     tokenAmount: string,
-    //tokenHolder: RecipientType,
     tokenHolder: string,
     paymentAmount: string
   ) {
@@ -594,10 +593,7 @@ class LIQUIDNFTClientForFunctions {
     
     const runtimeArgs = RuntimeArgs.fromMap({
       token_amount: CLValueBuilder.u256(tokenAmount),
-      //token_holder: utils.createRecipientAddress(tokenHolder),
-     token_holder: utils.createRecipientAddress(_tokenHolder),
-     //token_holder: new CLKey(tokenHolder),
-      
+      token_holder: utils.createRecipientAddress(_tokenHolder),
     });
 
     const deployHash = await contractCall({

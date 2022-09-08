@@ -1,5 +1,5 @@
 {
-  "name": "LiquidNFT-Factory-JsClient",
+  "name": "LiquidNFT-Factory-JsClient-Scripts",
   "version": "0.0.0",
   "scripts": {
     "deployContract": "ts-node LiquidNFT-Factory/scripts/deployContract.ts",
@@ -7,29 +7,40 @@
     "createEmptyLocker": "ts-node LiquidNFT-Factory/scripts/createEmptyLocker.ts",
     "contributeToLocker": "ts-node LiquidNFT-Factory/scripts/contributeToLocker.ts",
     "donateToLocker": "ts-node LiquidNFT-Factory/scripts/donateToLocker.ts",
+    "paybackToLocker": "ts-node LiquidNFT-Factory/scripts/paybackToLocker.ts",
     "updateMaster": "ts-node LiquidNFT-Factory/scripts/updateMaster.ts",
     "revokeMaster": "ts-node LiquidNFT-Factory/scripts/revokeMaster.ts",
     "lockerHashes": "ts-node LiquidNFT-Factory/scripts/lockerHashes.ts"
   },
+  "Script deployContract comments": {
+    "Description" : "use it to deploy Liquid NFT Factory",
+    "Syntax" : "npm run deployContract <defaultToken>",
+    "Example" : "npm run deployContract 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
+  },
   "Script createLiquidLocker comments": {
     "Description" : "use it to create liquidLocker",
     "Syntax" : "npm run createLiquidLocker <tokenId> <cep47PackageHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate> <erc20PackageHash>",
-    "Example" : "npm run createLiquidLocker 1 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 1000000000 5000000000 86400000 100 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
+    "Example" : "npm run createLiquidLocker 18 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
   },
   "Script createEmptyLocker comments": {
-    "Description" : "use it to create liquidLocker",
+    "Description" : "use it to create empty liquidLocker",
     "Syntax" : "npm run createEmptyLocker <erc20PackageHash>",
-    "Example" : "npm run createEmptyLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8"
+    "Example" : "npm run createEmptyLocker 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
   },
   "Script contributeToLocker comments": {
     "Description" : "use it to contribute to Locker",
     "Syntax" : "npm run contributeToLocker <lockerPackageHash> <paymentAmount>",
-    "Example" : "npm run contributeToLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 100"
+    "Example" : "npm run contributeToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 5000000000"
   },
   "Script donateToLocker comments": {
     "Description" : "use it to donate to Locker",
     "Syntax" : "npm run donateToLocker <lockerPackageHash> <donationAmount>",
-    "Example" : "npm run donateToLocker 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 100"
+    "Example" : "npm run donateToLocker ab3fa4bc9717719a27e7bad8eb95391a8a402d70f0dfab811445e0003dc1ef1e 10"
+  },
+  "Script paybackToLocker comments": {
+    "Description" : "use it to payback funds to Locker",
+    "Syntax" : "npm run paybackToLocker <lockerPackageHash> <paymentAmount>",
+    "Example" : "npm run paybackToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 1000000000"
   },
   "Script updateMaster comments": {
     "Description" : "use it to updateMaster",

@@ -9,3 +9,7 @@ liquidNFTfactory.updateMaster(process.argv[2]!);
         "Example" : "npm run updateMaster "
     },
 */
+
+/*Flow to call this function 
+No function is required to call before calling this function
+*/

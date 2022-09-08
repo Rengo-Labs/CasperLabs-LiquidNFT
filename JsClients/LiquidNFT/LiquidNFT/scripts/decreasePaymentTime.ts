@@ -8,6 +8,6 @@ liquidNFT.decreasePaymentTime(
     "Script decreasePaymentTime comments": {
         "Description" : "use it to decrease Payment Rate to the locker",
         "Syntax" : "npm run decreasePaymentTime <newPaymentRate>",
-        "Example" : "npm run decreasePaymentTime "
+        "Example" : "npm run decreasePaymentTime 100"
     },
 */

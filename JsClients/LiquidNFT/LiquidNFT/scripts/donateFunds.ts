@@ -8,6 +8,6 @@ liquidNFT.donateFunds(
     "Script donateFunds comments": {
         "Description" : "use it to donate funds to the locker",
         "Syntax" : "npm run donateFunds <donationAmount>",
-        "Example" : "npm run donateFunds "
+        "Example" : "npm run donateFunds 100"
     },
 */

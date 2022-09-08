@@ -91,11 +91,9 @@ class LIQUIDNFTFACTORYClientForFunctions {
       this.contractHash,
       ["result"]
     );
-    const serializedResult = serialize({obj: result.value()});
-    let deserializedResult= (deserialize(serializedResult)).obj;
-    const propertyValues:number[]= Object.values(deserializedResult.data);
-    let convertedValue=encodeBase16(Uint8Array.from(propertyValues));
-    return convertedValue;
+    let contractHash=encodeBase16(result.value()[0].data.data);
+    let packageHash=encodeBase16(result.value()[1].data.data);
+    return {contractHash,packageHash};
   }
 
   public async  updateMaster(

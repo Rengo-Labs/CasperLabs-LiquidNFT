@@ -1,0 +1,48 @@
+{
+  "name": "V2Core-JsClients",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "transfer": "ts-node ERC20/scripts/transfer.ts",
+    "mint": "ts-node ERC20/scripts/mint.ts",
+    "approve": "ts-node ERC20/scripts/approve.ts",
+    "deploy": "ts-node ERC20/scripts/deploy.ts",
+    "balanceOf": "ts-node ERC20/scripts/balanceOf.ts",
+    "test:erc20install": "ts-node ERC20/scripts/install.ts",
+    "test:erc20installed": "ts-node ERC20/scripts/installed.ts",
+    "test:pairinstall": "ts-node PAIR/test/install.ts",
+    "test:pairinstalled": "ts-node PAIR/test/installed.ts",
+    "test:factoryinstall": "ts-node FACTORY/test/install.ts",
+    "test:factoryinstalled": "ts-node FACTORY/test/installed.ts",
+    "test:wcsprinstall": "ts-node WCSPR/test/install.ts",
+    "test:libraryinstall": "ts-node LIBRARY/test/install.ts",
+    "test:flashswapperinstall": "ts-node FLASHSWAPPER/test/install.ts"
+  },
+  "Script mint comments": {
+    "Description" : "use it to mint tokens",
+    "Syntax" : "npm run mint <keyPath>  <amountTomint>",
+    "Example" : "npm run mint ERC20/keys  1000000000000"
+  },
+  "Script approve comments": {
+    "Description" : "use it to approve tokens",
+    "Syntax" : "npm run approve <packageHash>  <amountToApprove>",
+    "Example" : "npm run approve f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0  1000000000000"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "blakejs": "^1.1.1",
+    "casper-js-sdk": "^2.7.5",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
+    "fs": "0.0.1-security",
+    "prettier": "^2.3.2",
+    "serialize-javascript": "^6.0.0",
+    "text-decoding": "^1.0.0",
+    "ts-node": "^10.1.0",
+    "ts-results": "^3.3.0",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3"
+  }
+}
