@@ -84,7 +84,7 @@ function(which you want to contribute)
 8) Call payBackToLocker function 
 
 
-Successfull DeployHashes: 
+## Successfull DeployHashes: 
 
 ```
 mintOneToken: a95b2e1ebff578dad966f69e0524462f14da8f0fdfdbf45b40aebbce825ab18e
