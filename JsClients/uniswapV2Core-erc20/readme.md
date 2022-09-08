@@ -1,68 +1,46 @@
-# Casperlabs-UniswapV2Core-jsClient
+# Casperlabs-UniswapV2Core-erc20
 
-## Prerequisite
+## Requirement
 
-Make sure you have created, pasted and funded the keys before testing.
+Make sure you have created and funded the keys before testing.
 
-## Generate the keys
+## Commands
 
-Paste this command on the ubuntu terminal, that will create a keys folder for you containing public key , public key hex and secret key.
-
-```
-casper-client keygen keys
-
-```
-## Paste the keys
-
-Paste the keys folder created by the above command to ERC20, FACTORY, PAIR, FLASHSWAPPER, LIBRARY and WCSPR folders.
-
-## Fund the key
-
-We can fund the keys from casper live website faucet page on testnet.
-
-Link:
-
-```
-https://testnet.cspr.live/tools/faucet
-
-```
-
-## Testing
+1. Run ```make all`` command.
+2. Run ```npm ci``` command in JsClient Folder to install the node packages.
+3. Run ```npm run deploy``` to deploy contracts to test-net.
+4. if you encounter this error then try again 
+5. Must have atleast 500 CSPR for the deployment.
+  ```
+  type: 'system',
+  errno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT'
+  ```
+5. On
 
 Use the script file in package.json to perform the testing
 ```
 "scripts": {
-    "test:erc20install": "ts-node ERC20/test/install.ts",
-    "test:erc20installed": "ts-node ERC20/test/installed.ts",
-    "test:pairinstall": "ts-node PAIR/test/install.ts",
-    "test:pairinstalled": "ts-node PAIR/test/installed.ts",
-    "test:factoryinstall": "ts-node FACTORY/test/install.ts",
-    "test:factoryinstalled": "ts-node FACTORY/test/installed.ts",
-    "test:wcsprinstall": "ts-node WCSPR/test/install.ts",
-    "test:libraryinstall": "ts-node LIBRARY/test/install.ts",
-    "test:flashswapperinstall": "ts-node FLASHSWAPPER/test/install.ts",
+    "transfer": "ts-node ERC20/scripts/transfer.ts",
+    "mint": "ts-node ERC20/scripts/mint.ts",
+    "approve": "ts-node ERC20/scripts/approve.ts",
+    "deploy": "ts-node ERC20/scripts/deploy.ts",
+    "balanceOf": "ts-node ERC20/scripts/balanceOf.ts",
   },
 ```
 
 Use the following commands to perform testing
 ```
-npm run test:erc20install
-npm run test:erc20installed
-
-npm run test:factoryinstall
-npm run test:factoryinstalled
-
-npm run test:pairinstall
-npm run test:pairinstalled
-
-npm run test:wcsprinstall
-
-npm run test:libraryinstall
-
-npm run test:flashswapperinstall
-
+npm run approve <packageHash>  <amountToApprove>
+npm run mint <keyPath>  <amountTomint>
 
 ```
 
-* CONFIGURE .env BEFORE TESTING
+CONFIGURE .env BEFORE TESTING
+
+#### Note: .env file is in JSClient folder
+
+go to js client folder
+run command npm ci
+Copy keys folder to ERC20 folder OR generate key using keygen(if using keygen funds account)
 
