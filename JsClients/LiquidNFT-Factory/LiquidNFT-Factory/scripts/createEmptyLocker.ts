@@ -1,6 +1,6 @@
 import {LiquidNFTFactory} from "./lnftFactory";
 let LiquidNFTfactory = new LiquidNFTFactory();
-LiquidNFTfactory.createEmptyLocker(process.argv[2]);
+LiquidNFTfactory.createEmptyLocker(process.argv[2]!);
 
 /*
     "Script createEmptyLocker comments": {

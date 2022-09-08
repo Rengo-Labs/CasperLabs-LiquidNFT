@@ -43,13 +43,6 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-
-
-  
-
-  
-
-  
   // await getDeploy(NODE_ADDRESS!, mintDeployHash);
   // console.log("... Token minted successfully");
 
@@ -257,7 +250,6 @@ const getContractHash = () => {
 class Cep47 {
   contractHash: string;
   cep47Client: CEP47Client;
-  Ready: Promise<any>;
   constructor() {
     let _contractHash = fs.readFileSync('contractHash','utf8');
     this.contractHash = _contractHash.split("-").pop()!;

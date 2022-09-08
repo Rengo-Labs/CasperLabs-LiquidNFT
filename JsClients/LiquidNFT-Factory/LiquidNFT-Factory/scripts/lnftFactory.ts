@@ -123,11 +123,11 @@ class LiquidNFTFactory {
     await this.liquidNFTFactory.setContractHash(this.contractHash!);
     const result = await this.liquidNFTFactory.result();
 
-    fs.writeFileSync('.././LiquidNFT/contractHash',result.contractHash,{encoding:'utf8',flag:'w'});
-    console.log("... Contract Hash:", result.contractHash);
+    // fs.writeFileSync('.././LiquidNFT/contractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+    // console.log("... Contract Hash:", result.contractHash);
 
-    fs.writeFileSync('.././LiquidNFT/packageHash',result.packageHash,{encoding:'utf8',flag:'w'});
-    console.log("... Package Hash:", result.packageHash);
+    // fs.writeFileSync('.././LiquidNFT/packageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+    // console.log("... Package Hash:", result.packageHash);
 
   }
 
