@@ -72,4 +72,4 @@ CONFIGURE .env BEFORE TESTING
 
 go to js client folder
 run command npm ci
-Copy keys folder to Liquid NFT folder OR generate key using keygen(if using keygen funds account)
+Copy keys folder to LiquidNFT folder OR generate key using keygen(if using keygen funds account)

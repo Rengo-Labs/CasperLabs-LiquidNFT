@@ -1,7 +1,7 @@
 // const path = require('path');
 
 // module.exports = {
-//   entry: './LiquidNFT/src/index.ts',
+//   entry: './src/index.ts',
 //   devtool: 'inline-source-map',
 //   mode: 'development',
 //   module: {
@@ -18,6 +18,6 @@
 //   },
 //   output: {
 //     filename: 'index.js',
-//     path: path.resolve(__dirname, './LiquidNFT/dist'),
+//     path: path.resolve(__dirname, './dist'),
 //   },
 // };

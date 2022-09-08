@@ -1,5 +1,5 @@
 {
-  "name": "LiquidNFT-JsClient",
+  "name": "LiquidNFT-JsClient-Scripts",
   "version": "0.0.0",
   "scripts": {
     "calculateEpoch": "ts-node LiquidNFT/scripts/calculateEpoch.ts",

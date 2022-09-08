@@ -1,4 +1,4 @@
-import {LiquidNFTFactory} from "./lnftFactory";
+import {LiquidNFTFactory} from "../../../LiquidNFT-Factory/LiquidNFT-Factory/scripts/lnftFactory";
 import {LiquidNFT} from "../../../LiquidNFT/LiquidNFT/scripts/lnft";
 import {Cep47} from '../../../casper-cep47/scripts/cep47';
 import {ERC20} from '../../../uniswapV2Core-erc20/ERC20/scripts/erc20';
@@ -49,7 +49,7 @@ async function testMainContractFlow(
 
     // Call lockerHashes
     await liquidNFTfactory.lockerHashes();
-    let _lockerPackageHash = fs.readFileSync('.././LiquidNFT/packageHash','utf8');
+    let _lockerPackageHash = fs.readFileSync('liquidNFTPackageHash','utf8');
     let lockerPackageHash=_lockerPackageHash.split("-").pop()!; 
     
     // Call erc20 mint
@@ -90,7 +90,7 @@ testMainContractFlow(
     "Script testMainContractFlow comments": {
     "Description" : "use it to test main contract flow",
     "Syntax" : "npm run testMainContractFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> ",
-    "Example" : "npm run testMainContractFlow 16 name AwesomeNFT 7fcc17f692368169ba30ea0e90496c4a95d36d7bc8956e2305a86a38bce44675 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 4000000000 10000000000 86400000 10 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222 LiquidNFT-Factory/keys 1000000000000 5000000000 1000000000 1000000000"
+    "Example" : "npm run testMainContractFlow 17 name AwesomeNFT 7fcc17f692368169ba30ea0e90496c4a95d36d7bc8956e2305a86a38bce44675 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 4000000000 10000000000 86400000 10 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222 /keys 1000000000000 5000000000 1000000000 1000000000"
   },
 */
 

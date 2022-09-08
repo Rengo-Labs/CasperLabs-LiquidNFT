@@ -31,7 +31,6 @@ Use the script file in package.json to perform the testing
     "updateMaster": "ts-node LiquidNFT-Factory/scripts/updateMaster.ts",
     "revokeMaster": "ts-node LiquidNFT-Factory/scripts/revokeMaster.ts",
     "lockerHashes": "ts-node LiquidNFT-Factory/scripts/lockerHashes.ts",
-    "testMainContractFlow": "ts-node LiquidNFT-Factory/scripts/testMainContractFlow.ts"
   },
 ```
 
@@ -46,8 +45,6 @@ npm run donateToLocker <lockerPackageHash> <donationAmount>
 npm run updateMaster <newMasterAccountHash>
 npm run revokeMaster
 npm run lockerHashes
-npm run testMainContractFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> 
-
 ```
 
 CONFIGURE .env BEFORE TESTING
@@ -56,32 +53,7 @@ CONFIGURE .env BEFORE TESTING
 
 go to js client folder
 run command npm ci
-Copy keys folder to Liquid NFT folder OR generate key using keygen(if using keygen funds account)
-
-
-## Main Flow of the factory contract 
-
-1) Mint NFT against Onwer in cep47 JsClient using mintOneToken function
-
-2) Approve NFT against LiquidNFT Factory Package Hash in cep47 JsClient using approveOneToken function
-
-3) Lock NFT in the locker using funtion createliquidLockerJsClient
-
-  IMPORTANT NOTE: paymentTime and paymentRate values should be in proportion to each other
-  (Neither too big nor too low, else you will get user errors in other functions)
-
-4) Mint erc20 tokens against Onwer in erc20 JsClient using mint function (which you want to contribute)
-
-5) Approve erc20 tokens against LiquidNFT Factory Package Hash in erc20 JsClient using approve
-function(which you want to contribute)
-
-6) Contribute to the locker using contributeToLocker function
-
-7) Enable the locker by calling enableLocker function using LiquidNFT JsClient
-
-  IMPORTANT NOTE: Make sure floor asked has reached
-
-8) Call payBackToLocker function 
+Copy keys folder to LiquidNFT-Factory folder OR generate key using keygen(if using keygen funds account)
 
 
 ## Successfull DeployHashes: 

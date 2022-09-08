@@ -27,7 +27,7 @@ class LiquidNFT {
   contractHash: string;
   liquidNFT: LIQUIDNFTClientForFunctions;
   constructor() {
-    let _contractHash = fs.readFileSync('contractHash','utf8');
+    let _contractHash = fs.readFileSync('liquidNFTContractHash','utf8');
     this.contractHash = _contractHash.split("-").pop()!;
     this.liquidNFT = new LIQUIDNFTClientForFunctions(
       NODE_ADDRESS!,

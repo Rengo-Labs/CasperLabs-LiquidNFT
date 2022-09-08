@@ -64,15 +64,17 @@ export const deployContract = async (defaultToken: string) => {
     accountInfo,
     `${contractName!}_contract_hash`
   );
-  fs.writeFileSync('contractHash',contractHash,{encoding:'utf8',flag:'w'});
-
+  fs.writeFileSync('liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('../../../LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
+  
   console.log(`... Contract Hash: ${contractHash}`);
 
   const packageHash = await utils.getAccountNamedKeyValue(
     accountInfo,
     `${contractName!}_package_hash`
   );
-  fs.writeFileSync('packageHash',packageHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('../../../LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
   console.log(`... Package Hash: ${packageHash}`);
 
 };
@@ -81,7 +83,7 @@ class LiquidNFTFactory {
   contractHash: string;
   liquidNFTFactory: LIQUIDNFTFACTORYClientForFunctions;
   constructor() {
-    let _contractHash = fs.readFileSync('contractHash','utf8');
+    let _contractHash = fs.readFileSync('liquidNFTFactoryContractHash','utf8');
     this.contractHash = _contractHash.split("-").pop()!;
     this.liquidNFTFactory = new LIQUIDNFTFACTORYClientForFunctions(
       NODE_ADDRESS!,
@@ -123,11 +125,15 @@ class LiquidNFTFactory {
     await this.liquidNFTFactory.setContractHash(this.contractHash!);
     const result = await this.liquidNFTFactory.result();
 
-    // fs.writeFileSync('.././LiquidNFT/contractHash',result.contractHash,{encoding:'utf8',flag:'w'});
-    // console.log("... Contract Hash:", result.contractHash);
+    fs.writeFileSync('.././LiquidNFT/liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+    console.log("... Contract Hash:", result.contractHash);
 
-    // fs.writeFileSync('.././LiquidNFT/packageHash',result.packageHash,{encoding:'utf8',flag:'w'});
-    // console.log("... Package Hash:", result.packageHash);
+    fs.writeFileSync('.././LiquidNFT/liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+    console.log("... Package Hash:", result.packageHash);
+
+    fs.writeFileSync('liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+
+    fs.writeFileSync('liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
 
   }
 
