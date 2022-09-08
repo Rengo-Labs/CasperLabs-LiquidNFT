@@ -43,7 +43,7 @@ See all JsClients readme
 
 Readme for cep47 JSClient:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/casper-cerp47/readme.md
+https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/casper-cep47/README.md
 
 Readme for erc20 JSClient:
 
