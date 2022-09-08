@@ -13,6 +13,11 @@
     "lockerHashes": "ts-node LiquidNFT-Factory/scripts/lockerHashes.ts",
     "testMainContractFlow": "ts-node LiquidNFT-Factory/scripts/testMainContractFlow.ts"
   },
+  "Script deployContract comments": {
+    "Description" : "use it to deploy Liquid NFT Factory",
+    "Syntax" : "npm run deployContract <defaultToken>",
+    "Example" : "npm run deployContract 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
+  },
   "Script testMainContractFlow comments": {
     "Description" : "use it to test main contract flow",
     "Syntax" : "npm run testMainContractFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> ",
