@@ -47,8 +47,7 @@ const {
   AMOUNT_A_DESIRED,
   AMOUNT_B_DESIRED,
   MASTER_KEY_PAIR_PATH,
-  PAIR_CONTRACT_PACKAGE,
-  GRAPHQL
+  PAIR_CONTRACT_PACKAGE
 } = process.env;
 
 
@@ -90,13 +89,12 @@ class ERC20{
       console.log("... Token minted successfully.");
     }
 
-    approve = async (keyPath:string,approveAmount: string) => {
+    approve = async (packageHash:string,approveAmount: string) => {
       
       await this.erc20Client.setContractHash(this.contractHash!);
-      let k = jsutils.getKeys(keyPath);
       const approveDeployHash = await this.erc20Client.approve(
-        k,
-        k.publicKey,
+        KEYS,
+        packageHash,
         approveAmount!,
         MINT_PAYMENT_AMOUNT!
       );
@@ -111,7 +109,7 @@ class ERC20{
       let contractName = ERC20_CONTRACT_NAME + jsutils.getDeploymentCount();
       jsutils.updateDeploymentCount();
     
-      let k = jsutils.getKeys("keys");
+      let k = jsutils.getKeys("ERC20/keys");
     
       const installDeployHash = await this.erc20Client.install(
         k,
@@ -141,7 +139,7 @@ class ERC20{
         `${contractName!}_contract_hash`
       );
       fs.writeFileSync('ERC20ContractHash',contractHash,{encoding:'utf8',flag:'w'});
-      fs.writeFileSync('../../../LiquidNFT-Factory-Tests-Scripts/ERC20ContractHash',contractHash,{encoding:'utf8',flag:'w'});
+      fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/ERC20ContractHash',contractHash,{encoding:'utf8',flag:'w'});
       console.log(`... Contract Hash: ${contractHash}`);
     
       const packageHash = await utils.getAccountNamedKeyValue(
@@ -150,7 +148,7 @@ class ERC20{
       );
     
       fs.writeFileSync('ERC20PackageHash',packageHash,{encoding:'utf8',flag:'w'});
-      fs.writeFileSync('../../../LiquidNFT-Factory-Tests-Scripts/ERC20PackageHash',packageHash,{encoding:'utf8',flag:'w'});
+      fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/ERC20PackageHash',packageHash,{encoding:'utf8',flag:'w'});
       console.log(`... Package Hash: ${packageHash}`);
       
     };

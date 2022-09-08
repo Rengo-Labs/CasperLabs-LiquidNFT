@@ -5,6 +5,7 @@
   "scripts": {
     "transfer": "ts-node ERC20/scripts/transfer.ts",
     "mint": "ts-node ERC20/scripts/mint.ts",
+    "approve": "ts-node ERC20/scripts/approve.ts",
     "deploy": "ts-node ERC20/scripts/deploy.ts",
     "balanceOf": "ts-node ERC20/scripts/balanceOf.ts",
     "test:erc20install": "ts-node ERC20/scripts/install.ts",
@@ -16,6 +17,16 @@
     "test:wcsprinstall": "ts-node WCSPR/test/install.ts",
     "test:libraryinstall": "ts-node LIBRARY/test/install.ts",
     "test:flashswapperinstall": "ts-node FLASHSWAPPER/test/install.ts"
+  },
+  "Script mint comments": {
+    "Description" : "use it to mint tokens",
+    "Syntax" : "npm run mint <keyPath>  <amountTomint>",
+    "Example" : "npm run mint ERC20/keys  1000000000000"
+  },
+  "Script approve comments": {
+    "Description" : "use it to approve tokens",
+    "Syntax" : "npm run approve <packageHash>  <amountToApprove>",
+    "Example" : "npm run approve f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0  1000000000000"
   },
   "dependencies": {
     "axios": "^0.24.0",

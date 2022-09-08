@@ -6,7 +6,7 @@ liquidNFTfactory.paybackToLocker(process.argv[2],process.argv[3]);
     "Script paybackToLocker comments": {
         "Description" : "use it to payback funds to Locker",
         "Syntax" : "npm run paybackToLocker <lockerPackageHash> <paymentAmount>",
-        "Example" : "npm run paybackToLocker 5b8e4c95146e85afe8861832898b460133e153a102cc5b5cace28f6aa60dff08 1000000000"
+        "Example" : "npm run paybackToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 1000000000"
     },
 */
 

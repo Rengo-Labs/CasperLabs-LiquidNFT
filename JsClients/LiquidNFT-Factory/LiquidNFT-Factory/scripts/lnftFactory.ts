@@ -65,7 +65,7 @@ export const deployContract = async (defaultToken: string) => {
     `${contractName!}_contract_hash`
   );
   fs.writeFileSync('liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('../../../LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
   
   console.log(`... Contract Hash: ${contractHash}`);
 
@@ -74,7 +74,7 @@ export const deployContract = async (defaultToken: string) => {
     `${contractName!}_package_hash`
   );
   fs.writeFileSync('liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('../../../LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
   console.log(`... Package Hash: ${packageHash}`);
 
 };

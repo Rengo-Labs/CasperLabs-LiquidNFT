@@ -6,25 +6,29 @@ This folder have cep47, erc20 Jsclients and scripts for LiquidNFT-Factory and Li
 
 ### Steps:
 
-1) Go to casper-cep47 folder and npm i in it.
+1) Go to JsClientsForFrontend/LiquidNFT folder and npm i in it.
 
-2) Go to LiquidNFT folder and npm i in it.
+2) Go to JsClientsForFrontend/LiquidNFT-Factory folder and npm i in it.
 
-3) Go to LiquidNFT-Factory folder and npm i in it.
+3) Go to casper-cep47 folder and npm i in it.
 
-4) Go to uniswapV2Core-erc20 folder and npm i in it.
+4) Go to LiquidNFT folder and npm i in it.
 
-5) Go to LiquidNFT-Factory-Tests-Scripts folder and npm i in it.
+5) Go to LiquidNFT-Factory folder and npm i in it.
 
-6) Generate and paste a keys folder in LiquidNFT-Factory-Tests-Scripts/liquidNFT-Factory-Tests-Scripts folder.
+6) Go to uniswapV2Core-erc20 folder and npm i in it.
 
-7) Run the command in LiquidNFT-Factory-Tests-Scripts folder: 
+7) Go to LiquidNFT-Factory-Tests-Scripts folder and npm i in it.
+
+8) Generate and paste a keys folder in LiquidNFT-Factory-Tests-Scripts/liquidNFT-Factory-Tests-Scripts folder.
+
+9) Run the command in LiquidNFT-Factory-Tests-Scripts folder: 
 
 npm run testMainContractFlow <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker>
 
 Example command:
 
-npm run testMainContractFlow 16 name AwesomeNFT 7fcc17f692368169ba30ea0e90496c4a95d36d7bc8956e2305a86a38bce44675 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 4000000000 10000000000 86400000 10 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222 liquidNFT-Factory-Tests-Scripts/keys 1000000000000 5000000000 1000000000 1000000000
+npm run testMainContractFlow 19 name AwesomeNFT f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 liquidNFT-Factory-Tests-Scripts/keys 1000000000000 5000000000 1000000000 1000000000
 
 Important Notes: 
 
