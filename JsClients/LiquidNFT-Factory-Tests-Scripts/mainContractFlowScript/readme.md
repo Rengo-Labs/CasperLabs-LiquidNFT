@@ -1,4 +1,4 @@
-# CasperLabs-LiquidNFT-jsClient
+# CasperLabs-LiquidNFT-jsClient-mainContractFlowScript
 
 This folder has the test code to do testing of liquidNFT Factory flows
 
@@ -10,13 +10,21 @@ Copy keys folder to liquidNFT-Factory-Tests-Scripts folder
 Use the script file in package.json to perform the testing
 ```
 "scripts": {
-    "testMainContractFlow": "ts-node LiquidNFT-Factory/scripts/testMainContractFlow.ts"
+   "testMainContractFlow": "ts-node script/testMainContractFlow.ts"
   },
 ```
 
 Use the following commands to perform testing
 ```
 npm run testMainContractFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> 
+
+```
+
+Example Command:
+
+```
+
+npm run testMainContractFlow 21 name AwesomeNFT f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 keys 1000000000000 5000000000 1000000000 1000000000
 
 ```
 
@@ -45,7 +53,7 @@ function(which you want to contribute)
 8) Call payBackToLocker function 
 
 
-## Successfull DeployHashes: 
+## DeployHashes For Main Flow Tests: 
 
 ```
 mintOneToken: a95b2e1ebff578dad966f69e0524462f14da8f0fdfdbf45b40aebbce825ab18e

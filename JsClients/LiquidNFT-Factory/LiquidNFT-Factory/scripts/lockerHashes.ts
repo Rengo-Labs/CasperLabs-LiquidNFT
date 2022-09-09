@@ -1,6 +1,16 @@
 import {LiquidNFTFactory} from "./lnftFactory";
+import * as fs from 'fs';
 let liquidNFTfactory = new LiquidNFTFactory();
-liquidNFTfactory.lockerHashes();
+
+let result= await liquidNFTfactory.lockerHashes();
+fs.writeFileSync('liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+fs.writeFileSync('liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+
+fs.writeFileSync('.././LiquidNFT/liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+console.log("... Contract Hash:", result.contractHash);
+
+fs.writeFileSync('.././LiquidNFT/liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+console.log("... Package Hash:", result.packageHash);
 
 /*
     "Script lockerHashes comments": {

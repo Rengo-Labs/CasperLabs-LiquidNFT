@@ -65,7 +65,7 @@ export const deployContract = async (defaultToken: string) => {
     `${contractName!}_contract_hash`
   );
   fs.writeFileSync('liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/liquidNFTFactoryContractHash',contractHash,{encoding:'utf8',flag:'w'});
   
   console.log(`... Contract Hash: ${contractHash}`);
 
@@ -74,7 +74,7 @@ export const deployContract = async (defaultToken: string) => {
     `${contractName!}_package_hash`
   );
   fs.writeFileSync('liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/liquidNFTFactoryPackageHash',packageHash,{encoding:'utf8',flag:'w'});
   console.log(`... Package Hash: ${packageHash}`);
 
 };
@@ -124,17 +124,7 @@ class LiquidNFTFactory {
   lockerHashes =async () => {
     await this.liquidNFTFactory.setContractHash(this.contractHash!);
     const result = await this.liquidNFTFactory.result();
-
-    fs.writeFileSync('.././LiquidNFT/liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
-    console.log("... Contract Hash:", result.contractHash);
-
-    fs.writeFileSync('.././LiquidNFT/liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
-    console.log("... Package Hash:", result.packageHash);
-
-    fs.writeFileSync('liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
-
-    fs.writeFileSync('liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
-
+    return result ;
   }
 
   //createEmptyLockerJsClient

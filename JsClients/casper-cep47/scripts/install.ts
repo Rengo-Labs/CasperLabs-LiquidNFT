@@ -98,7 +98,7 @@ const deployContract = async (tokenName: string = TOKEN_NAME,
     `${contractName!}_contract_hash`
   );
   fs.writeFileSync('cep47ContractHash',contractHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/cep47ContractHash',contractHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/cep47ContractHash',contractHash,{encoding:'utf8',flag:'w'});
   console.log(`... Contract Hash: ${contractHash}`);
 
   const packageHash = await utils.getAccountNamedKeyValue(
@@ -106,7 +106,7 @@ const deployContract = async (tokenName: string = TOKEN_NAME,
     `${contractName!}_package_hash`
   );
   fs.writeFileSync('cep47PackageHash',packageHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/cep47PackageHash',packageHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/cep47PackageHash',packageHash,{encoding:'utf8',flag:'w'});
   console.log(`... Package Hash: ${packageHash}`);
 };
 
