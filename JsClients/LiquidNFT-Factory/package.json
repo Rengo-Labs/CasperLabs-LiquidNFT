@@ -13,56 +13,54 @@
     "lockerHashes": "ts-node LiquidNFT-Factory/scripts/lockerHashes.ts"
   },
   "Script deployContract comments": {
-    "Description" : "use it to deploy Liquid NFT Factory",
-    "Syntax" : "npm run deployContract <defaultToken>",
-    "Example" : "npm run deployContract 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
+    "Description": "use it to deploy Liquid NFT Factory",
+    "Syntax": "npm run deployContract <defaultToken>",
+    "Example": "npm run deployContract 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
   },
   "Script createLiquidLocker comments": {
-    "Description" : "use it to create liquidLocker",
-    "Syntax" : "npm run createLiquidLocker <tokenId> <cep47PackageHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate> <erc20PackageHash>",
-    "Example" : "npm run createLiquidLocker 18 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
+    "Description": "use it to create liquidLocker",
+    "Syntax": "npm run createLiquidLocker <tokenId> <cep47PackageHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate> <erc20PackageHash>",
+    "Example": "npm run createLiquidLocker 18 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
   },
   "Script createEmptyLocker comments": {
-    "Description" : "use it to create empty liquidLocker",
-    "Syntax" : "npm run createEmptyLocker <erc20PackageHash>",
-    "Example" : "npm run createEmptyLocker 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
+    "Description": "use it to create empty liquidLocker",
+    "Syntax": "npm run createEmptyLocker <erc20PackageHash>",
+    "Example": "npm run createEmptyLocker 56b77636b3af55977cfeea4eb22d18394ee2aa2ba4b2afe3a13a91adc26a1222"
   },
   "Script contributeToLocker comments": {
-    "Description" : "use it to contribute to Locker",
-    "Syntax" : "npm run contributeToLocker <lockerPackageHash> <paymentAmount>",
-    "Example" : "npm run contributeToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 5000000000"
+    "Description": "use it to contribute to Locker",
+    "Syntax": "npm run contributeToLocker <lockerPackageHash> <paymentAmount>",
+    "Example": "npm run contributeToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 5000000000"
   },
   "Script donateToLocker comments": {
-    "Description" : "use it to donate to Locker",
-    "Syntax" : "npm run donateToLocker <lockerPackageHash> <donationAmount>",
-    "Example" : "npm run donateToLocker ab3fa4bc9717719a27e7bad8eb95391a8a402d70f0dfab811445e0003dc1ef1e 10"
+    "Description": "use it to donate to Locker",
+    "Syntax": "npm run donateToLocker <lockerPackageHash> <donationAmount>",
+    "Example": "npm run donateToLocker ab3fa4bc9717719a27e7bad8eb95391a8a402d70f0dfab811445e0003dc1ef1e 10"
   },
   "Script paybackToLocker comments": {
-    "Description" : "use it to payback funds to Locker",
-    "Syntax" : "npm run paybackToLocker <lockerPackageHash> <paymentAmount>",
-    "Example" : "npm run paybackToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 1000000000"
+    "Description": "use it to payback funds to Locker",
+    "Syntax": "npm run paybackToLocker <lockerPackageHash> <paymentAmount>",
+    "Example": "npm run paybackToLocker d774f03ded1fb722e729fdebbb117f4ae39d52c5817d79f4155ff6254d6d294a 1000000000"
   },
   "Script updateMaster comments": {
-    "Description" : "use it to updateMaster",
-    "Syntax" : "npm run updateMaster <newMasterAccountHash> ",
-    "Example" : "npm run updateMaster 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
+    "Description": "use it to updateMaster",
+    "Syntax": "npm run updateMaster <newMasterAccountHash> ",
+    "Example": "npm run updateMaster 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script revokeMaster comments": {
-    "Description" : "use it to revokeMaster",
-    "Syntax" : "npm run revokeMaster",
-    "Example" : "npm run revokeMaster"
+    "Description": "use it to revokeMaster",
+    "Syntax": "npm run revokeMaster",
+    "Example": "npm run revokeMaster"
   },
   "Script lockerHashes comments": {
-    "Description" : "use it to get package and contract hash of locker",
-    "Syntax" : "npm run lockerHashes",
-    "Example" : "npm run lockerHashes"
+    "Description": "use it to get package and contract hash of locker",
+    "Syntax": "npm run lockerHashes",
+    "Example": "npm run lockerHashes"
   },
-
   "engine": {
     "node": "16.14.0",
     "npm": "8.10.0"
   },
-  
   "dependencies": {
     "casper-js-sdk": "^2.9.1",
     "cookie-parser": "~1.4.4",

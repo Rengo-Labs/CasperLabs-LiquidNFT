@@ -10,7 +10,7 @@ Copy keys folder to liquidNFT-Factory-Tests-Scripts folder
 Use the script file in package.json to perform the testing
 ```
 "scripts": {
-    "testMainContractFlow": "ts-node LiquidNFT-Factory/scripts/testMainContractFlow.ts"
+   "testMainContractFlow": "ts-node script/testMainContractFlow.ts"
   },
 ```
 
@@ -45,7 +45,7 @@ function(which you want to contribute)
 8) Call payBackToLocker function 
 
 
-## Successfull DeployHashes: 
+## DeployHashes For Main Flow Tests: 
 
 ```
 mintOneToken: a95b2e1ebff578dad966f69e0524462f14da8f0fdfdbf45b40aebbce825ab18e

@@ -23,7 +23,6 @@ async function testMainContractFlow(
 {
     //initializing all classes
     let liquidNFTfactory = new LiquidNFTFactory();
-    let liquidNFT = new LiquidNFT();
     let cep47 = new Cep47();
     let erc20 = new ERC20();
 
@@ -48,7 +47,10 @@ async function testMainContractFlow(
         erc20PackageHash);
 
     // Call lockerHashes
-    await liquidNFTfactory.lockerHashes();
+    let result = await liquidNFTfactory.lockerHashes();
+    fs.writeFileSync('liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
+    fs.writeFileSync('liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+
     let _lockerPackageHash = fs.readFileSync('liquidNFTPackageHash','utf8');
     let lockerPackageHash=_lockerPackageHash.split("-").pop()!; 
     
@@ -61,6 +63,7 @@ async function testMainContractFlow(
     // Call contributeToLocker
     await liquidNFTfactory.contributeToLocker(lockerPackageHash,paymentAmountContributeToLocker);    
 
+    let liquidNFT = new LiquidNFT();
     // Call enableLocker
     await liquidNFT.enableLocker(prePaymentAmount);
 
@@ -90,7 +93,7 @@ testMainContractFlow(
     "Script testMainContractFlow comments": {
     "Description" : "use it to test main contract flow",
     "Syntax" : "npm run testMainContractFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> ",
-    "Example" : "npm run testMainContractFlow 17 name AwesomeNFT f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 liquidNFT-Factory-Tests-Scripts/keys 1000000000000 5000000000 1000000000 1000000000"
+    "Example" : "npm run testMainContractFlow 17 name AwesomeNFT f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 keys 1000000000000 5000000000 1000000000 1000000000"
   },
 */
 

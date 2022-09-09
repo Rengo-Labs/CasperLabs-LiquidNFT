@@ -139,7 +139,7 @@ class ERC20{
         `${contractName!}_contract_hash`
       );
       fs.writeFileSync('ERC20ContractHash',contractHash,{encoding:'utf8',flag:'w'});
-      fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/ERC20ContractHash',contractHash,{encoding:'utf8',flag:'w'});
+      fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/ERC20ContractHash',contractHash,{encoding:'utf8',flag:'w'});
       console.log(`... Contract Hash: ${contractHash}`);
     
       const packageHash = await utils.getAccountNamedKeyValue(
@@ -148,7 +148,7 @@ class ERC20{
       );
     
       fs.writeFileSync('ERC20PackageHash',packageHash,{encoding:'utf8',flag:'w'});
-      fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/ERC20PackageHash',packageHash,{encoding:'utf8',flag:'w'});
+      fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/ERC20PackageHash',packageHash,{encoding:'utf8',flag:'w'});
       console.log(`... Package Hash: ${packageHash}`);
       
     };
