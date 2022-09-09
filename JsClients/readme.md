@@ -29,25 +29,35 @@ This folder have cep47, erc20 Jsclients and scripts for LiquidNFT-Factory and Li
 
 ### Main Contract Flow Test:
 
-Run the command in LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript folder: 
+Run the command in LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript folder:
+
+```
 
 npm run testMainContractFlow <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker>
 
+```
 Example command:
+
+```
 
 npm run testMainContractFlow 21 name AwesomeNFT f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 keys 1000000000000 5000000000 1000000000 1000000000
 
-
+```
 ### TooLate Payment Liquidate Flow Test:
 
 Run the command in LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript folder: 
 
+```
 npm run testTooLatePayBackFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> 
+
+```
 
 Example command:
 
+```
 npm run testTooLatePayBackFlow 22 name AwesomeNFT d10359a72bdf42adbe6067b4e7c1c16ccf199e6329a9aeef32c02d40b36ea0fe 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 120000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 keys 1000000000000 5000000000 1000000000 1000000000
 
+```
 
 ### Important Notes: 
 

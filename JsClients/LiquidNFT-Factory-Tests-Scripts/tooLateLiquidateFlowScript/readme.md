@@ -1,4 +1,4 @@
-# CasperLabs-LiquidNFT-jsClient
+# CasperLabs-LiquidNFT-jsClient-tooLateLiquidateFlowScript
 
 This folder has the test code to do testing of liquidNFT Factory flows
 
@@ -17,6 +17,12 @@ Use the script file in package.json to perform the testing
 Use the following commands to perform testing
 ```
 npm run testTooLatePayBackFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> 
+
+```
+Example command:
+
+```
+npm run testTooLatePayBackFlow 22 name AwesomeNFT d10359a72bdf42adbe6067b4e7c1c16ccf199e6329a9aeef32c02d40b36ea0fe 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 120000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 keys 1000000000000 5000000000 1000000000 1000000000
 
 ```
 

@@ -1,5 +1,5 @@
 {
-  "name": "LiquidNFT-Factory-JsClient-tests-scripts",
+  "name": "LiquidNFT-Factory-JsClient-mainContractFlowScript",
   "version": "0.0.0",
   "scripts": {
     "testMainContractFlow": "ts-node script/testMainContractFlow.ts"

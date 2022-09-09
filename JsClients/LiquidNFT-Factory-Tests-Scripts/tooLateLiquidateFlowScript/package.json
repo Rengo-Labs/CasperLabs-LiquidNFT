@@ -1,5 +1,5 @@
 {
-  "name": "LiquidNFT-Factory-JsClient-tests-scripts",
+  "name": "LiquidNFT-Factory-JsClient-tooLateLiquidateFlowScript",
   "version": "0.0.0",
   "scripts": {
     "testTooLatePayBackFlow": "ts-node script/testTooLatePayBackFlow.ts"
