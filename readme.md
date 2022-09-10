@@ -100,5 +100,5 @@ Requires chrome browser and the casper signer extension <br />
 You should import the keys that were generated in the previous step
 
 Now head over to <br />
-[Readme for Contracts](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/Contracts/README.md) <br />
-[Readme for JSClients](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/readme.md)
+[Readme for Contracts](https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/Contracts/README.md) <br />
+[Readme for JSClients](https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/readme.md)
