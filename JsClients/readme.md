@@ -70,11 +70,11 @@ npm run testTooLatePayBackFlow 22 name AwesomeNFT d10359a72bdf42adbe6067b4e7c1c1
 
 Readme for mainContract flow:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/readme.md
 
 Readme for tooLate liquidate flow:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript/readme.md
 
 
 ## Test JsClients Individually

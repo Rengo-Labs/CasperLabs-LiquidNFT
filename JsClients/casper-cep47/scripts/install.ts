@@ -35,7 +35,7 @@ const {
 } = process.env;
 
 const TOKEN_NAME = "LNFT test";
-const TOKEN_META = new  Map<string,string>().set("company name","Scytalelabs");
+const TOKEN_META = new  Map<string,string>().set("company name","Rengo Labs");
 const TOKEN_SYMBOL = "LNFT";
 const CONTRACT_NAME = "LNFT";
 const INSTALL_PAYMENT_AMOUNT = "200000000000";
