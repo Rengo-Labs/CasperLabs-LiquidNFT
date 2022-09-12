@@ -104,6 +104,7 @@ You can run this commands to build individual smart contracts.
 ```
 make build-contract-liquid-helper
 make build-contract-liquid-locker
+make build-contract-liquid-factory
 ```
 ### Note: High processing power is required to run test cases otherwise you may face errors like
 ```
@@ -118,14 +119,23 @@ You can run this commands to build individual smart contracts.
 ```
 make test-liquid-helper
 make test-liquid-locker
+make test-liquid-factory
 ```
 
 #### Run All Smart Contracts
 
-Run this command to build & test all smart contract.
+Run this command to build all smart contract.
 
 ```
 make all
+```
+
+#### Test All Smart Contracts
+
+Run this command to build all smart contract.
+
+```
+make test-all
 ```
 
 ### Deploying Liquid Helper contract manually
