@@ -122,9 +122,9 @@ make test-liquid-locker
 make test-liquid-factory
 ```
 
-#### Run All Smart Contracts
+#### Run All Smart Contracts And Generate Keys
 
-Run this command to build all smart contract.
+Run this command to build all smart contract and generate keys.
 
 ```
 make all
@@ -137,7 +137,6 @@ Run this command to build all smart contract.
 ```
 make test-all
 ```
-
 ### Deploying Liquid Helper contract manually
 
 If you need to deploy the `Liquid Helper` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Helper contract`.
@@ -148,11 +147,10 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 10000000000 \
+    --payment-amount 100000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="contract_name:string='contract_name'"
 ```
-
 ## Entry Point Methods <a id="LiquidHelper-entry-point-methods"></a>
 
 Following are the LiquidityHelper's entry point methods.
@@ -302,7 +300,7 @@ This method **returns** `U256`.
 
 ### Deploying Liquid Locker contract manually
 
-If you need to deploy the `Liquid Locker` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Locker contract`.
+If you need to deploy the `Liquid Locker` contract manually you need to pass some parameters. Following is the command to deploy the `Liquid Locker contract`.
 
 ```bash
 sudo casper-client put-deploy \
@@ -310,33 +308,30 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 10000000000 \
+    --payment-amount 170000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
-    --session-arg="contract_name:string='contract_name'"
-    --session-arg="contract_name:string='contract_name'"
-    --session-arg="contract_name:string='contract_name'"
     --session-arg="trustee_multisig:Key='trustee-multisig-hash'"
     --session-arg="payment_token:Key='payment-token-hash'"
+    --session-arg="contract_name:string='contract_name'"
 ```
-
 ## Entry Point methods <a id="LiquidLocker-entry-point-methods"></a>
 
-Following are the LiquidityLocker's entry point methods.
+Following are the LiquidLocker's entry point methods.
 
 - #### initialize <a id="LiquidLocker-initialize"></a>
   This is a call made by the constructor to set up variables on a new locker. This is essentially equivalent to a constructor, but for our gas saving cloning operation instead. This may also be used in locker-reuse in version 2.
 
 Following is the table of parameters.
 
-| Parameter Name | Type      |
-| -------------- | --------- |
-| token_id       | Vec<U256> |
-| token_address  | Key       |
-| token_owner    | Key       |
-| floor_asked    | U256      |
-| total_asked    | U256      |
-| payment_time   | U256      |
-| payment_rate   | U256      |
+| Parameter Name | Type        |
+| -------------- | ----------- |
+| token_id       | Vec`<U256>` |
+| token_address  | Key         |
+| token_owner    | Key         |
+| floor_asked    | U256        |
+| total_asked    | U256        |
+| payment_time   | U256        |
+| payment_rate   | U256        |
 
 This method **returns** nothing.
 
@@ -516,6 +511,315 @@ Following is the table of parameters.
 This method **returns** `U256`.
 
 - #### penalty_amount <a id="LiquidLocker-penalty-amount"></a>
+  Public users can add tokens to the pool to be used for the loan. The contributions for each user along with the total are recorded for splitting funds later. If a user contributes up to the maximum asked on a loan, they will become the sole provider (See users_increase and reached_total for functionality on becoming the sole provider). The sole provider will receive the token instead of the trusted multisig in the case if a liquidation.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| token_amount   | U256 |
+| token_holder   | Key  |
+
+This method **returns** `(U256, U256)`.
+### Deploying Liquid Factory contract manually
+
+If you need to deploy the `Liquid Factory` contract manually you need to pass some parameters. Following is the command to deploy the `Liquid Factory contract`.
+
+```bash
+sudo casper-client put-deploy \
+    --chain-name chain_name \
+    --node-address http://$NODE_ADDRESS:7777/ \
+    --secret-key path_to_secret_key.pem \
+    --session-path path_to_wasm_file \
+    --payment-amount 450000000000 \
+    --session-arg="public_key:public_key='Public Key In Hex'" \
+    --session-arg="default_count:U256='Default Count'"
+    --session-arg="default_token:Key='default_token address'"
+    --session-arg="default_target:Key='default_target address'"
+    --session-arg="contract_name:string='contract_name'"
+```
+## Entry Point methods <a id="LiquidFactory-entry-point-methods"></a>
+
+Following are the LiquidFactory's entry point methods.
+
+- #### update_master <a id="LiquidFactory-update-master"></a>
+  Transfer master permission.
+
+Following is the table of parameters.
+
+| Parameter Name | Type|
+| -------------- | --- |
+| new_master     | Key |
+
+This method **returns** nothing.
+
+- #### revoke_master <a id="LiquidFactory-revoke-master"></a>
+  Destroy Master functionality.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** nothing.
+
+- #### create_liquid_locker <a id="LiquidFactory-create-liquid-locker"></a>
+  Call into initialize for the locker to begin the LiquidNFT loan process. Transfer the NFT the user wants use for the loan into the locker.
+
+Following is the table of parameters.
+
+| Parameter Name | Type        |
+| -------------- | ----------- |
+| token_id       | Vec`<U256>` |
+| token_address  | Key         |
+| floor_asked    | U256        |
+| total_asked    | U256        |
+| payment_time   | U256        |
+| payment_rate   | U256        |
+| payment_token  | Key         |
+
+This method **returns** `(Key,Key)`.
+
+- #### create_empty_locker <a id="LiquidFactory-create-empty-locker"></a>
+  Creating an empty locker without any liquidity.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| payment_token  | Key  |
+
+This method **returns** `(Key,Key)`.
+
+- #### contribute_to_locker <a id="LiquidFactory-contribute-to-locker"></a>
+  Call contributeToLocker. Factory acts as a middle man between the user and the locker. We do this so that the user only has to approve the factory and not each new locker.
+
+Following is the table of parameters.
+
+| Parameter Name   | Type |
+| ---------------- | ---- |
+| lockers_address  | Key  |
+| payment_amount   | U256 |
+
+This method **returns** `(U256,U256)`.
+
+- #### donate_to_locker <a id="LiquidFactory-donate-to-locker"></a>
+  Give tokens to a locker. These tokens do not go toward paying off the loan, they are instead distributed among the contributors for the loan. The result of this is that the value is transferred to the contributors not the owner because it does not deduct from the balance the owner owes.
+
+Following is the table of parameters.
+
+| Parameter Name   | Type |
+| ---------------- | ---- |
+| lockers_address  | Key  |
+| donation_amount  | U256 |
+
+This method **returns** nothing.
+
+- #### payback_to_locker <a id="LiquidFactory-payback-to-locker"></a>
+  Call paybackToLocker. Factory acts as a middle man between the user and the locker. We do this so that the user only has to approve the factory and not each new locker.
+
+Following is the table of parameters.
+
+| Parameter Name   | Type |
+| ---------------- | ---- |
+| lockers_address  | Key  |
+| payment_amount   | U256 |
+
+This method **returns** nothing.
+
+- #### initialize <a id="LiquidFactory-initialize"></a>
+  This is a call made by the constructor to set up variables on a new locker. This is essentially equivalent to a constructor, but for our gas saving cloning operation instead. This may also be used in locker-reuse in version 2.
+
+Following is the table of parameters.
+
+| Parameter Name | Type        |
+| -------------- | ----------- |
+| token_id       | Vec`<U256>` |
+| token_address  | Key         |
+| token_owner    | Key         |
+| floor_asked    | U256        |
+| total_asked    | U256        |
+| payment_time   | U256        |
+| payment_rate   | U256        |
+
+This method **returns** nothing.
+
+- #### liquidate_locker <a id="LiquidFactory-liquidate-locker"></a>
+  If the owner has missed payments by 7 days this call will transfer the NFT to either the singleProvider address or the trusted multisig to be auctioned.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** nothing.
+
+- #### claim_interest_single <a id="LiquidFactory-claim-interest-single"></a>
+  Claim payed back tokens as a single contributor.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** nothing.
+
+- #### claim_interest_public <a id="LiquidFactory-claim-interest-public"></a>
+  Claim payed back tokens as with multiple contributors. We need 2 functions because we cannot wipe all the contributions of users before someone became the sole contributor.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** nothing.
+
+- #### decrease_payment_time <a id="LiquidFactory-decrease-payment-time"></a>
+  During the contribution phase, the owner can decrease the duration of the loan. The owner can only decrease the loan to a shorter duration, he cannot make it longer once the contribution phase has started.
+
+Following is the table of parameters.
+
+| Parameter Name   | Type |
+| ---------------- | ---- |
+| new_payment_rate | U256 |
+
+This method **returns** nothing.
+
+- #### increase_payment_rate <a id="LiquidFactory-increase-payment-rate"></a>
+  During the contribution phase, the owner can increase the rate they will pay for the loan. The owner can only increase the rate to make the deal better for contributors, he cannot decrease it.
+
+Following is the table of parameters.
+
+| Parameter Name   | Type |
+| ---------------- | ---- |
+| new_payment_rate | U256 |
+
+This method **returns** nothing.
+
+- #### enable_locker <a id="LiquidFactory-enable-locker"></a>
+  If the floor is reached early. The owner can also prepay an amount to pay off some of the earnings at enable time. The locker owner owes the earnings linearly until the end, then all of the actual loan plus any penalties are due at the end.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| prepay_amount  | U256 |
+
+This method **returns** nothing.
+
+- #### disable_locker <a id="LiquidFactory-disable-locker"></a>
+  If the floor asked was not reached during contributions, this function will return the nft to the owner and allow all the contributors to claim their funds back.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** nothing.
+
+- #### rescue_locker <a id="LiquidFactory-rescue-locker"></a>
+  There are a couple edge cases with extreme payment rates that cause enableLocker to revert. These are never callable on our UI and doing so would require a manual transaction. This function will disable a locker in this senario, allow contributors to claim their money and transfer the NFT back to the owner. Only the team multisig has permission to do this.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** nothing.
+
+- #### refund_due_disabled <a id="LiquidFactory-refund-due-disabled"></a>
+  Allow users to claim funds when a locker is disabled.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| refund_address | Key  |
+
+This method **returns** nothing.
+
+- #### refund_due_single <a id="LiquidFactory-refund-due-single"></a>
+  Allow users to claim funds when a someone kicks them out to become the single provider.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| refund_address | Key  |
+
+This method **returns** nothing.
+
+- #### donate_funds <a id="LiquidFactory-donate-funds"></a>
+  Someone can add funds to the locker and they will be split among the contributors. This does not count as a payment on the loan.
+
+Following is the table of parameters.
+
+| Parameter Name  | Type |
+| --------------- | ---- |
+| donation_amount | U256 |
+
+This method **returns** nothing.
+
+- #### pay_back_funds <a id="LiquidFactory-pay-back-funds"></a>
+  Locker owner can payback funds. Penalties are given if the owner does not pay the earnings linearally over the loan duration. If the owner pays back the earnings, loan amount, and penalties aka fully pays off the loan they will be transfered their nft back.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| payment_amount | U256 |
+
+This method **returns** nothing.
+
+- #### calculate_epoch <a id="LiquidFactory-calculate-epoch"></a>
+  Calculate how many sends should be added before the next payoff is due based on payment amount.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| total_value    | U256 |
+| payment_time   | U256 |
+| payment_rate   | U256 |
+
+This method **returns** `U256`.
+
+- #### calculate_paybacks <a id="LiquidFactory-calculate-paybacks"></a>
+  Calulate how much the usage fee takes off a payments, and how many tokens are due per second of loan (epochPayback is amount of tokens to extend loan by 1 second. Only need to pay off earnings).
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+| total_value    | U256 |
+| payment_time   | U256 |
+| payment_rate   | U256 |
+
+This method **returns** `(U256, U256, U256)`.
+
+- #### get_late_days <a id="LiquidFactory-get-late-days"></a>
+  Helper for the days math of calcualte penalties. Returns +1 per day before the 4th day and +2 for each day after the 4th day.
+
+Following is the table of parameters.
+
+| Parameter Name | Type |
+| -------------- | ---- |
+
+This method **returns** `U256`.
+
+- #### penalty_amount <a id="LiquidFactory-penalty-amount"></a>
+  Public pure accessor for get_penalty_amount.
+
+Following is the table of parameters.
+
+| Parameter Name   | Type |
+| ---------------- | ---- |
+| total_collected  | U256 |
+| late_days_amount | U256 |
+
+This method **returns** `U256`.
+
+- #### penalty_amount <a id="LiquidFactory-penalty-amount"></a>
   Public users can add tokens to the pool to be used for the loan. The contributions for each user along with the total are recorded for splitting funds later. If a user contributes up to the maximum asked on a loan, they will become the sole provider (See users_increase and reached_total for functionality on becoming the sole provider). The sole provider will receive the token instead of the trusted multisig in the case if a liquidation.
 
 Following is the table of parameters.
