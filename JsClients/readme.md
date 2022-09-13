@@ -3,26 +3,7 @@
 This folder have cep47, erc20 Jsclients and scripts for LiquidNFT-Factory and LiquidNFT JsClients
 
 ## Prequisites
-
-1) Go to JsClientsForFrontend/LiquidNFT folder and npm i in it.
-
-2) Go to JsClientsForFrontend/LiquidNFT-Factory folder and npm i in it.
-
-3) Go to casper-cep47 folder and npm i in it.
-
-4) Go to LiquidNFT folder and npm i in it.
-
-5) Go to LiquidNFT-Factory folder and npm i in it.
-
-6) Go to uniswapV2Core-erc20 folder and npm i in it.
-
-7) Go to LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript folder and npm i in it.
-
-8) Go to LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript folder and npm i in it.
-
-9) You can create key by command make all and it will be copied to all designed folders
-
-10) Fund the key to do deploymnents
+Make sure you have gone through the [Prerequisites](../readme.md#install-the-prerequisites) section before proceeding.
 
 
 ## Test LiquidNFT-Factory Flows

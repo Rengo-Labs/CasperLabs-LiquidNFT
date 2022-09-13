@@ -97,15 +97,17 @@ casper-client keygen keys
 
 The keys can be funded from casper live website [testnet faucet](https://testnet.cspr.live/tools/faucet). Requires chrome browser and the casper signer extension. You should import the keys that were generated in the previous step
 
-## Build all the contracts and generate all required artifacts
+## Build all the contracts, jsclients, keys and generate all other required artifacts
+### CAUTION: Make all will delete any keys already present so make sure to backup any keys before you run this command.
+```
+make prepare
+```
 ```
 make all
 ```
 The above command also places all the keys in the folders as required. So make sure you have the key funded before running this command.
 If you run out of funds and require a new pair of keys you can run the generate-key script target.
-
 ```
-make prepare
 make generate-key
 ```
 
