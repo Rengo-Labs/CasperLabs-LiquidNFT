@@ -28,8 +28,8 @@ import { concat } from '@ethersproject/bytes';
 import blake from "blakejs";
 
 class CEP47Client {
-  private contractHash: string;
-  private contractPackageHash: string;
+  private contractHash: string= "cep47";
+  private contractPackageHash: string= "cep47";
   private namedKeys: {
     balances: string;
     metadata: string;
@@ -46,7 +46,17 @@ class CEP47Client {
     private nodeAddress: string,
     private chainName: string,
     private eventStreamAddress?: string
-  ) {}
+  ) {
+    this.namedKeys= {
+      balances:"null",
+      metadata: "null",
+      ownedTokensByIndex: "null",
+      owners: "null",
+      issuers: "null",
+      paused: "null"
+    }; 
+  }
+
 
   public async install(
     keys: Keys.AsymmetricKey,

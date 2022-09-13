@@ -45,25 +45,24 @@ Use the script file in package.json to perform the testing
 
 Use the following commands to perform testing
 ```
-npm run deployContract
-npm run calculateEpoch
-npm run calculatePaybacks
+npm run calculateEpoch <totalValue> <paymentRate> <paymentTime>
+npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>
 npm run claimInterestPublic
 npm run claimInterestSingle
 npm run rescueLocker
 npm run disableLocker
-npm run donateFunds
-npm run enableLocker
+npm run donateFunds <donationAmount>
+npm run enableLocker <prePaymentAmount>
 npm run getLateDays
-npm run increasePaymentRate
-npm run decreasePaymentRate
-npm run initialize
-npm run makeContribution
+npm run increasePaymentRate <newPaymentRate>
+npm run decreasePaymentTime <newPaymentRate>
+npm run initialize <tokenId> <cep47PackageHash> <tokenOwnerAccountHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate>
+npm run makeContribution <tokenAmount> <tokenHolder>
 npm run liquidateLocker
-npm run payBackFunds
-npm run penaltyAmount
-npm run refundDueDisabled
-npm run refundDueSingle
+npm run payBackFunds <paymentAmount>
+npm run penaltyAmount <totalCollected> <lateDaysAmount>
+npm run refundDueDisabled <refundAddressAccountHash>
+npm run rrefundDueSingle <refundAddressAccountHash>
 
 ```
 
@@ -73,4 +72,4 @@ CONFIGURE .env BEFORE TESTING
 
 go to js client folder
 run command npm ci
-Copy keys folder to Liquid NFT folder OR generate key using keygen(if using keygen funds account)
+Copy keys folder to LiquidNFT folder OR generate key using keygen(if using keygen funds account)

@@ -10,6 +10,6 @@ liquidNFT.calculatePaybacks(
     "Script calculatePaybacks comments": {
         "Description" : "use it to calculate paybacks",
         "Syntax" : "npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>",
-        "Example" : "npm run calculatePaybacks "
+        "Example" : "npm run calculatePaybacks 100 100 100"
     },
 */

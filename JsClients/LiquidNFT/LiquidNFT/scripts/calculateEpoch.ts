@@ -10,6 +10,6 @@ liquidNFT.calculateEpoch(
     "Script calculateEpoch comments": {
         "Description" : "use it to calculate epoch",
         "Syntax" : "npm run calculateEpoch <totalValue> <paymentRate> <paymentTime>",
-        "Example" : "npm run calculateEpoch "
+        "Example" : "npm run calculateEpoch 100 100 100"
     },
 */

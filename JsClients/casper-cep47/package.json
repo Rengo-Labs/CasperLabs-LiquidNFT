@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "install": "ts-node scripts/install.ts",
+    "test:install": "ts-node scripts/install.ts",
     "test:installed": "ts-node scripts/installed.ts",
     "mintOneToken": "ts-node scripts/mintOneToken.ts",
     "approveOneToken": "ts-node scripts/approveOneToken.ts",
@@ -17,12 +17,12 @@
   "Script mintOneToken comments": {
     "Description" : "use it to mint only one NFT with given ID, fails with user error 3 if id is repeated",
     "Syntax" : "npm run mintOneToken <tokenId> <key> <value>",
-    "Example" : "npm run mintOneToken 1 name AwesomeNFT"
+    "Example" : "npm run mintOneToken 2 name AwesomeNFT"
   },
   "Script approveToken comments": {
     "Description" : "use it to approve one token for a given package-hash",
     "Syntax" : "npm run approveToken <package-hash> <tokenId>",
-    "Example" : "npm run approveToken 841f21fefb97f759a555255b0a414fda519c6deba4007c3a17ada7dc233552d8 0"
+    "Example" : "npm run approveOneToken 7a803911a6421e92fbe62d355927594d90e70756dfe7c9b0e22fd908ff746929 2"
   },
   "Script balanceOf comments": {
     "Description" : "use it to check balance against a specified user key files",

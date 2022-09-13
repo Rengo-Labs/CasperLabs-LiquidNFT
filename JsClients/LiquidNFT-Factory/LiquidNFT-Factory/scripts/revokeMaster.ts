@@ -9,3 +9,7 @@ liquidNFTfactory.revokeMaster();
         "Example" : "npm run revokeMaster"
     },
 */
+
+/*Flow to call this function 
+No function is required to call before calling this function
+*/

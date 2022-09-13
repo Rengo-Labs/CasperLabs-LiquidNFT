@@ -1,5 +1,5 @@
 {
-  "name": "LiquidNFT-JsClient",
+  "name": "LiquidNFT-JsClient-Scripts",
   "version": "0.0.0",
   "scripts": {
     "calculateEpoch": "ts-node LiquidNFT/scripts/calculateEpoch.ts",
@@ -12,7 +12,7 @@
     "enableLocker": "ts-node LiquidNFT/scripts/enableLocker.ts",
     "getLateDays": "ts-node LiquidNFT/scripts/getLateDays.ts",
     "increasePaymentRate": "ts-node LiquidNFT/scripts/increasePaymentRate.ts",
-    "decreasePaymentRate": "ts-node LiquidNFT/scripts/decreasePaymentRate.ts",
+    "decreasePaymentTime": "ts-node LiquidNFT/scripts/decreasePaymentTime.ts",
     "initialize": "ts-node LiquidNFT/scripts/initialize.ts",
     "makeContribution": "ts-node LiquidNFT/scripts/makeContribution.ts",
     "liquidateLocker": "ts-node LiquidNFT/scripts/liquidateLocker.ts",
@@ -22,100 +22,99 @@
     "refundDueSingle": "ts-node LiquidNFT/scripts/refundDueSingle.ts"
   },
   "Script calculateEpoch comments": {
-    "Description" : "use it to calculate epoch",
-    "Syntax" : "npm run calculateEpoch <totalValue> <paymentRate> <paymentTime>",
-    "Example" : "npm run calculateEpoch "
+    "Description": "use it to calculate epoch",
+    "Syntax": "npm run calculateEpoch <totalValue> <paymentRate> <paymentTime>",
+    "Example": "npm run calculateEpoch 100 100 100"
   },
   "Script calculatePaybacks comments": {
-    "Description" : "use it to calculate paybacks",
-    "Syntax" : "npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>",
-    "Example" : "npm run calculatePaybacks "
+    "Description": "use it to calculate paybacks",
+    "Syntax": "npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>",
+    "Example": "npm run calculatePaybacks 100 100 100"
   },
   "Script claimInterestPublic comments": {
-    "Description" : "use it to claim interest public of the locker",
-    "Syntax" : "npm run claimInterestPublic",
-    "Example" : "npm run claimInterestPublic"
+    "Description": "use it to claim interest public of the locker",
+    "Syntax": "npm run claimInterestPublic",
+    "Example": "npm run claimInterestPublic"
   },
   "Script claimInterestSingle comments": {
-    "Description" : "use it to claim interest single of the locker",
-    "Syntax" : "npm run claimInterestSingle",
-    "Example" : "npm run claimInterestSingle"
+    "Description": "use it to claim interest single of the locker",
+    "Syntax": "npm run claimInterestSingle",
+    "Example": "npm run claimInterestSingle"
   },
   "Script decreasePaymentTime comments": {
-    "Description" : "use it to decrease Payment Rate to the locker",
-    "Syntax" : "npm run decreasePaymentTime <newPaymentRate>",
-    "Example" : "npm run decreasePaymentTime "
+    "Description": "use it to decrease payment time to the locker",
+    "Syntax": "npm run decreasePaymentTime <newPaymentRate>",
+    "Example": "npm run decreasePaymentTime 100"
   },
   "Script disableLocker comments": {
-    "Description" : "use it to disable the locker",
-    "Syntax" : "npm run disableLocker",
-    "Example" : "npm run disableLocker"
+    "Description": "use it to disable the locker",
+    "Syntax": "npm run disableLocker",
+    "Example": "npm run disableLocker"
   },
   "Script donateFunds comments": {
-    "Description" : "use it to donate funds to the locker",
-    "Syntax" : "npm run donateFunds <donationAmount>",
-    "Example" : "npm run donateFunds "
+    "Description": "use it to donate funds to the locker",
+    "Syntax": "npm run donateFunds <donationAmount>",
+    "Example": "npm run donateFunds 100"
   },
   "Script enableLocker comments": {
-    "Description" : "use it to enable the locker",
-    "Syntax" : "npm run enableLocker <prePaymentAmount>",
-    "Example" : "npm run enableLocker "
+    "Description": "use it to enable the locker",
+    "Syntax": "npm run enableLocker <prePaymentAmount>",
+    "Example": "npm run enableLocker 1000000000"
   },
   "Script getLateDays comments": {
-    "Description" : "use it to get late days ",
-    "Syntax" : "npm run getLateDays",
-    "Example" : "npm run getLateDays"
+    "Description": "use it to get late days ",
+    "Syntax": "npm run getLateDays",
+    "Example": "npm run getLateDays"
   },
   "Script increasePaymentRate comments": {
-    "Description" : "use it to increase Payment Rate to the locker",
-    "Syntax" : "npm run increasePaymentRate <newPaymentRate>",
-    "Example" : "npm run increasePaymentRate "
+    "Description": "use it to increase Payment Rate to the locker",
+    "Syntax": "npm run increasePaymentRate <newPaymentRate>",
+    "Example": "npm run increasePaymentRate 100"
   },
   "Script initialize comments": {
-    "Description" : "use it to initialize locker",
-    "Syntax" : "npm run initialize <tokenId> <cep47PackageHash> <tokenOwnerAccountHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate>",
-    "Example" : "npm run initialize 1 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1 1000000000 5000000000 86400000 100"
+    "Description": "use it to initialize locker",
+    "Syntax": "npm run initialize <tokenId> <cep47PackageHash> <tokenOwnerAccountHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate>",
+    "Example": "npm run initialize 1 737588742efd608e68a1ae1bde3955d61e1d3f72b0e85f7755efe2f14363b943 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1 1000000000 5000000000 86400000 100"
   },
   "Script liquidateLocker comments": {
-    "Description" : "use it to liquidate the locker",
-    "Syntax" : "npm run liquidateLocker",
-    "Example" : "npm run liquidateLocker"
+    "Description": "use it to liquidate the locker",
+    "Syntax": "npm run liquidateLocker",
+    "Example": "npm run liquidateLocker"
   },
   "Script makeContribution comments": {
-    "Description" : "use it to make contribution to locker",
-    "Syntax" : "npm run makeContribution <tokenAmount> <tokenHolder>",
-    "Example" : "npm run makeContribution "
+    "Description": "use it to make contribution to locker",
+    "Syntax": "npm run makeContribution <tokenAmount> <tokenHolder>",
+    "Example": "npm run makeContribution 100 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script payBackFunds comments": {
-    "Description" : "use it to pay back funds to the locker",
-    "Syntax" : "npm run payBackFunds <paymentAmount>",
-    "Example" : "npm run payBackFunds "
+    "Description": "use it to pay back funds to the locker",
+    "Syntax": "npm run payBackFunds <paymentAmount>",
+    "Example": "npm run payBackFunds 100"
   },
   "Script penaltyAmount comments": {
-    "Description" : "use it to check penaltyAmount",
-    "Syntax" : "npm run penaltyAmount <totalCollected> <lateDaysAmount>",
-    "Example" : "npm run penaltyAmount "
+    "Description": "use it to check penaltyAmount",
+    "Syntax": "npm run penaltyAmount <totalCollected> <lateDaysAmount>",
+    "Example": "npm run penaltyAmount 100 100"
   },
   "Script refundDueDisabled comments": {
-    "Description" : "use it to disable due refund",
-    "Syntax" : "npm run refundDueDisabled <refundAddressAccountHash>",
-    "Example" : "npm run refundDueDisabled 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
+    "Description": "use it to disable due refund",
+    "Syntax": "npm run refundDueDisabled <refundAddressAccountHash>",
+    "Example": "npm run refundDueDisabled 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script refundDueSingle comments": {
-    "Description" : "use it to refundDueSingle",
-    "Syntax" : "npm run rrefundDueSingle <refundAddressAccountHash>",
-    "Example" : "npm run refundDueSingle 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
+    "Description": "use it to refundDueSingle",
+    "Syntax": "npm run rrefundDueSingle <refundAddressAccountHash>",
+    "Example": "npm run refundDueSingle 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script rescueLocker comments": {
-    "Description" : "use it to rescue the locker",
-    "Syntax" : "npm run rescueLocker",
-    "Example" : "npm run rescueLocker"
+    "Description": "use it to rescue the locker",
+    "Syntax": "npm run rescueLocker",
+    "Example": "npm run rescueLocker"
   },
   "engine": {
     "node": "16.14.0",
     "npm": "8.10.0"
   },
-  
   "dependencies": {
     "casper-js-sdk": "^2.9.1",
     "cookie-parser": "~1.4.4",

@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+      // ...
+    },
+    "include": ["../utils"],
+    "exclude": ["node_modules", "src/**/*.spec.ts"]
+  }
+  
