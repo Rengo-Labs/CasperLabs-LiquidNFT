@@ -61,17 +61,16 @@ test-all:
 
 clean:
 	cargo clean
-	rm -rf liquid-factory/liquid-factory-tests/wasm/*.wasm
-	rm -rf liquid-helper/liquid-helper-tests/wasm/*.wasm
-	rm -rf liquid-locker/liquid-locker-tests/wasm/*.wasm
-	rm -rf ../JsClients/LiquidNFT/LiquidNFT/wasm/*.wasm
-	rm -rf ../JsClients/casper-cep47/wasm/*.wasm
-	rm -rf ../JsClients/casper-cep47/keys
-	rm -rf ../JsClients/LiquidNFT/LiquidNFT/keys
-	rm -rf ../JsClients/LiquidNFT-Factory/LiquidNFT-Factory/keys
-	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/keys
-	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/keys
-	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/wasm/*.wasm
+	rm -rf ${liquid_factory_address}/wasm/*.wasm
+	rm -rf ${liquid_locker_address}/wasm/*.wasm
+	rm -rf ${liquid_helper_address}/wasm/*.wasm
+	rm -rf ${js_client_lnft_address}/wasm/*.wasm
+	rm -rf ${js_client_cep47_address}/wasm/*.wasm
+	rm -rf ${js_client_cep47_address}/keys
+	rm -rf ${js_client_lnft_address}/keys
+	rm -rf ${js_client_lnft_factory_address}/keys
+	rm -rf ${js_client_erc20_address}/keys
+	rm -rf ${js_client_erc20_address}/wasm/*.wasm
 	rm -rf ${js_client_lnft_factory-flow-tests_address}/keys
 	rm -rf keys
 	rm -rf Cargo.lock
