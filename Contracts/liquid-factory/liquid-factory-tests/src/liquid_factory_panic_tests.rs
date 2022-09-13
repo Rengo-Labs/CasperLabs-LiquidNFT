@@ -3,7 +3,9 @@ use std::collections::BTreeMap;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use test_env::{TestContract, TestEnv};
 
-use crate::liquid_factory_instance::LIQUIDFACTORYInstance;
+use crate::liquid_factory_instance::{now, LIQUIDFACTORYInstance};
+
+const ONE_MINUTE_IN_MS: u64 = 60000;
 
 fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
@@ -21,7 +23,7 @@ fn deploy_cep47(env: &TestEnv, owner: AccountHash, meta: BTreeMap<String, String
             "symbol" => "CEP-47",
             "meta" => meta
         },
-        0,
+        now(),
     )
 }
 
@@ -37,7 +39,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(0)
         },
-        0,
+        now(),
     )
 }
 
@@ -57,6 +59,7 @@ fn deploy() -> (TestEnv, AccountHash, LIQUIDFACTORYInstance, TestContract) {
         default_count,
         default_token,
         default_target,
+        now(),
     );
 
     (env, owner, instance, erc20)
@@ -101,7 +104,7 @@ fn init() -> (
             "to" => Key::Account(owner),
             "amount" => U256::from(1_000_000_000_000u64)
         },
-        0,
+        now(),
     );
 
     cep47.call_contract(
@@ -112,7 +115,7 @@ fn init() -> (
             "token_ids" => token_ids.clone(),
             "token_metas" => token_metas,
         },
-        0,
+        now(),
     );
 
     erc20.call_contract(
@@ -122,7 +125,7 @@ fn init() -> (
             "spender" => Key::from(factory_instance.package_hash()),
             "amount" => U256::from(1_000_000_000_000u64),
         },
-        0,
+        now(),
     );
 
     cep47.call_contract(
@@ -132,7 +135,7 @@ fn init() -> (
             "spender" => Key::from(factory_instance.package_hash()),
             "token_ids" => token_ids.clone(),
         },
-        0,
+        now(),
     );
 
     factory_instance.create_liquid_locker(
@@ -144,7 +147,7 @@ fn init() -> (
         payment_time,
         payment_rate,
         payment_token,
-        0,
+        now(),
     );
 
     let (lockers_contract_address, lockers_package_address): (Key, Key) =
@@ -175,7 +178,10 @@ fn should_not_be_able_to_contribute_after_contribution_phase_end() {
     ) = init();
     let payment_amount: U256 = 100_000.into();
 
-    const TIME: u64 = 500_000_000;
-
-    factory_instance.contribute_to_locker(owner, lockers_package_address, payment_amount, TIME);
+    factory_instance.contribute_to_locker(
+        owner,
+        lockers_package_address,
+        payment_amount,
+        now() + (ONE_MINUTE_IN_MS * 500_000_000),
+    );
 }

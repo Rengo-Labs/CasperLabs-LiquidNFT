@@ -1,6 +1,6 @@
 wasm_strip = wasm-strip target/wasm32-unknown-unknown/release/*.wasm 2>/dev/null | true
 
-src_target = Contracts/target/wasm32-unknown-unknown/release
+src_target = target/wasm32-unknown-unknown/release
 liquid_factory_address = Contracts/liquid-factory/liquid-factory-tests
 liquid_locker_address = Contracts/liquid-locker/liquid-locker-tests
 liquid_helper_address = Contracts/liquid-helper/liquid-helper-tests
@@ -9,6 +9,13 @@ js_client_lnft_factory-flow-tests_address= JsClients/LiquidNFT-Factory-Tests-Scr
 js_client_lnft_address =  JsClients/LiquidNFT/LiquidNFT
 js_client_cep47_address = JsClients/casper-cep47
 js_client_erc20_address = JsClients/uniswapV2Core-erc20/ERC20
+js_client_uniswapV2Core-erc20 = JsClients/uniswapV2Core-erc20
+js_client_main_contract_flow_script = JsClients/LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript
+js_client_too_late_liquidate_flow_script = JsClients/LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript
+js_client_for_frontend_liquid_nft = JsClientsForFrontend/LiquidNFT
+js_client_for_frontend_liquid_nft_factory = JsClientsForFrontend/LiquidNFT-Factory
+LiquidNFT_node_modules = JsClients/LiquidNFT
+LiquidNFT_factory_node_modules = JsClients/LiquidNFT-Factory
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -54,7 +61,7 @@ test-liquid-locker:
 	make build-contract-liquid-locker && make copy-wasm-file-liquid-locker && make test-only-liquid-locker
 
 all:
-	make build-contract-liquid-factory && make build-contract-liquid-helper && make build-contract-liquid-locker && make copy-wasm-file-js-client && make generate-key
+	make build-contract-liquid-factory && make build-contract-liquid-helper && make build-contract-liquid-locker && make copy-wasm-file-js-client && make generate-key && make build-jsclients
 
 test-all:
 	make test-liquid-factory && make test-liquid-helper && make test-liquid-locker
@@ -62,17 +69,24 @@ test-all:
 clean:
 	cargo clean
 	rm -rf ${liquid_factory_address}/wasm/*.wasm
-	rm -rf ${liquid_helper_address}/wasm/*.wasm
 	rm -rf ${liquid_locker_address}/wasm/*.wasm
-	rm -rf ../JsClients/LiquidNFT/LiquidNFT/wasm/*.wasm
-	rm -rf ../JsClients/casper-cep47/wasm/*.wasm
-	rm -rf ../JsClients/casper-cep47/keys
-	rm -rf ../JsClients/LiquidNFT/LiquidNFT/keys
-	rm -rf ../JsClients/LiquidNFT-Factory/LiquidNFT-Factory/keys
-	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/keys
-	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/keys
-	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/wasm/*.wasm
+	rm -rf ${liquid_helper_address}/wasm/*.wasm
+	rm -rf ${js_client_lnft_address}/wasm/*.wasm
+	rm -rf ${js_client_cep47_address}/wasm/*.wasm
+	rm -rf ${js_client_cep47_address}/keys
+	rm -rf ${js_client_lnft_address}/keys
+	rm -rf ${js_client_lnft_factory_address}/keys
+	rm -rf ${js_client_erc20_address}/keys
+	rm -rf ${js_client_erc20_address}/wasm/*.wasm
 	rm -rf ${js_client_lnft_factory-flow-tests_address}/keys
+	rm -rf ${LiquidNFT_factory_node_modules}/node_modules
+	rm -rf ${js_client_cep47_address}/node_modules
+	rm -rf ${LiquidNFT_node_modules}/node_modules
+	rm -rf ${js_client_uniswapV2Core-erc20}/node_modules
+	rm -rf ${js_client_main_contract_flow_script}/node_modules
+	rm -rf ${js_client_too_late_liquidate_flow_script}/node_modules
+	rm -rf ${js_client_for_frontend_liquid_nft}/node_modules
+	rm -rf ${js_client_for_frontend_liquid_nft_factory}/node_modules
 	rm -rf keys
 	rm -rf Cargo.lock
 generate-key:
@@ -98,4 +112,11 @@ git-clear:
 
 
 build-jsclients:
-	cd ${js_client_lnft_factory_address}/ && npm ci
+	cd ${js_client_lnft_factory_address}/ && npm cache clean --force && npm ci
+	cd ${js_client_cep47_address}/ && npm cache clean --force && npm ci
+	cd ${js_client_lnft_address}/ && npm cache clean --force && npm ci
+	cd ${js_client_uniswapV2Core-erc20}/ && npm cache clean --force && npm ci
+	cd ${js_client_main_contract_flow_script}/&& npm cache clean --force && npm ci
+	cd ${js_client_too_late_liquidate_flow_script}/&& npm cache clean --force && npm ci
+	cd ${js_client_for_frontend_liquid_nft}/&& npm cache clean --force && npm ci
+	cd ${js_client_for_frontend_liquid_nft_factory}/&& npm cache clean --force && npm ci
