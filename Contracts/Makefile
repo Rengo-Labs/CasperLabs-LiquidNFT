@@ -1,11 +1,14 @@
 wasm_strip = wasm-strip target/wasm32-unknown-unknown/release/*.wasm 2>/dev/null | true
 
-src_target = target/wasm32-unknown-unknown/release
-liquid_factory_address = liquid-factory/liquid-factory-tests
-liquid_locker_address = liquid-locker/liquid-locker-tests
-liquid_helper_address = liquid-helper/liquid-helper-tests
-js_client_lnft_address =  ../JsClients/LiquidNFT/LiquidNFT
-js_client_cep47_address = ../JsClients/casper-cep47
+src_target = Contracts/target/wasm32-unknown-unknown/release
+liquid_factory_address = Contracts/liquid-factory/liquid-factory-tests
+liquid_locker_address = Contracts/liquid-locker/liquid-locker-tests
+liquid_helper_address = Contracts/liquid-helper/liquid-helper-tests
+js_client_lnft_factory_address =  JsClients/LiquidNFT-Factory/LiquidNFT-Factory
+js_client_lnft_factory-flow-tests_address= JsClients/LiquidNFT-Factory-Tests-Scripts
+js_client_lnft_address =  JsClients/LiquidNFT/LiquidNFT
+js_client_cep47_address = JsClients/casper-cep47
+js_client_erc20_address = JsClients/uniswapV2Core-erc20/ERC20
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -38,10 +41,8 @@ copy-wasm-file-liquid-locker:
 	cp ${src_target}/erc20-token.wasm ${liquid_locker_address}/wasm
 
 copy-wasm-file-js-client:
-	cp ${src_target}/liquid-factory.wasm ${js_client_lnft_address}/wasm
-	cp ${src_target}/liquid-locker.wasm ${js_client_lnft_address}/wasm
-	cp ${src_target}/cep47-token.wasm ${js_client_lnft_address}/wasm
-	cp ${src_target}/erc20-token.wasm ${js_client_lnft_address}/wasm
+	cp ${src_target}/liquid-factory.wasm ${js_client_lnft_factory_address}/wasm
+	cp ${src_target}/erc20-token.wasm ${js_client_erc20_address}/wasm
 	cp ${src_target}/cep47-token.wasm ${js_client_cep47_address}/wasm
 	
 
@@ -60,18 +61,28 @@ test-all:
 
 clean:
 	cargo clean
-	rm -rf liquid-factory/liquid-factory-tests/wasm/*.wasm
-	rm -rf liquid-helper/liquid-helper-tests/wasm/*.wasm
-	rm -rf liquid-locker/liquid-locker-tests/wasm/*.wasm
+	rm -rf ${liquid_factory_address}/wasm/*.wasm
+	rm -rf ${liquid_helper_address}/wasm/*.wasm
+	rm -rf ${liquid_locker_address}/wasm/*.wasm
 	rm -rf ../JsClients/LiquidNFT/LiquidNFT/wasm/*.wasm
 	rm -rf ../JsClients/casper-cep47/wasm/*.wasm
 	rm -rf ../JsClients/casper-cep47/keys
 	rm -rf ../JsClients/LiquidNFT/LiquidNFT/keys
+	rm -rf ../JsClients/LiquidNFT-Factory/LiquidNFT-Factory/keys
+	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/keys
+	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/keys
+	rm -rf ../JsClients/uniswapV2Core-erc20/ERC20/wasm/*.wasm
+	rm -rf ${js_client_lnft_factory-flow-tests_address}/keys
+	rm -rf keys
 	rm -rf Cargo.lock
 generate-key:
 	casper-client keygen ./keys
 	cp -R ./keys ${js_client_cep47_address} 
+	cp -R ./keys ${js_client_lnft_factory_address}
+	cp -R ./keys ${js_client_lnft_factory-flow-tests_address}
 	cp -R ./keys ${js_client_lnft_address}
+	cp -R ./keys ${js_client_erc20_address}
+
 lint: clippy
 	cargo fmt --all
 
@@ -84,3 +95,7 @@ clippy:
 git-clear:
 	git rm -rf --cached .
 	git add .
+
+
+build-jsclients:
+	cd ${js_client_lnft_factory_address}/ && npm ci
