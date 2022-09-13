@@ -95,10 +95,22 @@ casper-client keygen keys
 ```
 ### Fund the key
 
-The keys can be funded from casper live website [testnet faucet](https://testnet.cspr.live/tools/faucet) <br />
-Requires chrome browser and the casper signer extension <br />
-You should import the keys that were generated in the previous step
+The keys can be funded from casper live website [testnet faucet](https://testnet.cspr.live/tools/faucet). Requires chrome browser and the casper signer extension. You should import the keys that were generated in the previous step
+
+## Build all the contracts and generate all required artifacts
+```
+make all
+```
+The above command also places all the keys in the folders as required. So make sure you have the key funded before running this command.
+If you run out of funds and require a new pair of keys you can run the generate-key script target.
+
+```
+make prepare
+make generate-key
+```
 
 Now head over to <br />
-[Readme for Contracts](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/Contracts/README.md) <br />
-[Readme for JSClients](https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/readme.md)
+[Readme for JSClients](JsClients/readme.md)
+The JSClients folder make it easier to interact with contracts with the help of automated scripts that do most of the heavy lifting. If you wish to manually test things out or want to deep dive into the contracts head over to the documentations page for contracts.
+
+[Readme for Contracts](Contracts/README.md) <br />
