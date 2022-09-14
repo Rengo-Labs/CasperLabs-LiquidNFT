@@ -14,6 +14,7 @@ js_client_main_contract_flow_script = JsClients/LiquidNFT-Factory-Tests-Scripts/
 js_client_too_late_liquidate_flow_script = JsClients/LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript
 js_client_for_frontend_liquid_nft = JsClientsForFrontend/LiquidNFT
 js_client_for_frontend_liquid_nft_factory = JsClientsForFrontend/LiquidNFT-Factory
+js_client_address = JsClients
 LiquidNFT_node_modules = JsClients/LiquidNFT
 LiquidNFT_factory_node_modules = JsClients/LiquidNFT-Factory
 
@@ -79,6 +80,10 @@ clean:
 	rm -rf ${js_client_erc20_address}/keys
 	rm -rf ${js_client_erc20_address}/wasm/*.wasm
 	rm -rf ${js_client_lnft_factory-flow-tests_address}/keys
+	rm -rf ${js_client_main_contract_flow_script}/keys
+	rm -rf ${js_client_too_late_liquidate_flow_script}/keys
+	rm -rf ${js_client_address}	
+
 	rm -rf ${LiquidNFT_factory_node_modules}/node_modules
 	rm -rf ${js_client_cep47_address}/node_modules
 	rm -rf ${LiquidNFT_node_modules}/node_modules
@@ -89,14 +94,29 @@ clean:
 	rm -rf ${js_client_for_frontend_liquid_nft_factory}/node_modules
 	rm -rf keys
 	rm -rf Cargo.lock
+
 generate-key:
+	rm -rf keys
+	rm -rf ${js_client_address}/keys	
+	rm -rf ${js_client_cep47_address}/keys
+	rm -rf ${js_client_lnft_address}/keys
+	rm -rf ${js_client_lnft_factory_address}/keys
+	rm -rf ${js_client_erc20_address}/keys
+	rm -rf ${js_client_lnft_factory-flow-tests_address}/keys
+	rm -rf ${js_client_main_contract_flow_script}/keys
+	rm -rf ${js_client_too_late_liquidate_flow_script}/keys
+	
+
+
 	casper-client keygen ./keys
 	cp -R ./keys ${js_client_cep47_address} 
 	cp -R ./keys ${js_client_lnft_factory_address}
 	cp -R ./keys ${js_client_lnft_factory-flow-tests_address}
 	cp -R ./keys ${js_client_lnft_address}
 	cp -R ./keys ${js_client_erc20_address}
-
+	cp -R ./keys ${js_client_main_contract_flow_script}
+	cp -R ./keys ${js_client_too_late_liquidate_flow_script}
+	cp -R ./keys ${js_client_address}	
 lint: clippy
 	cargo fmt --all
 
