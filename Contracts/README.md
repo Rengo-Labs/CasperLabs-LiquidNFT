@@ -26,62 +26,6 @@ Implementation of following contracts for the CasperLabs platform.
     - [Entry Point Methods](#LiquidLocker-entry-point-methods)
   
 
-### Install the prerequisites
-
-You can install the required software by issuing the following commands. If you are on an up-to-date Casper node, you probably already have all of the prerequisites installed so you can skip this step.
-
-#### Note: If any command fails try again by restarting the terminal to reset the enviornment variable.
-
-```bash
-# Update package repositories
-sudo apt update
-# Install the command-line JSON processor
-sudo apt install jq -y
-# Install rust
-# Choose cutomize intallation to install nightly version
-# Install the nightly version (by default stable toolchain is installed)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup install nightly
-# Check that nightly toolchain version is installed(this will list stable and nightly versions)
-rustup toolchain list
-# Set rust nightly as default
-rustup default nightly
-# Install wasm32-unknown-unknown
-rustup target add wasm32-unknown-unknown
-# Rust Version
-rustup --version
-# Install Cmake
-sudo apt-get -y install cmake
-Note:https://cgold.readthedocs.io/en/latest/first-step/installation.html
-# cmake Version
-cmake --version
-# Installing the Casper Crates
-cargo install cargo-casper
-# Add Casper repository
-echo "deb https://repo.casperlabs.io/releases" bionic main | sudo tee -a /etc/apt/sources.list.d/casper.list
-curl -O https://repo.casperlabs.io/casper-repo-pubkey.asc
-sudo apt-key add casper-repo-pubkey.asc
-sudo apt update
-sudo apt install libssl-dev
-sudo apt install pkg-config
-# Install the Casper client software
-cargo +nightly install casper-client
-# To check Casper Client Version
-casper-client --version
-# Commands for help
-casper-client --help
-casper-client <command> --help
-```
-
-### Creating Keys
-
-#### Note: Choose the name of directory where generated keys will be stored.
-
-```bash
-# Create keys
-casper-client keygen <TARGET DIRECTORY>
-```
-
 ### Usage
 
 To run the Contracts make sure you are in the root folder.
@@ -93,6 +37,24 @@ Make sure `wasm32-unknown-unknown` is installed.
 ```
 make prepare
 ```
+
+#### Run All Smart Contracts And Generate Keys
+
+Run this command to build all smart contract and generate keys.
+
+```
+make all
+```
+
+#### Test All Smart Contracts
+
+Run this command to build and test all smart contracts.
+
+```
+make test-all
+```
+
+#Alternatively you can build and test individual contracts
 
 It's also recommended to have [wasm-strip](https://github.com/WebAssembly/wabt)
 available in your PATH to reduce the size of compiled Wasm.
@@ -114,7 +76,7 @@ Caused by: process didn't exit successfully: `/home/.../.../ (signal: 9, SIGKILL
 
 #### Test individual Smart Contract
 
-You can run this commands to build individual smart contracts.
+You can run this commands to test individual smart contracts.
 
 ```
 make test-liquid-helper
@@ -122,21 +84,17 @@ make test-liquid-locker
 make test-liquid-factory
 ```
 
-#### Run All Smart Contracts And Generate Keys
 
-Run this command to build all smart contract and generate keys.
+# Interacting with onchain contracts (the easy way)
 
-```
-make all
-```
-
-#### Test All Smart Contracts
-
-Run this command to build all smart contract.
+A host of scripts have been made available in the package.json file. They simplify the task of running cumbersome manual commands. Make sure your in folder with package.json then run any script by
 
 ```
-make test-all
+npm run <script_name> <param_one> <param_two> .....
 ```
+
+The params are documented in the package.json for each script
+
 ### Deploying Liquid Helper contract manually
 
 If you need to deploy the `Liquid Helper` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Helper contract`.

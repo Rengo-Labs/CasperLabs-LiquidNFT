@@ -65,6 +65,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
     fn _generate_locker(&self, payment_token: Key) -> (Key, Key) {
         // Factory
         let salt: String = data::get_counter().to_string();
+        data::set_counter(data::get_counter().checked_add(1.into()).unwrap_or_revert());
         let name: String = "Locker-".to_string() + &salt;
         let (package_hash, _) = storage::create_contract_package_at_hash();
         let (contract_hash, _) =
