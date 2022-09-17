@@ -6,6 +6,7 @@ jobs:
       - image: cimg/rust:1.50.0
     steps:
       - checkout
+      - run: sudo apt update
       - run: sudo apt install libssl-dev pkg-config
       - run: rustup install nightly-2022-08-29
       - run: rustup default nightly-2022-08-29-x86_64-unknown-linux-gnu
