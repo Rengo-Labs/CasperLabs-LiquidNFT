@@ -1,6 +1,6 @@
 # CasperLabs-LiquidNFT
 
-[![Rengo-Labs](https://circleci.com/gh/Rengo-Labs/CasperLabs-LiquidNFT.svg?style=svg)](https://circleci.com/gh/circleci/circleci-docs)
+[![Rengo-Labs/CasperLabs-LiquidNFT](https://circleci.com/gh/Rengo-Labs/CasperLabs-LiquidNFT.svg?style=svg)](https://circleci.com/gh/Rengo-Labs/CasperLabs-LiquidNFT)
 
 ### Install the prerequisites
 
