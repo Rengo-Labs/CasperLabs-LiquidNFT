@@ -78,19 +78,21 @@ fn factory_constructor() {
         package_hash,
     );
 }
-
+/// Transfer master permission
 #[no_mangle]
 fn update_master() {
     let new_master: Key = runtime::get_named_arg("new_master");
 
     LiquidFactory::default().update_master(new_master);
 }
-
+/// Destroy Master functionality
 #[no_mangle]
 fn revoke_master() {
     LiquidFactory::default().revoke_master();
 }
-
+/// @dev Clone the implemenation for a token into a new contract.
+/// Call into initialize for the locker to begin the LiquidNFT loan process.
+/// Transfer the NFT the user wants use for the loan into the locker.
 #[no_mangle]
 fn create_liquid_locker() {
     let token_id: Vec<U256> = runtime::get_named_arg("token_id");
@@ -150,7 +152,8 @@ fn create_empty_locker_js_client() {
     let ret: (Key, Key) = LiquidFactory::default().create_empty_locker(payment_token);
     set_result(ret);
 }
-
+/// @dev Call contributeToLocker. Factory acts as a middle man between the user and the locker.
+/// We do this so that the user only has to approve the factory and not each new locker.
 #[no_mangle]
 fn contribute_to_locker() {
     let lockers_address: Key = runtime::get_named_arg("lockers_address");
@@ -170,7 +173,10 @@ fn contribute_to_locker_js_client() {
         LiquidFactory::default().contribute_to_locker(lockers_address, payment_amount);
     set_result(ret);
 }
-
+/// dev Give tokens to a locker. These tokens do not go toward paying off the loan,
+/// they are instead distributed among the contributors for the loan.
+/// The result of this is that the value is transferred to the contributors not the owner because it does
+/// not deduct from the balance the owner owes.
 #[no_mangle]
 fn donate_to_locker() {
     let lockers_address: Key = runtime::get_named_arg("lockers_address");
@@ -178,7 +184,8 @@ fn donate_to_locker() {
 
     LiquidFactory::default().donate_to_locker(lockers_address, donation_amount);
 }
-
+/// @dev Call paybackToLocker. Factory acts as a middle man between the user and the locker.
+/// We do this so that the user only has to approve the factory and not each new locker.
 #[no_mangle]
 fn payback_to_locker() {
     let lockers_address: Key = runtime::get_named_arg("lockers_address");
@@ -223,62 +230,90 @@ fn initialize() {
         payment_rate,
     );
 }
+/// @dev If the owner has missed payments by 7 days this call will transfer the NFT to either the
+/// singleProvider address or the trusted multisig to be auctioned
 #[no_mangle]
 fn liquidate_locker() {
     LIQUIDLOCKER::liquidate_locker(&LiquidFactory::default());
 }
+/// @dev Claim payed back tokens as a single contributor
 #[no_mangle]
 fn claim_interest_single() {
     LIQUIDLOCKER::claim_interest_single(&LiquidFactory::default());
 }
+/// @dev Claim payed back tokens as with multiple contributors.
+/// We need 2 functions because we cannot wipe all the contributions of users before someone became the sole contributor
 #[no_mangle]
 fn claim_interest_public() {
     LIQUIDLOCKER::claim_interest_public(&LiquidFactory::default());
 }
+/// @dev During the contribution phase, the owner can decrease the duration of the loan.
+/// The owner can only decrease the loan to a shorter duration, he cannot make it longer once the
+/// contribution phase has started.
 #[no_mangle]
 fn decrease_payment_time() {
     let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
     LIQUIDLOCKER::decrease_payment_time(&LiquidFactory::default(), new_payment_rate);
 }
+/// @dev During the contribution phase, the owner can increase the rate they will pay for the loan.
+/// The owner can only increase the rate to make the deal better for contributors, he cannot decrease it.
 #[no_mangle]
 fn increase_payment_rate() {
     let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
     LIQUIDLOCKER::increase_payment_rate(&LiquidFactory::default(), new_payment_rate);
 }
+/// @dev Locker owner calls this once the contribution phase is over to receive the funds for the loan.
+/// This can only be done once the floor is reached, and can be done before the end of the contribution phase
+/// if the floor is reached early. The owner can also prepay an amount to pay off some of the earnings at enable time.
+/// The locker owner owes the earnings linearly until the end, then all of the actual loan plus any penalties are due at the end.
 #[no_mangle]
 fn enable_locker() {
     let prepay_amount: U256 = runtime::get_named_arg("prepay_amount");
     LIQUIDLOCKER::enable_locker(&mut LiquidFactory::default(), prepay_amount);
 }
+/// @dev If the floor asked was not reached during contributions, this function will return the nft to the owner
+/// and allow all the contributors to claim their funds back.
 #[no_mangle]
 fn disable_locker() {
     LIQUIDLOCKER::disable_locker(&LiquidFactory::default());
 }
+/// @dev There are a couple edge cases with extreme payment rates that cause enableLocker to revert.
+/// These are never callable on our UI and doing so would require a manual transaction.
+/// This function will disable a locker in this senario, allow contributors to claim their money and transfer the NFT back to the owner.
+/// Only the team multisig has permission to do this
 #[no_mangle]
 fn rescue_locker() {
     LIQUIDLOCKER::rescue_locker(&LiquidFactory::default());
 }
+/// @dev Allow users to claim funds when a locker is disabled
 #[no_mangle]
 fn refund_due_disabled() {
     let refund_address: Key = runtime::get_named_arg("refund_address");
     LIQUIDLOCKER::refund_due_disabled(&LiquidFactory::default(), refund_address);
 }
-
+/// @dev Allow users to claim funds when a someone kicks them out to become the single provider
 #[no_mangle]
 fn refund_due_single() {
     let refund_address: Key = runtime::get_named_arg("refund_address");
     LIQUIDLOCKER::refund_due_single(&LiquidFactory::default(), refund_address);
 }
+/// @dev Someone can add funds to the locker and they will be split among the contributors
+/// This does not count as a payment on the loan.
 #[no_mangle]
 fn donate_funds() {
     let donation_amount: U256 = runtime::get_named_arg("donation_amount");
     LIQUIDLOCKER::donate_funds(&LiquidFactory::default(), donation_amount);
 }
+/// @dev Locker owner can payback funds.
+/// Penalties are given if the owner does not pay the earnings linearally over the loan duration.
+/// If the owner pays back the earnings, loan amount, and penalties aka fully pays off the loan
+/// they will be transfered their nft back
 #[no_mangle]
 fn pay_back_funds() {
     let payment_amount: U256 = runtime::get_named_arg("payment_amount");
     LIQUIDLOCKER::pay_back_funds(&mut LiquidFactory::default(), payment_amount);
 }
+/// @dev Calculate how many sends should be added before the next payoff is due based on payment amount
 #[no_mangle]
 fn calculate_epoch() {
     let total_value: U256 = runtime::get_named_arg("total_value");
@@ -292,6 +327,9 @@ fn calculate_epoch() {
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+/// @dev Calulate how much the usage fee takes off a payments,
+/// and how many tokens are due per second of loan
+/// (epochPayback is amount of tokens to extend loan by 1 second. Only need to pay off earnings)
 #[no_mangle]
 fn calculate_paybacks() {
     let total_value: U256 = runtime::get_named_arg("total_value");
@@ -305,12 +343,14 @@ fn calculate_paybacks() {
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// @dev Helper for the days math of calcualte penalties.
+/// Returns +1 per day before the 4th day and +2 for each day after the 4th day
 #[no_mangle]
 fn get_late_days() {
     let ret: U256 = LIQUIDLOCKER::get_late_days(&LiquidFactory::default());
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+/// @dev Public pure accessor for _getPenaltyAmount
 #[no_mangle]
 fn penalty_amount() {
     let total_collected: U256 = runtime::get_named_arg("total_collected");
@@ -319,6 +359,11 @@ fn penalty_amount() {
         LIQUIDLOCKER::penalty_amount(&LiquidFactory::default(), total_collected, late_days_amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+/// @dev Public users can add tokens to the pool to be used for the loan.
+/// The contributions for each user along with the total are recorded for splitting funds later.
+/// If a user contributes up to the maximum asked on a loan, they will become the sole provider
+/// (See _usersIncrease and _reachedTotal for functionality on becoming the sole provider)
+/// The sole provider will receive the token instead of the trusted multisig in the case if a liquidation.
 #[no_mangle]
 fn make_contribution() {
     let token_amount: U256 = runtime::get_named_arg("token_amount");
