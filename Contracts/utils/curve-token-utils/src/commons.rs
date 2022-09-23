@@ -77,7 +77,6 @@ pub mod key_names {
     pub const SYMBOL: &str = "symbol";
     pub const DECIMALS: &str = "decimals";
     pub const TOTAL_SUPPLY: &str = "total_supply";
-    pub const DOMAIN_SEPARATOR: &str = "domain_separator";
 
     //  misc
     pub const PATH: &str = "path";
