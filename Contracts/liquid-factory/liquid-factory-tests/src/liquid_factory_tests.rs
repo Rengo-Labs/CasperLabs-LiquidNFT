@@ -169,6 +169,19 @@ fn init() -> (
 }
 
 #[test]
+fn test_deploy() {
+    let (
+        env,
+        accounts,
+        factory_instance,
+        erc20,
+        _,
+        lockers_contract_address,
+        lockers_package_address,
+    ) = init();
+}
+
+#[test]
 fn test_update_master() {
     let (env, owner, instance, _) = deploy();
     assert_eq!(

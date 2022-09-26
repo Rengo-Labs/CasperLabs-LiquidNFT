@@ -6,82 +6,115 @@ You can install the required software by issuing the following commands. If you 
 
 #### Note: If any command fails try again by restarting the terminal to reset the enviornment variable.
 
-
 ### Update package repositories
+
 ```
 sudo apt update
 ```
+
 ### Install the command-line JSON processor
+
 ```
 sudo apt install jq -y
 ```
+
 ### Install rust
+
 Choose cutomize intallation to install nightly version
 Install the nightly version (by default stable toolchain is installed)
+
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+
 ```
 rustup install nightly-2022-08-29
 ```
+
 ### Check that nightly toolchain version is installed(this will list stable and nightly versions)
+
 ```
 rustup toolchain list
 ```
+
 ### Set rust nightly as default
+
 ```
 rustup default nightly-2022-08-29-x86_64-unknown-linux-gnu
 ```
+
 ### Install wasm32-unknown-unknown
+
 ```
 rustup target add wasm32-unknown-unknown
 ```
+
 ### Rust Version
+
 ```
 rustup --version
 ```
+
 ### Install Cmake
+
 ```
 sudo apt-get -y install cmake
 ```
+
 Note:https://cgold.readthedocs.io/en/latest/first-step/installation.html
+
 ### check if cmake is installed properly
+
 ```
 cmake --version
 ```
+
 ### Install the Casper Crates
+
 ```
 cargo install cargo-casper
 ```
+
 ### Add Casper repository
 
 ```
 echo "deb https://repo.casperlabs.io/releases" bionic main | sudo tee -a /etc/apt/sources.list.d/casper.list
 ```
+
 ```
 curl -O https://repo.casperlabs.io/casper-repo-pubkey.asc
 ```
+
 ```
 sudo apt-key add casper-repo-pubkey.asc
 ```
+
 ```
 sudo apt update
 ```
+
 ```
 sudo apt install libssl-dev
 ```
+
 ```
 sudo apt install pkg-config
 ```
+
 ### Install the Casper client software
+
 ```
 cargo +nightly-2022-08-29-x86_64-unknown-linux-gnu install casper-client
 ```
+
 ### To check Casper Client Version
+
 ```
 casper-client --version
 ```
+
 # Additonal commands for help
+
 ```
 casper-client --help
 casper-client <command> --help
@@ -93,20 +126,30 @@ casper-client <command> --help
 casper-client keygen keys
 
 ```
+
 ### Fund the key
 
 The keys can be funded from casper live website [testnet faucet](https://testnet.cspr.live/tools/faucet). Requires chrome browser and the casper signer extension. You should import the keys that were generated in the previous step
 
 ## Build all the contracts, jsclients, keys and generate all other required artifacts
+
 ### CAUTION: Make all will delete any keys already present so make sure to backup any keys before you run this command.
+
 ```
 make prepare
 ```
+
 ```
 make all
 ```
+
+```
+make all-jsclient
+```
+
 The above command also places all the keys in the folders as required. So make sure you have the key funded before running this command.
 If you run out of funds and require a new pair of keys you can run the generate-key script target.
+
 ```
 make generate-key
 ```
