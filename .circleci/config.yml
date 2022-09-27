@@ -14,10 +14,10 @@ jobs:
       - run: rustup default nightly-2022-08-29-x86_64-unknown-linux-gnu
       - run: cargo install cargo-casper
       - run: cargo +nightly-2022-08-29-x86_64-unknown-linux-gnu install casper-client
-      - run:
+      - run: 
           name: Prepare
           command: make prepare
-      - run:
+      - run: 
           name: Build
           command: make all
       - run:
