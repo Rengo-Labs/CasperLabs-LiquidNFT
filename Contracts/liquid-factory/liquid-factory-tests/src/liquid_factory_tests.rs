@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use casper_types::{account::AccountHash, runtime_args, BlockTime, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use test_env::{call_contract_with_hash, TestContract, TestEnv};
 
 use crate::liquid_factory_instance::{now, LIQUIDFACTORYInstance};
@@ -169,6 +169,19 @@ fn init() -> (
 }
 
 #[test]
+fn test_deploy() {
+    let (
+        _env,
+        _accounts,
+        _factory_instance,
+        _erc20,
+        _,
+        _lockers_contract_address,
+        _lockers_package_address,
+    ) = init();
+}
+
+#[test]
 fn test_update_master() {
     let (env, owner, instance, _) = deploy();
     assert_eq!(
@@ -298,12 +311,12 @@ fn test_create_empty_locker() {
 #[test]
 fn test_contribute_to_locker() {
     let (
-        env,
+        _env,
         accounts,
         factory_instance,
         erc20,
         _,
-        lockers_contract_address,
+        _lockers_contract_address,
         lockers_package_address,
     ) = init();
 

@@ -1,4 +1,4 @@
-use std::time::{self, SystemTime};
+use std::time::SystemTime;
 
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
