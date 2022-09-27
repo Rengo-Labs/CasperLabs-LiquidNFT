@@ -213,9 +213,9 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             self,
             LIQUIDHELPER::starting_timestamp(self)
                 .checked_add(
-                    (prepay_amount
+                    prepay_amount
                         .checked_div(epoch_payback)
-                        .unwrap_or_revert_with(Error::LiquidLockerDivision0)),
+                        .unwrap_or_revert_with(Error::LiquidLockerDivision0),
                 )
                 .unwrap_or_revert(),
         );

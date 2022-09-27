@@ -423,6 +423,44 @@ class ERC20Client {
       throw Error("Invalid Deploy");
     }
   }
+  public async permit(
+    keys: Keys.AsymmetricKey,
+    publicKey: string,
+    signature: string,
+    owner: RecipientType,
+    spender: RecipientType,
+    amount: string,
+    deadline: string,
+    paymentAmount: string
+  ) {
+
+    const runtimeArgs = RuntimeArgs.fromMap({
+      public: CLValueBuilder.string(publicKey),
+      signature: CLValueBuilder.string(signature),
+      owner: utils.createRecipientAddress(owner),
+      spender: utils.createRecipientAddress(spender),
+      value: CLValueBuilder.u256(amount),
+      deadline: CLValueBuilder.u64(deadline)
+    });
+
+
+    const deployHash = await contractCall({
+      chainName: this.chainName,
+      contractHash: this.contractHash,
+      entryPoint: "permit",
+      keys,
+      nodeAddress: this.nodeAddress,
+      paymentAmount,
+      runtimeArgs,
+    });
+
+    if (deployHash !== null) {
+      
+      return deployHash;
+    } else {
+      throw Error("Invalid Deploy");
+    }
+  }
 
   public onEvent(
     eventNames: ERC20Events[],
