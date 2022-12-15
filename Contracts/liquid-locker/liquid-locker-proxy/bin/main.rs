@@ -96,13 +96,13 @@ fn claim_interest_public() {
 fn decrease_payment_time() {
     let liquid_locker_address: ContractPackageHash =
         mappings::get_key(&mappings::liquid_locker_key());
-    let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
+    let new_payment_time: U256 = runtime::get_named_arg("new_payment_time");
     let ret: () = runtime::call_versioned_contract(
         liquid_locker_address,
         None,
         "decrease_payment_time",
         runtime_args! {
-            "new_payment_rate" => new_payment_rate
+            "new_payment_time" => new_payment_time
         },
     );
     mappings::set_key(&mappings::result_key(), ret);
@@ -357,7 +357,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "decrease_payment_time",
-        vec![Parameter::new("new_payment_rate", CLType::U256)],
+        vec![Parameter::new("new_payment_time", CLType::U256)],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

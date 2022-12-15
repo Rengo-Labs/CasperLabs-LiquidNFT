@@ -252,8 +252,8 @@ fn claim_interest_public() {
 /// contribution phase has started.
 #[no_mangle]
 fn decrease_payment_time() {
-    let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
-    LIQUIDLOCKER::decrease_payment_time(&LiquidFactory::default(), new_payment_rate);
+    let new_payment_time: U256 = runtime::get_named_arg("new_payment_time");
+    LIQUIDLOCKER::decrease_payment_time(&LiquidFactory::default(), new_payment_time);
 }
 /// @dev During the contribution phase, the owner can increase the rate they will pay for the loan.
 /// The owner can only increase the rate to make the deal better for contributors, he cannot decrease it.

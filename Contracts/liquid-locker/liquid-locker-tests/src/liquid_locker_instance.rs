@@ -107,12 +107,12 @@ impl LIQUIDLOCKERInstance {
         );
     }
     // Decrease Payment Rate
-    pub fn decrease_payment_time(&self, sender: AccountHash, new_payment_rate: U256) {
+    pub fn decrease_payment_time(&self, sender: AccountHash, new_payment_time: U256) {
         self.0.call_contract(
             sender,
             "decrease_payment_time",
             runtime_args! {
-                "new_payment_rate" => new_payment_rate
+                "new_payment_time" => new_payment_time
             },
             0,
         );

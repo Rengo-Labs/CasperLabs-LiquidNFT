@@ -9,7 +9,7 @@ hex = { version = "0.4.3", default-features = false }
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
 casperlabs-contract-utils = "0.1.0"
-casperlabs-erc20 = "0.2.1"
+casperlabs-erc20 = "0.3.0"
 
 [[bin]]
 name = "erc20-token"
@@ -17,4 +17,3 @@ path = "bin/erc20_token.rs"
 bench = false
 doctest = false
 test = false
-

@@ -62,6 +62,9 @@ test-liquid-locker:
 	make build-contract-liquid-locker && make copy-wasm-file-liquid-locker && make test-only-liquid-locker
 
 all:
+	make build-contract-liquid-factory && make build-contract-liquid-helper && make build-contract-liquid-locker
+
+all-jsclient:
 	make build-contract-liquid-factory && make build-contract-liquid-helper && make build-contract-liquid-locker && make copy-wasm-file-js-client && make generate-key && make build-jsclients
 
 test-all:

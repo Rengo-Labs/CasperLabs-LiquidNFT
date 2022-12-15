@@ -48,6 +48,11 @@ pub enum Error {
     TooEarly = 143,
     NotSingleProvider = 144,
     SingleProviderExists = 145,
+    InvalidRate = 146,
+    InvalidRate1 = 147,
+    InvalidRate2 = 148,
+    InvalidRate3 = 149,
+    InvalidTime = 150,
 }
 
 impl From<Error> for ApiError {

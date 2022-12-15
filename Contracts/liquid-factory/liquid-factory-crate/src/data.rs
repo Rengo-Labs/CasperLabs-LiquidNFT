@@ -1,10 +1,11 @@
-use core::convert::TryInto;
-
 use casper_contract::contract_api::{runtime, storage};
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-
 pub use common::keys::*;
+use core::convert::TryInto;
+
+// Precision factor for interest rate 100E9
+pub const RATE_MAX: U256 = U256([100_000_000_000, 0, 0, 0]);
 
 pub struct Implementations {
     dict: Dict,
