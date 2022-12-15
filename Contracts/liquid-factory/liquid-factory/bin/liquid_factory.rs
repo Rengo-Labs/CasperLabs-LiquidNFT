@@ -237,8 +237,8 @@ fn claim_interest_public() {
 }
 #[no_mangle]
 fn decrease_payment_time() {
-    let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
-    LIQUIDLOCKER::decrease_payment_time(&LiquidFactory::default(), new_payment_rate);
+    let new_payment_time: U256 = runtime::get_named_arg("new_payment_time");
+    LIQUIDLOCKER::decrease_payment_time(&LiquidFactory::default(), new_payment_time);
 }
 #[no_mangle]
 fn increase_payment_rate() {

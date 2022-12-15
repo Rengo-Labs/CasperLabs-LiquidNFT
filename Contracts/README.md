@@ -24,7 +24,6 @@ Implementation of following contracts for the CasperLabs platform.
     - [Entry Point Methods](#LiquidHelper-entry-point-methods)
     - [Deploying Liquid Locker contract manually](#deploying-liquid-locker-contract-manually)
     - [Entry Point Methods](#LiquidLocker-entry-point-methods)
-  
 
 ### Usage
 
@@ -68,7 +67,9 @@ make build-contract-liquid-helper
 make build-contract-liquid-locker
 make build-contract-liquid-factory
 ```
+
 ### Note: High processing power is required to run test cases otherwise you may face errors like
+
 ```
 error: test failed
 Caused by: process didn't exit successfully: `/home/.../.../ (signal: 9, SIGKILL: kill)
@@ -83,7 +84,6 @@ make test-liquid-helper
 make test-liquid-locker
 make test-liquid-factory
 ```
-
 
 # Interacting with onchain contracts (the easy way)
 
@@ -109,6 +109,7 @@ sudo casper-client put-deploy \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="contract_name:string='contract_name'"
 ```
+
 ## Entry Point Methods <a id="LiquidHelper-entry-point-methods"></a>
 
 Following are the LiquidityHelper's entry point methods.
@@ -272,6 +273,7 @@ sudo casper-client put-deploy \
     --session-arg="payment_token:Key='payment-token-hash'"
     --session-arg="contract_name:string='contract_name'"
 ```
+
 ## Entry Point methods <a id="LiquidLocker-entry-point-methods"></a>
 
 Following are the LiquidLocker's entry point methods.
@@ -330,7 +332,7 @@ Following is the table of parameters.
 
 | Parameter Name   | Type |
 | ---------------- | ---- |
-| new_payment_rate | U256 |
+| new_payment_time | U256 |
 
 This method **returns** nothing.
 
@@ -479,6 +481,7 @@ Following is the table of parameters.
 | token_holder   | Key  |
 
 This method **returns** `(U256, U256)`.
+
 ### Deploying Liquid Factory contract manually
 
 If you need to deploy the `Liquid Factory` contract manually you need to pass some parameters. Following is the command to deploy the `Liquid Factory contract`.
@@ -496,6 +499,7 @@ sudo casper-client put-deploy \
     --session-arg="default_target:Key='default_target address'"
     --session-arg="contract_name:string='contract_name'"
 ```
+
 ## Entry Point methods <a id="LiquidFactory-entry-point-methods"></a>
 
 Following are the LiquidFactory's entry point methods.
@@ -505,9 +509,9 @@ Following are the LiquidFactory's entry point methods.
 
 Following is the table of parameters.
 
-| Parameter Name | Type|
-| -------------- | --- |
-| new_master     | Key |
+| Parameter Name | Type |
+| -------------- | ---- |
+| new_master     | Key  |
 
 This method **returns** nothing.
 
@@ -554,10 +558,10 @@ This method **returns** `(Key,Key)`.
 
 Following is the table of parameters.
 
-| Parameter Name   | Type |
-| ---------------- | ---- |
-| lockers_address  | Key  |
-| payment_amount   | U256 |
+| Parameter Name  | Type |
+| --------------- | ---- |
+| lockers_address | Key  |
+| payment_amount  | U256 |
 
 This method **returns** `(U256,U256)`.
 
@@ -566,10 +570,10 @@ This method **returns** `(U256,U256)`.
 
 Following is the table of parameters.
 
-| Parameter Name   | Type |
-| ---------------- | ---- |
-| lockers_address  | Key  |
-| donation_amount  | U256 |
+| Parameter Name  | Type |
+| --------------- | ---- |
+| lockers_address | Key  |
+| donation_amount | U256 |
 
 This method **returns** nothing.
 
@@ -578,10 +582,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name   | Type |
-| ---------------- | ---- |
-| lockers_address  | Key  |
-| payment_amount   | U256 |
+| Parameter Name  | Type |
+| --------------- | ---- |
+| lockers_address | Key  |
+| payment_amount  | U256 |
 
 This method **returns** nothing.
 
@@ -639,7 +643,7 @@ Following is the table of parameters.
 
 | Parameter Name   | Type |
 | ---------------- | ---- |
-| new_payment_rate | U256 |
+| new_payment_time | U256 |
 
 This method **returns** nothing.
 

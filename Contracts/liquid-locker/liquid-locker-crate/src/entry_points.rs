@@ -42,7 +42,7 @@ pub fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "decrease_payment_time",
-        vec![Parameter::new("new_payment_rate", CLType::U256)],
+        vec![Parameter::new("new_payment_time", CLType::U256)],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
