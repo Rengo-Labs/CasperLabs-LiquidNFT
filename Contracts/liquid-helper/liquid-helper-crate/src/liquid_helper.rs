@@ -21,26 +21,20 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
         get_globals().token_id
     }
 
-    fn ownerless_locker(&self) -> bool {
-        let locker_owner: Key = get_globals().locker_owner;
-        locker_owner == zero_address()
-    }
-
     fn floor_not_reached(&self) -> bool {
         !self.contribution_phase() && self.below_floor_asked()
     }
 
     fn not_single_provider(&self, check_address: Key) -> bool {
-        LIQUIDBASE::get_single_provider(self) != check_address
-            && LIQUIDBASE::get_single_provider(self) != zero_address()
+        get_single_provider() != check_address && get_single_provider() != zero_address()
     }
 
     fn reached_total(&self, contributor: Key, token_amount: U256) -> bool {
-        let ans: U256 = LIQUIDBASE::Contributions(self)
+        Contributions::instance()
             .get(&contributor)
             .checked_add(token_amount)
-            .unwrap_or_revert();
-        ans >= LIQUIDBASE::get_total_asked(self)
+            .unwrap_or_revert()
+            >= get_total_asked()
     }
 
     fn missed_activate(&self) -> bool {
@@ -54,22 +48,22 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
 
     fn missed_deadline(&self) -> bool {
         let blocktime: u64 = runtime::get_blocktime().into();
-        let sum: U256 = LIQUIDBASE::get_next_due_time(self)
+        let sum: U256 = get_next_due_time()
             .checked_add(DEADLINE_TIME)
             .unwrap_or_revert();
-        LIQUIDBASE::get_next_due_time(self) > 0.into() && sum < U256::from(blocktime)
+        get_next_due_time() > 0.into() && sum < U256::from(blocktime)
     }
 
     fn below_floor_asked(&self) -> bool {
-        LIQUIDBASE::get_total_collected(self) < LIQUIDBASE::get_floor_asked(self)
+        get_total_collected() < get_floor_asked()
     }
 
     fn payment_time_not_set(&self) -> bool {
-        LIQUIDBASE::get_next_due_time(self) == 0.into()
+        get_next_due_time() == 0.into()
     }
 
     fn contribution_phase(&self) -> bool {
-        self.time_since(LIQUIDBASE::get_creation_time(self)) < CONTRIBUTION_TIME
+        self.time_since(get_creation_time()) < CONTRIBUTION_TIME
     }
 
     fn payback_timestamp(&self) -> U256 {
@@ -81,18 +75,23 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
     }
 
     fn starting_timestamp(&self) -> U256 {
-        let sum: U256 = LIQUIDBASE::get_creation_time(self)
+        let sum: U256 = get_creation_time()
             .checked_add(CONTRIBUTION_TIME)
             .unwrap_or_revert();
         sum
     }
 
     fn liquidate_to(&self) -> Key {
-        if LIQUIDBASE::get_single_provider(self) == zero_address() {
+        if get_single_provider() == zero_address() {
             get_trustee_multisig()
         } else {
-            LIQUIDBASE::get_single_provider(self)
+            get_single_provider()
         }
+    }
+
+    fn ownerless_locker(&self) -> bool {
+        let locker_owner: Key = get_globals().locker_owner;
+        locker_owner == zero_address()
     }
 
     fn time_since(&self, time_stamp: U256) -> U256 {
@@ -115,13 +114,13 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
     }
 
     fn _revoke_due_time(&self) {
-        LIQUIDBASE::set_next_due_time(self, 0.into());
+        set_next_due_time(0.into());
     }
 
     fn _increase_contributions(&self, contributors_address: Key, contribution_amount: U256) {
-        LIQUIDBASE::Contributions(self).set(
+        Contributions::instance().set(
             &contributors_address,
-            LIQUIDBASE::Contributions(self)
+            Contributions::instance()
                 .get(&contributors_address)
                 .checked_add(contribution_amount)
                 .unwrap_or_revert(),
@@ -129,17 +128,17 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
     }
 
     fn _increase_total_collected(&self, increase_amount: U256) {
-        let sum: U256 = LIQUIDBASE::get_total_collected(self)
+        let sum: U256 = get_total_collected()
             .checked_add(increase_amount)
             .unwrap_or_revert();
-        LIQUIDBASE::set_total_collected(self, sum);
+        set_total_collected(sum);
     }
 
     fn _decrease_total_collected(&self, decrease_amount: U256) {
-        let sub: U256 = LIQUIDBASE::get_total_collected(self)
+        let sub: U256 = get_total_collected()
             .checked_sub(decrease_amount)
             .unwrap_or_revert_with(Error::LiquidHelperUnderflowSub1);
-        LIQUIDBASE::set_total_collected(self, sub);
+        set_total_collected(sub);
     }
 
     fn _safe_transfer(&self, token: Key, recipient: Key, amount: U256) {

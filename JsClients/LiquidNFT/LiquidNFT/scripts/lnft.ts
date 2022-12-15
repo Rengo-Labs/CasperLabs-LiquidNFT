@@ -27,7 +27,7 @@ class LiquidNFT {
   contractHash: string;
   liquidNFT: LIQUIDNFTClientForFunctions;
   constructor() {
-    let _contractHash = fs.readFileSync('liquidNFTContractHash','utf8');
+    let _contractHash = fs.readFileSync('liquidNFTContractHash', 'utf8');
     this.contractHash = _contractHash.split("-").pop()!;
     this.liquidNFT = new LIQUIDNFTClientForFunctions(
       NODE_ADDRESS!,
@@ -35,17 +35,17 @@ class LiquidNFT {
       EVENT_STREAM_ADDRESS!
     );
   }
-  
+
   //initialize
-  initialize = async(
+  initialize = async (
     tokenIdsArray: Array<string>,
     cep47PackageHash: string,
     tokenOwner: string,
-    floorAsked:string,
+    floorAsked: string,
     totalAsked: string,
     paymentTime: string,
     paymentRate: string,
-  )=>{
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const initializeDeployHash = await this.liquidNFT.initialize(
       KEYS,
@@ -65,10 +65,10 @@ class LiquidNFT {
   }
 
   //makeContribution
-  makeContribution = async(
-    tokenAmount:string,
+  makeContribution = async (
+    tokenAmount: string,
     tokenHolder: string
-  )=>{
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const makeContributionDeployHash = await this.liquidNFT.makeContribution(
       KEYS,
@@ -83,9 +83,9 @@ class LiquidNFT {
   }
 
   //increasePaymentRate
-  increasePaymentRate = async(
-    newPaymentRate:string
-  )=>{
+  increasePaymentRate = async (
+    newPaymentRate: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const increasePaymentRateDeployHash = await this.liquidNFT.increasePaymentRate(
       KEYS,
@@ -99,13 +99,13 @@ class LiquidNFT {
   }
 
   //decreasePaymentTime
-  decreasePaymentTime = async(
-    newPaymentRate:string
-  )=>{
+  decreasePaymentTime = async (
+    newPaymentTime: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const decreasePaymentTimeDeployHash = await this.liquidNFT.decreasePaymentTime(
       KEYS,
-      newPaymentRate!,
+      newPaymentTime!,
       LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
     );
     console.log("... decreasePaymentTime deploy hash: ", decreasePaymentTimeDeployHash);
@@ -116,9 +116,9 @@ class LiquidNFT {
 
 
   //enableLocker
-  enableLocker = async(
-    prePaymentAmount:string
-  )=>{
+  enableLocker = async (
+    prePaymentAmount: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const enableLockerDeployHash = await this.liquidNFT.enableLocker(
       KEYS,
@@ -132,7 +132,7 @@ class LiquidNFT {
   }
 
   //disableLocker
-  disableLocker = async()=>{
+  disableLocker = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const disableLockerDeployHash = await this.liquidNFT.disableLocker(
       KEYS,
@@ -145,7 +145,7 @@ class LiquidNFT {
   }
 
   //rescueLocker
-  rescueLocker = async()=>{
+  rescueLocker = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const rescueLockerDeployHash = await this.liquidNFT.rescueLocker(
       KEYS,
@@ -158,7 +158,7 @@ class LiquidNFT {
   }
 
   //liquidateLocker
-  liquidateLocker = async()=>{
+  liquidateLocker = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const liquidateLockerDeployHash = await this.liquidNFT.liquidateLocker(
       KEYS,
@@ -171,9 +171,9 @@ class LiquidNFT {
   }
 
   //refundDueDisabled
-  refundDueDisabled = async(
-    refundAddress:string
-  )=>{
+  refundDueDisabled = async (
+    refundAddress: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const refundDueDisabledDeployHash = await this.liquidNFT.refundDueDisabled(
       KEYS,
@@ -187,9 +187,9 @@ class LiquidNFT {
   }
 
   //refundDueSingle
-  refundDueSingle = async(
-    refundAddress:string
-  )=>{
+  refundDueSingle = async (
+    refundAddress: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const refundDueSingleDeployHash = await this.liquidNFT.refundDueSingle(
       KEYS,
@@ -203,9 +203,9 @@ class LiquidNFT {
   }
 
   //donateFunds
-  donateFunds = async(
-    donationAmount:string
-  )=>{
+  donateFunds = async (
+    donationAmount: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const donateFundsDeployHash = await this.liquidNFT.donateFunds(
       KEYS,
@@ -219,9 +219,9 @@ class LiquidNFT {
   }
 
   //payBackFunds
-  payBackFunds = async(
-    paymentAmount:string
-  )=>{
+  payBackFunds = async (
+    paymentAmount: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const payBackFundsDeployHash = await this.liquidNFT.payBackFunds(
       KEYS,
@@ -235,7 +235,7 @@ class LiquidNFT {
   }
 
   //claimInterestSingle
-  claimInterestSingle = async()=>{
+  claimInterestSingle = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const claimInterestSingleDeployHash = await this.liquidNFT.claimInterestSingle(
       KEYS,
@@ -248,7 +248,7 @@ class LiquidNFT {
   }
 
   //claimInterestPublic
-  claimInterestPublic = async()=>{
+  claimInterestPublic = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const claimInterestPublicDeployHash = await this.liquidNFT.claimInterestPublic(
       KEYS,
@@ -261,11 +261,11 @@ class LiquidNFT {
   }
 
   //calculateEpoch
-  calculateEpoch = async(
-    totalValue:string,
-    paymentRate:string,
-    paymentTime:string
-  )=>{
+  calculateEpoch = async (
+    totalValue: string,
+    paymentRate: string,
+    paymentTime: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const calculateEpochDeployHash = await this.liquidNFT.calculateEpoch(
       KEYS,
@@ -281,11 +281,11 @@ class LiquidNFT {
   }
 
   //calculatePaybacks
-  calculatePaybacks  = async(
-    totalValue:string,
-    paymentRate:string,
-    paymentTime:string
-  )=>{
+  calculatePaybacks = async (
+    totalValue: string,
+    paymentRate: string,
+    paymentTime: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const calculatePaybacksDeployHash = await this.liquidNFT.calculatePaybacks(
       KEYS,
@@ -301,7 +301,7 @@ class LiquidNFT {
   }
 
   //getLateDays
-  getLateDays  = async()=>{
+  getLateDays = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const getLateDaysDeployHash = await this.liquidNFT.getLateDays(
       KEYS,
@@ -314,10 +314,10 @@ class LiquidNFT {
   }
 
   //penaltyAmount
-  penaltyAmount  = async(
-    totalCollected:string,
-    lateDaysAmount:string
-  )=>{
+  penaltyAmount = async (
+    totalCollected: string,
+    lateDaysAmount: string
+  ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const penaltyAmountDeployHash = await this.liquidNFT.penaltyAmount(
       KEYS,
@@ -333,7 +333,7 @@ class LiquidNFT {
 
 }
 
-export{LiquidNFT};
+export { LiquidNFT };
 
 
 

@@ -3,6 +3,7 @@
 extern crate alloc;
 
 pub mod data;
-mod liquid_base;
+pub mod events;
+pub mod liquid_base;
 
 pub use liquid_base::LIQUIDBASE;

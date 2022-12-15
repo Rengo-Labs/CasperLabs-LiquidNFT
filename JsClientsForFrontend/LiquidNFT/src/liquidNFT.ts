@@ -13,14 +13,14 @@ import {
   CLAccountHash
 } from "casper-js-sdk";
 import * as utils from "./utils";
-import { RecipientType} from "./types";
+import { RecipientType } from "./types";
 
 class LIQUIDNFTClientForFunctions {
   private contractName: string = "LIQUIDNFT";
-  private contractHash: string= "LIQUIDNFT";
-  private contractPackageHash: string= "LIQUIDNFT";
+  private contractHash: string = "LIQUIDNFT";
+  private contractPackageHash: string = "LIQUIDNFT";
   private namedKeys: {
-    balances:string
+    balances: string
     metadata: string;
     nonces: string;
     allowances: string;
@@ -34,18 +34,17 @@ class LIQUIDNFTClientForFunctions {
     private nodeAddress: string,
     private chainName: string,
     private eventStreamAddress?: string,
-    
-  ) 
-  {
-    this.namedKeys= {
-      balances:"null",
+
+  ) {
+    this.namedKeys = {
+      balances: "null",
       metadata: "null",
       nonces: "null",
       allowances: "null",
       ownedTokens: "null",
       owners: "null",
       paused: "null"
-    }; 
+    };
   }
 
   public async setContractHash(hash: string) {
@@ -81,7 +80,7 @@ class LIQUIDNFTClientForFunctions {
     }, {});
   }
 
-  public async  initialize(
+  public async initialize(
     keys: Keys.AsymmetricKey,
     ids: string[],
     tokenAddress: string,
@@ -92,11 +91,11 @@ class LIQUIDNFTClientForFunctions {
     paymentRate: string,
     paymentAmount: string
   ) {
-    
+
     const _tokenAddress = new CLByteArray(
-			Uint8Array.from(Buffer.from(tokenAddress, "hex"))
-		);
-    const _tokenOwner =new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(tokenOwner, "hex"))));
+      Uint8Array.from(Buffer.from(tokenAddress, "hex"))
+    );
+    const _tokenOwner = new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(tokenOwner, "hex"))));
 
     let list = [];
     for (let i = 0; i < 5; i++) {
@@ -108,7 +107,7 @@ class LIQUIDNFTClientForFunctions {
       token_address: utils.createRecipientAddress(_tokenAddress),
       token_owner: _tokenOwner,
       floor_asked: CLValueBuilder.u256(floorAsked),
-      total_asked: CLValueBuilder.u256(totalAsked), 
+      total_asked: CLValueBuilder.u256(totalAsked),
       payment_time: CLValueBuilder.u256(paymentTime),
       payment_rate: CLValueBuilder.u256(paymentRate)
     });
@@ -124,19 +123,19 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  increasePaymentRate(
+  public async increasePaymentRate(
     keys: Keys.AsymmetricKey,
     newPaymentRate: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       new_payment_rate: CLValueBuilder.u256(newPaymentRate),
     });
@@ -152,21 +151,21 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  decreasePaymentTime(
+  public async decreasePaymentTime(
     keys: Keys.AsymmetricKey,
-    newPaymentRate: string,
+    newPaymentTime: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
-      new_payment_rate: CLValueBuilder.u256(newPaymentRate),
+      new_payment_time: CLValueBuilder.u256(newPaymentTime),
     });
 
     const deployHash = await contractCall({
@@ -180,19 +179,19 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  enableLocker(
+  public async enableLocker(
     keys: Keys.AsymmetricKey,
     prepayAmount: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       prepay_amount: CLValueBuilder.u256(prepayAmount),
     });
@@ -208,18 +207,18 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  disableLocker(
+  public async disableLocker(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
     });
 
@@ -234,18 +233,18 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  rescueLocker(
+  public async rescueLocker(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
     });
 
@@ -260,20 +259,20 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  refundDueDisabled(
+  public async refundDueDisabled(
     keys: Keys.AsymmetricKey,
     refundAddress: string,
     paymentAmount: string
   ) {
 
-    const _refundAddress =new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(refundAddress, "hex"))));
+    const _refundAddress = new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(refundAddress, "hex"))));
     const runtimeArgs = RuntimeArgs.fromMap({
       refund_address: _refundAddress,
     });
@@ -289,20 +288,20 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  refundDueSingle(
+  public async refundDueSingle(
     keys: Keys.AsymmetricKey,
     refundAddress: string,
     paymentAmount: string
   ) {
-    
-    const _refundAddress =new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(refundAddress, "hex"))));
+
+    const _refundAddress = new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(refundAddress, "hex"))));
     const runtimeArgs = RuntimeArgs.fromMap({
       refund_address: _refundAddress,
     });
@@ -318,19 +317,19 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  donateFunds(
+  public async donateFunds(
     keys: Keys.AsymmetricKey,
     donationAmount: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       donation_amount: CLValueBuilder.u256(donationAmount),
     });
@@ -346,20 +345,20 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  payBackFunds(
+  public async payBackFunds(
     keys: Keys.AsymmetricKey,
     paymentAmountArgs: string,
     paymentAmount: string
-  
+
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       payment_amount: CLValueBuilder.u256(paymentAmountArgs),
     });
@@ -375,18 +374,18 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  liquidateLocker(
+  public async liquidateLocker(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
     });
 
@@ -401,18 +400,18 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  claimInterestSingle(
+  public async claimInterestSingle(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
     });
 
@@ -427,18 +426,18 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  claimInterestPublic(
+  public async claimInterestPublic(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
     });
 
@@ -453,21 +452,21 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  calculateEpoch(
+  public async calculateEpoch(
     keys: Keys.AsymmetricKey,
     totalValue: string,
     paymentTime: string,
     paymentRate: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       total_value: CLValueBuilder.u256(totalValue),
       payment_time: CLValueBuilder.u256(paymentTime),
@@ -485,21 +484,21 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  calculatePaybacks(
+  public async calculatePaybacks(
     keys: Keys.AsymmetricKey,
     totalValue: string,
     paymentTime: string,
     paymentRate: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       total_value: CLValueBuilder.u256(totalValue),
       payment_time: CLValueBuilder.u256(paymentTime),
@@ -517,18 +516,18 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  getLateDays(
+  public async getLateDays(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
     });
 
@@ -543,20 +542,20 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  penaltyAmount(
+  public async penaltyAmount(
     keys: Keys.AsymmetricKey,
     totalCollected: string,
     lateDaysAmount: string,
     paymentAmount: string
   ) {
-    
+
     const runtimeArgs = RuntimeArgs.fromMap({
       total_collected: CLValueBuilder.u256(totalCollected),
       late_days_amount: CLValueBuilder.u256(lateDaysAmount),
@@ -573,14 +572,14 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
     }
   }
 
-  public async  makeContribution(
+  public async makeContribution(
     keys: Keys.AsymmetricKey,
     tokenAmount: string,
     tokenHolder: string,
@@ -588,9 +587,9 @@ class LIQUIDNFTClientForFunctions {
   ) {
 
     const _tokenHolder = new CLByteArray(
-      	Uint8Array.from(Buffer.from(tokenHolder, "hex"))
-      );
-    
+      Uint8Array.from(Buffer.from(tokenHolder, "hex"))
+    );
+
     const runtimeArgs = RuntimeArgs.fromMap({
       token_amount: CLValueBuilder.u256(tokenAmount),
       token_holder: utils.createRecipientAddress(_tokenHolder),
@@ -607,7 +606,7 @@ class LIQUIDNFTClientForFunctions {
     });
 
     if (deployHash !== null) {
-      
+
       return deployHash;
     } else {
       throw Error("Invalid Deploy");
