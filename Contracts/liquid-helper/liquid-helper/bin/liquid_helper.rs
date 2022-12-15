@@ -38,25 +38,25 @@ fn constructor() {
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     LiquidHelper::default().constructor(contract_hash, package_hash);
 }
-
+///@dev returns IDs of NFTs being held
 #[no_mangle]
 fn get_tokens() {
     let ret: Vec<U256> = LiquidHelper::default().get_tokens();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if owner is zero address
 #[no_mangle]
 fn ownerless_locker() {
     let ret: bool = LiquidHelper::default().ownerless_locker();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if contributions have not reached min asked
 #[no_mangle]
 fn floor_not_reached() {
     let ret: bool = LiquidHelper::default().floor_not_reached();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if the provider address is not the single provider
 #[no_mangle]
 fn not_single_provider() {
     let check_address: Key = runtime::get_named_arg("check_address");
@@ -64,7 +64,7 @@ fn not_single_provider() {
     let ret: bool = LiquidHelper::default().not_single_provider(check_address);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if the contributor will reach the ceiling asked with the provided token amount
 #[no_mangle]
 fn reached_total() {
     let contributor: Key = runtime::get_named_arg("contributor");
@@ -73,55 +73,55 @@ fn reached_total() {
     let ret: bool = LiquidHelper::default().reached_total(contributor, token_amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if locker has not been enabled within 7 days after contribution phase
 #[no_mangle]
 fn missed_activate() {
     let ret: bool = LiquidHelper::default().missed_activate();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if owner has not paid back within 7 days of last payment
 #[no_mangle]
 fn missed_deadline() {
     let ret: bool = LiquidHelper::default().missed_deadline();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if nextDueTime is 0, mean it has not been initialized (unix timestamp)
 #[no_mangle]
 fn payment_time_not_set() {
     let ret: bool = LiquidHelper::default().payment_time_not_set();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true total collected is below the min asked
 #[no_mangle]
 fn below_floor_asked() {
     let ret: bool = LiquidHelper::default().below_floor_asked();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns true if contract is in contribution phase time window
 #[no_mangle]
 fn contribution_phase() {
     let ret: bool = LiquidHelper::default().contribution_phase();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns final due time of loan
 #[no_mangle]
 fn payback_timestamp() {
     let ret: U256 = LiquidHelper::default().payback_timestamp();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns approximate time the loan will/did start
 #[no_mangle]
 fn starting_timestamp() {
     let ret: U256 = LiquidHelper::default().starting_timestamp();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns address to transfer NFT to in event of liquidation
 #[no_mangle]
 fn liquidate_to() {
     let ret: Key = LiquidHelper::default().liquidate_to();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+///@dev returns calc of time since a certain timestamp to block timestamp
 #[no_mangle]
 fn time_since() {
     let time_stamp: U256 = runtime::get_named_arg("time_stamp");

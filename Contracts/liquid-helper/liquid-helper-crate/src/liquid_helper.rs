@@ -16,19 +16,18 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
 
         LIQUIDBASE::init(self);
     }
-
+    ///@dev returns IDs of NFTs being held
     fn get_tokens(&self) -> Vec<U256> {
         get_globals().token_id
     }
-
     fn floor_not_reached(&self) -> bool {
         !self.contribution_phase() && self.below_floor_asked()
     }
-
+    ///@dev returns true if the provider address is not the single provider
     fn not_single_provider(&self, check_address: Key) -> bool {
         get_single_provider() != check_address && get_single_provider() != zero_address()
     }
-
+    ///@dev returns true if the contributor will reach the ceiling asked with the provided token amount
     fn reached_total(&self, contributor: Key, token_amount: U256) -> bool {
         Contributions::instance()
             .get(&contributor)
@@ -36,7 +35,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
             .unwrap_or_revert()
             >= get_total_asked()
     }
-
+    ///@dev returns true if locker has not been enabled within 7 days after contribution phase
     fn missed_activate(&self) -> bool {
         let blocktime: u64 = runtime::get_blocktime().into();
         let sum: U256 = self
@@ -45,7 +44,7 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
             .unwrap_or_revert();
         self.payment_time_not_set() && sum < U256::from(blocktime)
     }
-
+    ///@dev returns true if owner has not paid back within 7 days of last payment
     fn missed_deadline(&self) -> bool {
         let blocktime: u64 = runtime::get_blocktime().into();
         let sum: U256 = get_next_due_time()
@@ -53,19 +52,19 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
             .unwrap_or_revert();
         get_next_due_time() > 0.into() && sum < U256::from(blocktime)
     }
-
+    /// @dev returns true total collected is below the min asked
     fn below_floor_asked(&self) -> bool {
         get_total_collected() < get_floor_asked()
     }
-
+    ///@dev returns true if nextDueTime is 0, mean it has not been initialized (unix timestamp)
     fn payment_time_not_set(&self) -> bool {
         get_next_due_time() == 0.into()
     }
-
+    ///@dev returns true if contract is in contribution phase time window
     fn contribution_phase(&self) -> bool {
         self.time_since(get_creation_time()) < CONTRIBUTION_TIME
     }
-
+    ///@dev returns final due time of loan
     fn payback_timestamp(&self) -> U256 {
         let sum: U256 = self
             .starting_timestamp()
@@ -73,14 +72,14 @@ pub trait LIQUIDHELPER<Storage: ContractStorage>:
             .unwrap_or_revert();
         sum
     }
-
+    ///@dev returns approximate time the loan will/did start
     fn starting_timestamp(&self) -> U256 {
         let sum: U256 = get_creation_time()
             .checked_add(CONTRIBUTION_TIME)
             .unwrap_or_revert();
         sum
     }
-
+    ///@dev returns address to transfer NFT to in event of liquidation
     fn liquidate_to(&self) -> Key {
         if get_single_provider() == zero_address() {
             get_trustee_multisig()

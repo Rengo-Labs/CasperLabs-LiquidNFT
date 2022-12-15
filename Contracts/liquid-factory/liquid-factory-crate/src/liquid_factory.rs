@@ -116,7 +116,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         self.only_master();
         data::set_master_address(data::zero_address());
     }
-
+    /// @dev Clone the implemenation for a token into a new contract.
     /// Call into initialize for the locker to begin the LiquidNFT loan process.
     /// Transfer the NFT the user wants use for the loan into the locker.
     #[allow(clippy::too_many_arguments)]
