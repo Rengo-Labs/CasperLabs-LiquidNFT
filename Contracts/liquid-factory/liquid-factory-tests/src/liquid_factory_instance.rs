@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
@@ -5,6 +7,13 @@ use casper_types::{
 use test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDFACTORYInstance(TestContract);
+
+pub fn now() -> u64 {
+    SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64
+}
 
 impl LIQUIDFACTORYInstance {
     pub fn new(
@@ -14,6 +23,7 @@ impl LIQUIDFACTORYInstance {
         default_count: U256,
         default_token: Key,
         default_target: Key,
+        time: u64,
     ) -> LIQUIDFACTORYInstance {
         LIQUIDFACTORYInstance(TestContract::new(
             env,
@@ -25,7 +35,7 @@ impl LIQUIDFACTORYInstance {
                 "default_token" => default_token,
                 "default_target" => default_target
             },
-            0,
+            time,
         ))
     }
 
@@ -74,14 +84,14 @@ impl LIQUIDFACTORYInstance {
         );
     }
 
-    pub fn create_empty_locker(&self, sender: AccountHash, payment_token: Key) {
+    pub fn create_empty_locker(&self, sender: AccountHash, payment_token: Key, time: u64) {
         self.0.call_contract(
             sender,
             "create_empty_locker_js_client",
             runtime_args! {
                 "payment_token" => payment_token
             },
-            0,
+            time,
         );
     }
 
@@ -108,6 +118,7 @@ impl LIQUIDFACTORYInstance {
         sender: AccountHash,
         lockers_address: Key,
         donation_amount: U256,
+        time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -116,7 +127,7 @@ impl LIQUIDFACTORYInstance {
                 "lockers_address" => lockers_address,
                 "donation_amount" => donation_amount
             },
-            0,
+            time,
         );
     }
 

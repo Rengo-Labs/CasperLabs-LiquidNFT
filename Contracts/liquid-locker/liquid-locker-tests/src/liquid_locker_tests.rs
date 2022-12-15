@@ -181,8 +181,8 @@ fn test_decrease_payment_time() {
         1000.into(),
         1000.into(),
     );
-    let new_payment_rate: U256 = U256::from(0);
-    proxy.decrease_payment_time(owner, new_payment_rate);
+    let new_payment_time: U256 = U256::from(0);
+    proxy.decrease_payment_time(owner, new_payment_time);
 }
 
 #[test]

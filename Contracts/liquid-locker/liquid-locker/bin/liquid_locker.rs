@@ -116,8 +116,17 @@ fn claim_interest_public() {
 /// contribution phase has started.
 #[no_mangle]
 fn decrease_payment_time() {
+    let new_payment_time: U256 = runtime::get_named_arg("new_payment_time");
+    LiquidLocker::default().decrease_payment_time(new_payment_time);
+}
+
+/// @dev During the contribution phase, the owner can increase the rate and decrease time
+/// This function executes both actions at the same time to save on one extra transaction
+#[no_mangle]
+fn update_settings() {
     let new_payment_rate: U256 = runtime::get_named_arg("new_payment_rate");
-    LiquidLocker::default().decrease_payment_time(new_payment_rate);
+    let new_payment_time: U256 = runtime::get_named_arg("new_payment_time");
+    LiquidLocker::default().update_settings(new_payment_rate, new_payment_time);
 }
 
 /// @dev During the contribution phase, the owner can increase the rate they will pay for the loan.

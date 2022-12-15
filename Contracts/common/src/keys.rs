@@ -5,6 +5,12 @@ pub fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
         .unwrap()
 }
+pub fn account_zero_address() -> Key {
+    Key::from_formatted_str(
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
+    )
+    .unwrap()
+}
 // Common Keys
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_PACKAGE_HASH: &str = "self_package_hash";
@@ -21,6 +27,7 @@ pub const REMAINING_BALANCE: &str = "remaining_balance";
 pub const PENALTIES_BALANCE: &str = "penalties_balance";
 pub const NEXT_DUE_TIME: &str = "next_due_time";
 pub const CREATION_TIME: &str = "creation_time";
+pub const FACTORY_ADDRESS: &str = "factory_address";
 pub const PAYMENT_TOKEN: &str = "payment_token";
 pub const TRUSTEE_MULTISIG: &str = "trustee_multisig";
 pub const GLOBALS: &str = "globals";

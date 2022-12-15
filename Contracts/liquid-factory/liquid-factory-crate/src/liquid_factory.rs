@@ -9,7 +9,7 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use casper_types::{runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
 use liquid_locker_crate::{
@@ -50,13 +50,13 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         if self.get_caller().to_formatted_string()
             != data::get_master_address().to_formatted_string()
         {
-            runtime::revert(ApiError::from(Error::InvalidMaster));
+            runtime::revert(Error::InvalidMaster);
         }
     }
 
     fn is_locker(&self, lockers_address: &Key) {
         if !Lockers::instance().get(lockers_address) {
-            runtime::revert(ApiError::from(Error::InvalidLocker));
+            runtime::revert(Error::InvalidLocker);
         }
     }
 
@@ -65,6 +65,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
     fn _generate_locker(&self, payment_token: Key) -> (Key, Key) {
         // Factory
         let salt: String = data::get_counter().to_string();
+        data::set_counter(data::get_counter().checked_add(1.into()).unwrap_or_revert());
         let name: String = "Locker-".to_string() + &salt;
         let (package_hash, _) = storage::create_contract_package_at_hash();
         let (contract_hash, _) =
@@ -129,6 +130,9 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         payment_rate: U256,
         payment_token: Key,
     ) -> (Key, Key) {
+        if payment_rate > RATE_MAX {
+            runtime::revert(Error::InvalidRate3);
+        }
         let (locker_contract_address, locker_package_address) =
             self._generate_locker(payment_token);
         let () = runtime::call_versioned_contract(

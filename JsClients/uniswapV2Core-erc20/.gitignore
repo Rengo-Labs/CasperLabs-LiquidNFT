@@ -1,0 +1,3 @@
+/node_modules
+/ERC20/keys
+/ERC20/wasm/*.wasm
