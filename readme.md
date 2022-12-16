@@ -107,16 +107,21 @@ sudo apt install pkg-config
 cargo +nightly-2022-08-29-x86_64-unknown-linux-gnu install casper-client
 ```
 
-### To check Casper Client Version
+# Other Commands
+
+## To check Casper Client Version
 
 ```
 casper-client --version
 ```
 
-# Additonal commands for help
+## Commands for help
 
 ```
 casper-client --help
+```
+
+```
 casper-client <command> --help
 ```
 
@@ -124,7 +129,6 @@ casper-client <command> --help
 
 ```
 casper-client keygen keys
-
 ```
 
 ### Fund the key
