@@ -43,10 +43,5 @@ pub const PAYMENT_TOKEN: &str = "payment_token";
 pub const TRUSTEE_MULTISIG: &str = "trustee_multisig";
 pub const GLOBALS: &str = "globals";
 /// Liquid Factory
-pub const IMPLEMENTATIONS_DICT: &str = "implementations";
-pub const LOCKERS_DICT: &str = "lockers";
 pub const MASTER_ADDRESS: &str = "master_address";
-pub const LOCKER_COUNT: &str = "locker_count";
-pub const DEFAULT_COUNT: &str = "default_count";
 pub const DEFAULT_TOKEN: &str = "default_token";
-pub const COUNTER: &str = "counter";

@@ -266,7 +266,7 @@ class LIQUIDNFTClientForFunctions {
     }
   }
 
-  public async refundDueDisabled(
+  public async refundDueExpired(
     keys: Keys.AsymmetricKey,
     refundAddress: string,
     paymentAmount: string
@@ -280,7 +280,7 @@ class LIQUIDNFTClientForFunctions {
     const deployHash = await contractCall({
       chainName: this.chainName,
       contractHash: this.contractHash,
-      entryPoint: "refund_due_disabled",
+      entryPoint: "refund_due_expired",
       keys,
       nodeAddress: this.nodeAddress,
       paymentAmount,
@@ -355,12 +355,14 @@ class LIQUIDNFTClientForFunctions {
   public async payBackFunds(
     keys: Keys.AsymmetricKey,
     paymentAmountArgs: string,
-    paymentAmount: string
-
+    paymentAmount: string,
+    paymentAddress: string
   ) {
+    const _paymentAddress = new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(paymentAddress, "hex"))));
 
     const runtimeArgs = RuntimeArgs.fromMap({
       payment_amount: CLValueBuilder.u256(paymentAmountArgs),
+      payment_address: _paymentAddress
     });
 
     const deployHash = await contractCall({
@@ -407,7 +409,7 @@ class LIQUIDNFTClientForFunctions {
     }
   }
 
-  public async claimInterestSingle(
+  public async claimInterest(
     keys: Keys.AsymmetricKey,
     paymentAmount: string
   ) {
@@ -418,33 +420,7 @@ class LIQUIDNFTClientForFunctions {
     const deployHash = await contractCall({
       chainName: this.chainName,
       contractHash: this.contractHash,
-      entryPoint: "claim_interest_single",
-      keys,
-      nodeAddress: this.nodeAddress,
-      paymentAmount,
-      runtimeArgs,
-    });
-
-    if (deployHash !== null) {
-
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
-    }
-  }
-
-  public async claimInterestPublic(
-    keys: Keys.AsymmetricKey,
-    paymentAmount: string
-  ) {
-
-    const runtimeArgs = RuntimeArgs.fromMap({
-    });
-
-    const deployHash = await contractCall({
-      chainName: this.chainName,
-      contractHash: this.contractHash,
-      entryPoint: "claim_interest_public",
+      entryPoint: "claim_interest",
       keys,
       nodeAddress: this.nodeAddress,
       paymentAmount,

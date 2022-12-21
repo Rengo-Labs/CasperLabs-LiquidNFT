@@ -4,8 +4,7 @@
   "scripts": {
     "calculateEpoch": "ts-node LiquidNFT/scripts/calculateEpoch.ts",
     "calculatePaybacks": "ts-node LiquidNFT/scripts/calculatePaybacks.ts",
-    "claimInterestPublic": "ts-node LiquidNFT/scripts/claimInterestPublic.ts",
-    "claimInterestSingle": "ts-node LiquidNFT/scripts/claimInterestSingle.ts",
+    "claimInterest": "ts-node LiquidNFT/scripts/claimInterest.ts",
     "rescueLocker": "ts-node LiquidNFT/scripts/rescueLocker.ts",
     "disableLocker": "ts-node LiquidNFT/scripts/disableLocker.ts",
     "donateFunds": "ts-node LiquidNFT/scripts/donateFunds.ts",
@@ -18,7 +17,7 @@
     "liquidateLocker": "ts-node LiquidNFT/scripts/liquidateLocker.ts",
     "payBackFunds": "ts-node LiquidNFT/scripts/payBackFunds.ts",
     "penaltyAmount": "ts-node LiquidNFT/scripts/penaltyAmount.ts",
-    "refundDueDisabled": "ts-node LiquidNFT/scripts/refundDueDisabled.ts",
+    "refundDueExpired": "ts-node LiquidNFT/scripts/refundDueExpired.ts",
     "refundDueSingle": "ts-node LiquidNFT/scripts/refundDueSingle.ts"
   },
   "Script calculateEpoch comments": {
@@ -31,15 +30,10 @@
     "Syntax": "npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>",
     "Example": "npm run calculatePaybacks 100 100 100"
   },
-  "Script claimInterestPublic comments": {
+  "Script claimInterest comments": {
     "Description": "use it to claim interest public of the locker",
-    "Syntax": "npm run claimInterestPublic",
-    "Example": "npm run claimInterestPublic"
-  },
-  "Script claimInterestSingle comments": {
-    "Description": "use it to claim interest single of the locker",
-    "Syntax": "npm run claimInterestSingle",
-    "Example": "npm run claimInterestSingle"
+    "Syntax": "npm run claimInterest",
+    "Example": "npm run claimInterest"
   },
   "Script decreasePaymentTime comments": {
     "Description": "use it to decrease payment time to the locker",
@@ -88,18 +82,18 @@
   },
   "Script payBackFunds comments": {
     "Description": "use it to pay back funds to the locker",
-    "Syntax": "npm run payBackFunds <paymentAmount>",
-    "Example": "npm run payBackFunds 100"
+    "Syntax": "npm run payBackFunds <paymentAmount> <paymentAddress>",
+    "Example": "npm run payBackFunds 100 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script penaltyAmount comments": {
     "Description": "use it to check penaltyAmount",
     "Syntax": "npm run penaltyAmount <totalCollected> <lateDaysAmount>",
     "Example": "npm run penaltyAmount 100 100"
   },
-  "Script refundDueDisabled comments": {
+  "Script refundDueExpired comments": {
     "Description": "use it to disable due refund",
-    "Syntax": "npm run refundDueDisabled <refundAddressAccountHash>",
-    "Example": "npm run refundDueDisabled 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
+    "Syntax": "npm run refundDueExpired <refundAddressAccountHash>",
+    "Example": "npm run refundDueExpired 24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"
   },
   "Script refundDueSingle comments": {
     "Description": "use it to refundDueSingle",

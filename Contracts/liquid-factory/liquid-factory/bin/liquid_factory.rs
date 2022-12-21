@@ -45,17 +45,15 @@ impl LIQUIDFACTORY<OnChainContractStorage> for LiquidFactory {}
 impl LiquidFactory {
     fn constructor(
         &mut self,
-        default_count: U256,
         default_token: Key,
-        default_target: Key,
+        trustee_multisig: Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
         LIQUIDFACTORY::init(
             self,
-            default_count,
             default_token,
-            default_target,
+            trustee_multisig,
             Key::from(contract_hash),
             package_hash,
         );
@@ -64,16 +62,14 @@ impl LiquidFactory {
 
 #[no_mangle]
 fn factory_constructor() {
-    let default_count: U256 = runtime::get_named_arg("default_count");
     let default_token: Key = runtime::get_named_arg("default_token");
-    let default_target: Key = runtime::get_named_arg("default_target");
+    let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
     LiquidFactory::default().constructor(
-        default_count,
         default_token,
-        default_target,
+        trustee_multisig,
         contract_hash,
         package_hash,
     );
@@ -98,7 +94,7 @@ fn create_liquid_locker() {
     let token_id: Vec<U256> = runtime::get_named_arg("token_id");
     let token_address: Key = runtime::get_named_arg("token_address");
     let floor_asked: U256 = runtime::get_named_arg("floor_asked");
-    let total_asked: U256 = runtime::get_named_arg("total_asked");
+    let delta_asked: U256 = runtime::get_named_arg("delta_asked");
     let payment_time: U256 = runtime::get_named_arg("payment_time");
     let payment_rate: U256 = runtime::get_named_arg("payment_rate");
     let payment_token: Key = runtime::get_named_arg("payment_token");
@@ -107,7 +103,7 @@ fn create_liquid_locker() {
         token_id,
         token_address,
         floor_asked,
-        total_asked,
+        delta_asked,
         payment_time,
         payment_rate,
         payment_token,
@@ -137,21 +133,6 @@ fn create_liquid_locker_js_client() {
     set_result(ret);
 }
 
-#[no_mangle]
-fn create_empty_locker() {
-    let payment_token: Key = runtime::get_named_arg("payment_token");
-
-    let ret: (Key, Key) = LiquidFactory::default().create_empty_locker(payment_token);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn create_empty_locker_js_client() {
-    let payment_token: Key = runtime::get_named_arg("payment_token");
-
-    let ret: (Key, Key) = LiquidFactory::default().create_empty_locker(payment_token);
-    set_result(ret);
-}
 /// @dev Call contributeToLocker. Factory acts as a middle man between the user and the locker.
 /// We do this so that the user only has to approve the factory and not each new locker.
 #[no_mangle]
@@ -200,12 +181,14 @@ fn payback_to_locker() {
 fn constructor() {
     let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
     let payment_token: Key = runtime::get_named_arg("payment_token");
+    let factory_address: Key = runtime::get_named_arg("factory_address");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     LIQUIDLOCKER::init(
         &mut LiquidFactory::default(),
         trustee_multisig,
         payment_token,
+        factory_address,
         Key::from(contract_hash),
         package_hash,
     );
@@ -236,16 +219,10 @@ fn initialize() {
 fn liquidate_locker() {
     LIQUIDLOCKER::liquidate_locker(&LiquidFactory::default());
 }
-/// @dev Claim payed back tokens as a single contributor
+/// @dev Claim payed back tokens
 #[no_mangle]
-fn claim_interest_single() {
-    LIQUIDLOCKER::claim_interest_single(&LiquidFactory::default());
-}
-/// @dev Claim payed back tokens as with multiple contributors.
-/// We need 2 functions because we cannot wipe all the contributions of users before someone became the sole contributor
-#[no_mangle]
-fn claim_interest_public() {
-    LIQUIDLOCKER::claim_interest_public(&LiquidFactory::default());
+fn claim_interest() {
+    LIQUIDLOCKER::claim_interest(&LiquidFactory::default());
 }
 /// @dev During the contribution phase, the owner can decrease the duration of the loan.
 /// The owner can only decrease the loan to a shorter duration, he cannot make it longer once the
@@ -287,9 +264,9 @@ fn rescue_locker() {
 }
 /// @dev Allow users to claim funds when a locker is disabled
 #[no_mangle]
-fn refund_due_disabled() {
+fn refund_due_expired() {
     let refund_address: Key = runtime::get_named_arg("refund_address");
-    LIQUIDLOCKER::refund_due_disabled(&LiquidFactory::default(), refund_address);
+    LIQUIDLOCKER::refund_due_expired(&LiquidFactory::default(), refund_address);
 }
 /// @dev Allow users to claim funds when a someone kicks them out to become the single provider
 #[no_mangle]
@@ -311,7 +288,12 @@ fn donate_funds() {
 #[no_mangle]
 fn pay_back_funds() {
     let payment_amount: U256 = runtime::get_named_arg("payment_amount");
-    LIQUIDLOCKER::pay_back_funds(&mut LiquidFactory::default(), payment_amount);
+    let payment_address: Key = runtime::get_named_arg("payment_address");
+    LIQUIDLOCKER::pay_back_funds(
+        &mut LiquidFactory::default(),
+        payment_amount,
+        payment_address,
+    );
 }
 /// @dev Calculate how many sends should be added before the next payoff is due based on payment amount
 #[no_mangle]
@@ -383,9 +365,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "factory_constructor",
         vec![
-            Parameter::new("default_count", U256::cl_type()),
             Parameter::new("default_token", Key::cl_type()),
-            Parameter::new("default_target", Key::cl_type()),
+            Parameter::new("trustee_multisig", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -413,7 +394,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("token_id", CLType::List(Box::new(U256::cl_type()))),
             Parameter::new("token_address", Key::cl_type()),
             Parameter::new("floor_asked", U256::cl_type()),
-            Parameter::new("total_asked", U256::cl_type()),
+            Parameter::new("delta_asked", U256::cl_type()),
             Parameter::new("payment_time", U256::cl_type()),
             Parameter::new("payment_rate", U256::cl_type()),
             Parameter::new("payment_token", Key::cl_type()),
@@ -433,20 +414,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("payment_rate", U256::cl_type()),
             Parameter::new("payment_token", Key::cl_type()),
         ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "create_empty_locker",
-        vec![Parameter::new("payment_token", Key::cl_type())],
-        CLType::Tuple2([Box::new(CLType::Key), Box::new(CLType::Key)]),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "create_empty_locker_js_client",
-        vec![Parameter::new("payment_token", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -506,15 +473,13 @@ fn call() {
     let (contract_hash, _) =
         storage::add_contract_version(package_hash, get_entry_points(), Default::default());
 
-    let default_count: U256 = runtime::get_named_arg("default_count");
     let default_token: Key = runtime::get_named_arg("default_token");
-    let default_target: Key = runtime::get_named_arg("default_target");
+    let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
 
     // Prepare constructor args
     let constructor_args = runtime_args! {
-        "default_count" => default_count,
         "default_token" => default_token,
-        "default_target" => default_target,
+        "trustee_multisig" => trustee_multisig,
         "contract_hash" => contract_hash,
         "package_hash"=> package_hash
     };

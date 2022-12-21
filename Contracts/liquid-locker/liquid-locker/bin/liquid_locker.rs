@@ -41,6 +41,7 @@ impl LiquidLocker {
         &mut self,
         trustee_multisig: Key,
         payment_token: Key,
+        factory_address: Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
@@ -48,6 +49,7 @@ impl LiquidLocker {
             self,
             trustee_multisig,
             payment_token,
+            factory_address,
             Key::from(contract_hash),
             package_hash,
         );
@@ -58,11 +60,13 @@ impl LiquidLocker {
 fn constructor() {
     let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
     let payment_token: Key = runtime::get_named_arg("payment_token");
+    let factory_address: Key = runtime::get_named_arg("factory_address");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     LiquidLocker::default().constructor(
         trustee_multisig,
         payment_token,
+        factory_address,
         contract_hash,
         package_hash,
     );
@@ -98,17 +102,10 @@ fn liquidate_locker() {
     LiquidLocker::default().liquidate_locker();
 }
 
-/// @dev Claim payed back tokens as a single contributor
+/// @dev Claim payed back tokens
 #[no_mangle]
-fn claim_interest_single() {
-    LiquidLocker::default().claim_interest_single();
-}
-
-/// @dev Claim payed back tokens as with multiple contributors.
-/// We need 2 functions because we cannot wipe all the contributions of users before someone became the sole contributor
-#[no_mangle]
-fn claim_interest_public() {
-    LiquidLocker::default().claim_interest_public();
+fn claim_interest() {
+    LiquidLocker::default().claim_interest();
 }
 
 /// @dev During the contribution phase, the owner can decrease the duration of the loan.
@@ -165,9 +162,9 @@ fn rescue_locker() {
 
 /// @dev Allow users to claim funds when a locker is disabled
 #[no_mangle]
-fn refund_due_disabled() {
+fn refund_due_expired() {
     let refund_address: Key = runtime::get_named_arg("refund_address");
-    LiquidLocker::default().refund_due_disabled(refund_address);
+    LiquidLocker::default().refund_due_expired(refund_address);
 }
 
 /// @dev Allow users to claim funds when a someone kicks them out to become the single provider
@@ -192,7 +189,8 @@ fn donate_funds() {
 #[no_mangle]
 fn pay_back_funds() {
     let payment_amount: U256 = runtime::get_named_arg("payment_amount");
-    LiquidLocker::default().pay_back_funds(payment_amount);
+    let payment_address: Key = runtime::get_named_arg("payment_address");
+    LiquidLocker::default().pay_back_funds(payment_amount, payment_address);
 }
 
 /// @dev Calculate how many sends should be added before the next payoff is due based on payment amount
@@ -270,9 +268,11 @@ fn call() {
 
         let trustee_multisig: Key = runtime::get_named_arg("trustee_multisig");
         let payment_token: Key = runtime::get_named_arg("payment_token");
+        let factory_address: Key = runtime::get_named_arg("factory_address");
         let constructor_args = runtime_args! {
             "trustee_multisig" => trustee_multisig,
             "payment_token" => payment_token,
+            "factory_address" => factory_address,
             "package_hash" => package_hash,
             "contract_hash" => contract_hash,
         };

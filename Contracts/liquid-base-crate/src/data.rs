@@ -1,5 +1,6 @@
 use alloc::vec::Vec;
-use casper_types::{Key, U256};
+use casper_contract::unwrap_or_revert::UnwrapOrRevert;
+use casper_types::{ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 
@@ -197,4 +198,20 @@ pub fn set_creation_time(creation_time: U256) {
 
 pub fn get_creation_time() -> U256 {
     get_key(CREATION_TIME).unwrap_or_default()
+}
+
+pub fn set_hash(contract_hash: Key) {
+    set_key(SELF_CONTRACT_HASH, contract_hash);
+}
+
+pub fn get_hash() -> Key {
+    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+}
+
+pub fn set_package_hash(package_hash: ContractPackageHash) {
+    set_key(SELF_PACKAGE_HASH, package_hash);
+}
+
+pub fn get_contract_package_hash() -> ContractPackageHash {
+    get_key(SELF_PACKAGE_HASH).unwrap_or_revert()
 }

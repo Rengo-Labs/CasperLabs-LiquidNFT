@@ -170,20 +170,20 @@ class LiquidNFT {
     console.log("... liquidateLocker function called successfully");
   }
 
-  //refundDueDisabled
-  refundDueDisabled = async (
+  //refundDueExpired
+  refundDueExpired = async (
     refundAddress: string
   ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
-    const refundDueDisabledDeployHash = await this.liquidNFT.refundDueDisabled(
+    const refundDueExpiredDeployHash = await this.liquidNFT.refundDueExpired(
       KEYS,
       refundAddress!,
       LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
     );
-    console.log("...refundDueDisabled deploy hash: ", refundDueDisabledDeployHash);
+    console.log("...refundDueExpired deploy hash: ", refundDueExpiredDeployHash);
 
-    await getDeploy(NODE_ADDRESS!, refundDueDisabledDeployHash);
-    console.log("... refundDueDisabled function called successfully");
+    await getDeploy(NODE_ADDRESS!, refundDueExpiredDeployHash);
+    console.log("... refundDueExpired function called successfully");
   }
 
   //refundDueSingle
@@ -220,12 +220,14 @@ class LiquidNFT {
 
   //payBackFunds
   payBackFunds = async (
-    paymentAmount: string
+    paymentAmount: string,
+    paymentAddress: string
   ) => {
     await this.liquidNFT.setContractHash(this.contractHash!);
     const payBackFundsDeployHash = await this.liquidNFT.payBackFunds(
       KEYS,
       paymentAmount!,
+      paymentAddress!,
       LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
     );
     console.log("...payBackFunds deploy hash: ", payBackFundsDeployHash);
@@ -234,30 +236,17 @@ class LiquidNFT {
     console.log("... payBackFunds function called successfully");
   }
 
-  //claimInterestSingle
-  claimInterestSingle = async () => {
+  //claimInterest
+  claimInterest = async () => {
     await this.liquidNFT.setContractHash(this.contractHash!);
-    const claimInterestSingleDeployHash = await this.liquidNFT.claimInterestSingle(
+    const claimInterestDeployHash = await this.liquidNFT.claimInterest(
       KEYS,
       LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
     );
-    console.log("...claimInterestSingle deploy hash: ", claimInterestSingleDeployHash);
+    console.log("...claimInterest deploy hash: ", claimInterestDeployHash);
 
-    await getDeploy(NODE_ADDRESS!, claimInterestSingleDeployHash);
-    console.log("... claimInterestSingle function called successfully");
-  }
-
-  //claimInterestPublic
-  claimInterestPublic = async () => {
-    await this.liquidNFT.setContractHash(this.contractHash!);
-    const claimInterestPublicDeployHash = await this.liquidNFT.claimInterestPublic(
-      KEYS,
-      LIQUIDNFT_FUNCTIONS_PAYMENT_AMOUNT!
-    );
-    console.log("...claimInterestPublic deploy hash: ", claimInterestPublicDeployHash);
-
-    await getDeploy(NODE_ADDRESS!, claimInterestPublicDeployHash);
-    console.log("... claimInterestPublic function called successfully");
+    await getDeploy(NODE_ADDRESS!, claimInterestDeployHash);
+    console.log("... claimInterest function called successfully");
   }
 
   //calculateEpoch

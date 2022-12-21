@@ -12,36 +12,28 @@ import {
 import * as utils from "./utils";
 
 class LIQUIDNFTFactoryClientForDeployment {
-  
+
   constructor(
 
     private nodeAddress: string,
     private chainName: string,
     private eventStreamAddress?: string,
-    
-  ) 
-  {}
+
+  ) { }
 
   public async install(
     keys: Keys.AsymmetricKey,
-    defaultCount: string,
     defaultToken: string,
-    defaultTarget: string,
     contractName: string,
     paymentAmount: string,
     wasmPath: string
   ) {
-    
+
     const _defaultToken = new CLByteArray(
-			Uint8Array.from(Buffer.from(defaultToken, "hex"))
-		);
-    const _defaultTarget = new CLByteArray(
-			Uint8Array.from(Buffer.from(defaultTarget, "hex"))
-		);
+      Uint8Array.from(Buffer.from(defaultToken, "hex"))
+    );
     const runtimeArgs = RuntimeArgs.fromMap({
-      default_count: CLValueBuilder.u256(defaultCount),
       default_token: utils.createRecipientAddress(_defaultToken),
-      default_target: utils.createRecipientAddress(_defaultTarget),
       contract_name: CLValueBuilder.string(contractName),
     });
 
