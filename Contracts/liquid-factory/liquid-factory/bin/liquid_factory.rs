@@ -116,7 +116,7 @@ fn create_liquid_locker_js_client() {
     let token_id: Vec<U256> = runtime::get_named_arg("token_id");
     let token_address: Key = runtime::get_named_arg("token_address");
     let floor_asked: U256 = runtime::get_named_arg("floor_asked");
-    let total_asked: U256 = runtime::get_named_arg("total_asked");
+    let delta_asked: U256 = runtime::get_named_arg("delta_asked");
     let payment_time: U256 = runtime::get_named_arg("payment_time");
     let payment_rate: U256 = runtime::get_named_arg("payment_rate");
     let payment_token: Key = runtime::get_named_arg("payment_token");
@@ -125,7 +125,7 @@ fn create_liquid_locker_js_client() {
         token_id,
         token_address,
         floor_asked,
-        total_asked,
+        delta_asked,
         payment_time,
         payment_rate,
         payment_token,
@@ -409,7 +409,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("token_id", CLType::List(Box::new(U256::cl_type()))),
             Parameter::new("token_address", Key::cl_type()),
             Parameter::new("floor_asked", U256::cl_type()),
-            Parameter::new("total_asked", U256::cl_type()),
+            Parameter::new("delta_asked", U256::cl_type()),
             Parameter::new("payment_time", U256::cl_type()),
             Parameter::new("payment_rate", U256::cl_type()),
             Parameter::new("payment_token", Key::cl_type()),

@@ -75,7 +75,7 @@ impl LIQUIDFACTORYInstance {
         token_id: Vec<U256>,
         token_address: Key,
         floor_asked: U256,
-        total_asked: U256,
+        delta_asked: U256,
         payment_time: U256,
         payment_rate: U256,
         payment_token: Key,
@@ -88,7 +88,7 @@ impl LIQUIDFACTORYInstance {
                 "token_id" => token_id,
                 "token_address" => token_address,
                 "floor_asked" => floor_asked,
-                "total_asked" => total_asked,
+                "delta_asked" => delta_asked,
                 "payment_time" => payment_time,
                 "payment_rate" => payment_rate,
                 "payment_token" => payment_token
