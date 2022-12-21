@@ -23,9 +23,6 @@ pub enum LiquidFactoryEvent {
         payers_address: Key,
         payback_amount: U256,
     },
-    NewEmptyLocker {
-        locker_address: Key,
-    },
 }
 
 impl LiquidFactoryEvent {
@@ -52,7 +49,6 @@ impl LiquidFactoryEvent {
                 payers_address: _,
                 payback_amount: _,
             } => "paybackToLocker",
-            LiquidFactoryEvent::NewEmptyLocker { locker_address: _ } => "newEmptyLocker",
         }
         .to_string()
     }

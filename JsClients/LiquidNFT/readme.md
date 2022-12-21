@@ -24,8 +24,7 @@ Use the script file in package.json to perform the testing
 "scripts": {
     "calculateEpoch": "ts-node LiquidNFT/scripts/calculateEpoch.ts",
     "calculatePaybacks": "ts-node LiquidNFT/scripts/calculatePaybacks.ts",
-    "claimInterestPublic": "ts-node LiquidNFT/scripts/claimInterestPublic.ts",
-    "claimInterestSingle": "ts-node LiquidNFT/scripts/claimInterestSingle.ts",
+    "claimInterest": "ts-node LiquidNFT/scripts/claimInterest.ts",
     "rescueLocker": "ts-node LiquidNFT/scripts/rescueLocker.ts",
     "disableLocker": "ts-node LiquidNFT/scripts/disableLocker.ts",
     "donateFunds": "ts-node LiquidNFT/scripts/donateFunds.ts",
@@ -38,7 +37,7 @@ Use the script file in package.json to perform the testing
     "liquidateLocker": "ts-node LiquidNFT/scripts/liquidateLocker.ts",
     "payBackFunds": "ts-node LiquidNFT/scripts/payBackFunds.ts",
     "penaltyAmount": "ts-node LiquidNFT/scripts/penaltyAmount.ts",
-    "refundDueDisabled": "ts-node LiquidNFT/scripts/refundDueDisabled.ts",
+    "refundDueExpired": "ts-node LiquidNFT/scripts/refundDueExpired.ts",
     "refundDueSingle": "ts-node LiquidNFT/scripts/refundDueSingle.ts"
   },
 ```
@@ -47,8 +46,7 @@ Use the following commands to perform testing
 ```
 npm run calculateEpoch <totalValue> <paymentRate> <paymentTime>
 npm run calculatePaybacks <totalValue> <paymentRate> <paymentTime>
-npm run claimInterestPublic
-npm run claimInterestSingle
+npm run claimInterest
 npm run rescueLocker
 npm run disableLocker
 npm run donateFunds <donationAmount>
@@ -59,9 +57,9 @@ npm run decreasePaymentTime <newPaymentRate>
 npm run initialize <tokenId> <cep47PackageHash> <tokenOwnerAccountHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate>
 npm run makeContribution <tokenAmount> <tokenHolder>
 npm run liquidateLocker
-npm run payBackFunds <paymentAmount>
+npm run payBackFunds <paymentAmount> <paymentAddress>
 npm run penaltyAmount <totalCollected> <lateDaysAmount>
-npm run refundDueDisabled <refundAddressAccountHash>
+npm run refundDueExpired <refundAddressAccountHash>
 npm run rrefundDueSingle <refundAddressAccountHash>
 
 ```

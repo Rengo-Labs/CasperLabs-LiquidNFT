@@ -1,7 +1,8 @@
-import {LiquidNFT} from "./lnft";
+import { LiquidNFT } from "./lnft";
 let liquidNFT = new LiquidNFT();
 liquidNFT.payBackFunds(
-    process.argv[2]
+    process.argv[2],
+    process.argv[3],
 );
 
 /*

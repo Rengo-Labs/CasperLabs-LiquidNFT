@@ -1,8 +1,7 @@
 use crate::{data, events::LiquidFactoryEvent};
 use alloc::{
     collections::{BTreeMap, BTreeSet},
-    format,
-    string::{String, ToString},
+    string::ToString,
     vec::Vec,
 };
 use casper_contract::{
@@ -13,7 +12,9 @@ use casper_types::{runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U2
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
 use liquid_locker_crate::{
-    entry_points::get_entry_points, liquid_helper_crate::liquid_base_crate, LIQUIDLOCKER,
+    entry_points::get_entry_points,
+    liquid_helper_crate::liquid_base_crate::data::{get_trustee_multisig, set_trustee_multisig},
+    LIQUIDLOCKER,
 };
 use liquid_transfer_crate::LIQUIDTRANSFER;
 
@@ -25,85 +26,23 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
     /// @dev Set parameters and precompute some locker addresses.
     fn init(
         &mut self,
-        default_count: U256,
         default_token: Key,
-        default_target: Key,
+        trustee_multisig: Key,
         contract_hash: Key,
         package_hash: ContractPackageHash,
     ) {
-        data::set_default_count(default_count);
         data::set_default_token(default_token);
         data::set_master_address(self.get_caller());
-        data::set_locker_count(0.into());
-
-        Implementations::init();
-        Lockers::init();
-        Implementations::instance().set(&default_token, default_target);
+        set_trustee_multisig(trustee_multisig);
 
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-
-        self._generate_locker(default_token);
     }
 
     fn only_master(&self) {
-        if self.get_caller().to_formatted_string()
-            != data::get_master_address().to_formatted_string()
-        {
+        if self.get_caller() != data::get_master_address() {
             runtime::revert(Error::InvalidMaster);
         }
-    }
-
-    fn is_locker(&self, lockers_address: &Key) {
-        if !Lockers::instance().get(lockers_address) {
-            runtime::revert(Error::InvalidLocker);
-        }
-    }
-
-    /// @dev Clone the byte code from one contract into a new contract. Uses solidity assembly.
-    /// This is a lot cheaper in gas than deploying a new contract.
-    fn _generate_locker(&self, payment_token: Key) -> (Key, Key) {
-        // Factory
-        let salt: String = data::get_counter().to_string();
-        data::set_counter(data::get_counter().checked_add(1.into()).unwrap_or_revert());
-        let name: String = "Locker-".to_string() + &salt;
-        let (package_hash, _) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-        runtime::put_key(&format!("{}_contract", name), contract_hash.into());
-
-        // Making constructor access to call
-        let constructor_access: URef =
-            storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
-                .unwrap_or_revert()
-                .pop()
-                .unwrap_or_revert();
-
-        // Call the constructor entry point
-        let _: () = runtime::call_versioned_contract(
-            package_hash,
-            None,
-            "constructor",
-            runtime_args! {
-                "trustee_multisig" => liquid_base_crate::data::get_trustee_multisig(),
-                "payment_token" => payment_token,
-                "package_hash" => package_hash,
-                "contract_hash" => contract_hash,
-            },
-        );
-
-        // Remove all URefs from the constructor group, so no one can call it for the second time.
-        let mut urefs = BTreeSet::new();
-        urefs.insert(constructor_access);
-        storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
-            .unwrap_or_revert();
-
-        if !Lockers::instance().get(&Key::from(package_hash)) {
-            Lockers::instance().set(&Key::from(package_hash), true);
-        }
-
-        // New deployed locker address
-        (Key::from(contract_hash), Key::from(package_hash))
     }
 
     /// @dev Transfer master permission
@@ -111,11 +50,13 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         self.only_master();
         data::set_master_address(new_master);
     }
+
     /// @dev Destroy Master functionality
     fn revoke_master(&self) {
         self.only_master();
-        data::set_master_address(data::zero_address());
+        data::set_master_address(data::account_zero_address());
     }
+
     /// @dev Clone the implemenation for a token into a new contract.
     /// Call into initialize for the locker to begin the LiquidNFT loan process.
     /// Transfer the NFT the user wants use for the loan into the locker.
@@ -125,7 +66,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         token_id: Vec<U256>,
         token_address: Key,
         floor_asked: U256,
-        total_asked: U256,
+        delta_asked: U256,
         payment_time: U256,
         payment_rate: U256,
         payment_token: Key,
@@ -135,6 +76,7 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         }
         let (locker_contract_address, locker_package_address) =
             self._generate_locker(payment_token);
+        let total_asked = floor_asked.checked_add(delta_asked).unwrap_or_revert();
         let () = runtime::call_versioned_contract(
             locker_package_address.into_hash().unwrap_or_revert().into(),
             None,
@@ -167,23 +109,47 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
         (locker_contract_address, locker_package_address)
     }
 
-    /// Creating an empty locker without any liquidity
-    fn create_empty_locker(&mut self, payment_token: Key) -> (Key, Key) {
-        let (locker_contract_address, locker_package_address) =
-            self._generate_locker(payment_token);
-        LIQUIDFACTORY::emit(
-            self,
-            &LiquidFactoryEvent::NewEmptyLocker {
-                locker_address: locker_package_address,
+    /// @dev Clone the byte code from one contract into a new contract. Uses solidity assembly.
+    /// This is a lot cheaper in gas than deploying a new contract.
+    fn _generate_locker(&self, payment_token: Key) -> (Key, Key) {
+        let (package_hash, _) = storage::create_contract_package_at_hash();
+        let (contract_hash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+
+        // Making constructor access to call
+        let constructor_access: URef =
+            storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
+                .unwrap_or_revert()
+                .pop()
+                .unwrap_or_revert();
+
+        // Call the constructor entry point
+        runtime::call_versioned_contract::<()>(
+            package_hash,
+            None,
+            "constructor",
+            runtime_args! {
+                "trustee_multisig" => get_trustee_multisig(),
+                "payment_token" => payment_token,
+                "factory_address" => Key::from(get_contract_package_hash()),
+                "package_hash" => package_hash,
+                "contract_hash" => contract_hash,
             },
         );
-        (locker_contract_address, locker_package_address)
+
+        // Remove all URefs from the constructor group, so no one can call it for the second time.
+        let mut urefs = BTreeSet::new();
+        urefs.insert(constructor_access);
+        storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
+            .unwrap_or_revert();
+
+        // New deployed locker address
+        (Key::from(contract_hash), Key::from(package_hash))
     }
 
     /// @dev Call contributeToLocker. Factory acts as a middle man between the user and the locker.
     /// We do this so that the user only has to approve the factory and not each new locker.
     fn contribute_to_locker(&mut self, lockers_address: Key, payment_amount: U256) -> (U256, U256) {
-        self.is_locker(&lockers_address);
         let (total_increase, users_increase): (U256, U256) = runtime::call_versioned_contract(
             lockers_address.into_hash().unwrap_or_revert().into(),
             None,
@@ -222,7 +188,6 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
     /// The result of this is that the value is transferred to the contributors not the owner because it does
     /// not deduct from the balance the owner owes.
     fn donate_to_locker(&mut self, lockers_address: Key, donation_amount: U256) {
-        self.is_locker(&lockers_address);
         let () = runtime::call_versioned_contract(
             lockers_address.into_hash().unwrap_or_revert().into(),
             None,
@@ -256,13 +221,13 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
     /// @dev Call paybackToLocker. Factory acts as a middle man between the user and the locker.
     /// We do this so that the user only has to approve the factory and not each new locker.
     fn payback_to_locker(&mut self, lockers_address: Key, payment_amount: U256) {
-        self.is_locker(&lockers_address);
         let () = runtime::call_versioned_contract(
             lockers_address.into_hash().unwrap_or_revert().into(),
             None,
             "pay_back_funds",
             runtime_args! {
-                "payment_amount" => payment_amount
+                "payment_amount" => payment_amount,
+                "payment_address" => self.get_caller()
             },
         );
         let payment_token: Key = runtime::call_versioned_contract(
@@ -343,13 +308,6 @@ pub trait LIQUIDFACTORY<Storage: ContractStorage>:
                 event.insert("locker_address", locker_address.to_string());
                 event.insert("payers_address", payers_address.to_string());
                 event.insert("payback_amount", payback_amount.to_string());
-                events.push(event);
-            }
-            LiquidFactoryEvent::NewEmptyLocker { locker_address } => {
-                let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", liquid_factory_event.type_name());
-                event.insert("locker_address", locker_address.to_string());
                 events.push(event);
             }
         };
