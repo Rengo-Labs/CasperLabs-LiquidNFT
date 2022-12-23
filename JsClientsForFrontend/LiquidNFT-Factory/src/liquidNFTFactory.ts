@@ -156,7 +156,7 @@ class LIQUIDNFTFACTORYClientForFunctions {
     ids: string[],
     tokenAddress: string,
     floorAsked: string,
-    totalAsked: string,
+    deltaAsked: string,
     paymentTime: string,
     paymentRate: string,
     paymentToken: string,
@@ -173,7 +173,7 @@ class LIQUIDNFTFACTORYClientForFunctions {
       token_id: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
       token_address: utils.createRecipientAddress(_tokenAddress),
       floor_asked: CLValueBuilder.u256(floorAsked),
-      total_asked: CLValueBuilder.u256(totalAsked), 
+      delta_asked: CLValueBuilder.u256(deltaAsked), 
       payment_time: CLValueBuilder.u256(paymentTime),
       payment_rate: CLValueBuilder.u256(paymentRate),
       payment_token: new CLKey(_paymentToken),
@@ -184,39 +184,6 @@ class LIQUIDNFTFACTORYClientForFunctions {
       chainName: this.chainName,
       contractHash: this.contractHash,
       entryPoint: "create_liquid_locker_js_client",
-      keys,
-      nodeAddress: this.nodeAddress,
-      paymentAmount,
-      runtimeArgs,
-    });
-
-    if (deployHash !== null) {
-      
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
-    }
-  }
-
-  public async  createEmptyLockerJsClient(
-    keys: Keys.AsymmetricKey,
-    paymentToken: string,
-    //paymentToken: RecipientType, 
-    paymentAmount: string
-  ) {
-    
-    const _paymentToken = new CLByteArray(
-      Uint8Array.from(Buffer.from(paymentToken, "hex"))
-    );
-    const runtimeArgs = RuntimeArgs.fromMap({
-      payment_token: new CLKey(_paymentToken),
-      //paymentToken: utils.createRecipientAddress(paymentToken),
-    });
-
-    const deployHash = await contractCall({
-      chainName: this.chainName,
-      contractHash: this.contractHash,
-      entryPoint: "create_empty_locker_js_client",
       keys,
       nodeAddress: this.nodeAddress,
       paymentAmount,
