@@ -13,7 +13,7 @@ liquidNFTfactory.createLiquidLockerJsClient(
 /*
     "Script createLiquidLocker comments": {
         "Description" : "use it to create liquidLocker",
-        "Syntax" : "npm run createLiquidLocker <tokenId> <cep47PackageHash> <floorAsked> <totalAsked> <paymentTime> <paymentRate> <erc20PackageHash>",
+        "Syntax" : "npm run createLiquidLocker <tokenId> <cep47PackageHash> <floorAsked> <deltaAsked> <paymentTime> <paymentRate> <erc20PackageHash>",
         "Example" : "npm run createLiquidLocker 18 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04"
     },
 */

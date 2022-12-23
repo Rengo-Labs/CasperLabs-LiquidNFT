@@ -30,7 +30,7 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${LIQUIDNFT_FACTORY_MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-export const deployContract = async (defaultToken: string) => {
+export const deployContract = async (defaultToken: string,trusteeMultisig:string) => {
   const liquidNFT = new LIQUIDNFTFactoryClientForDeployment(
     NODE_ADDRESS!,
     CHAIN_NAME!,
@@ -42,6 +42,7 @@ export const deployContract = async (defaultToken: string) => {
   const installDeployHash = await liquidNFT.install(
     KEYS,
     defaultToken!,
+    trusteeMultisig!,
     contractName!,
     LIQUIDNFT_FACTORY_INSTALL_PAYMENT_AMOUNT!,
     LIQUIDNFT_FACTORY_WASM_PATH!
@@ -95,7 +96,7 @@ class LiquidNFTFactory {
     tokenIdsArray: Array<string>,
     cep47PackageHash: string,
     floorAsked: string,
-    totalAsked: string,
+    deltaAsked: string,
     paymentTime: string,
     paymentRate: string,
     erc20PackageHash: string,
@@ -106,7 +107,7 @@ class LiquidNFTFactory {
       tokenIdsArray!,
       cep47PackageHash!,
       floorAsked!,
-      totalAsked!,
+      deltaAsked!,
       paymentTime!,
       paymentRate!,
       erc20PackageHash!,
@@ -123,20 +124,6 @@ class LiquidNFTFactory {
     await this.liquidNFTFactory.setContractHash(this.contractHash!);
     const result = await this.liquidNFTFactory.result();
     return result;
-  }
-
-  //createEmptyLockerJsClient
-  createEmptyLocker = async (erc20PackageHash: string) => {
-    await this.liquidNFTFactory.setContractHash(this.contractHash!);
-    const createEmptyLockerJsClientDeployHash = await this.liquidNFTFactory.createEmptyLockerJsClient(
-      KEYS,
-      erc20PackageHash!,
-      LIQUIDNFT_FACTORY_CREATEEMPTYLOCKER_FUNCTIONS_PAYMENT_AMOUNT!
-    );
-    console.log("... createEmptyLockerJsClient deploy hash: ", createEmptyLockerJsClientDeployHash);
-
-    await getDeploy(NODE_ADDRESS!, createEmptyLockerJsClientDeployHash);
-    console.log("... createEmptyLockerJsClient function called successfully");
   }
 
 
