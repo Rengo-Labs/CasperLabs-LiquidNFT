@@ -1,5 +1,5 @@
 import {deployContract} from "./lnftFactory";
-deployContract(process.argv[2]!, process.argv[3]!,);
+deployContract(process.argv[2]!);
 
 /*
     "Script deployContract comments": {

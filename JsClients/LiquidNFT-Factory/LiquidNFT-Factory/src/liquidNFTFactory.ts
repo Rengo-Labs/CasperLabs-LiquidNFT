@@ -8,6 +8,7 @@ import {
   Keys,
   RuntimeArgs,
 } from "casper-js-sdk";
+import { RecipientType } from "./types";
 
 import * as utils from "./utils";
 
@@ -24,7 +25,7 @@ class LIQUIDNFTFactoryClientForDeployment {
   public async install(
     keys: Keys.AsymmetricKey,
     defaultToken: string,
-    trusteeMultisig: string,
+    trusteeMultisig: RecipientType,
     contractName: string,
     paymentAmount: string,
     wasmPath: string
@@ -33,12 +34,12 @@ class LIQUIDNFTFactoryClientForDeployment {
     const _defaultToken = new CLByteArray(
       Uint8Array.from(Buffer.from(defaultToken, "hex"))
     );
-    const _trusteeMultisig = new CLByteArray(
-      Uint8Array.from(Buffer.from(trusteeMultisig, "hex"))
-    );
+    // const _trusteeMultisig = new CLByteArray(
+    //   Uint8Array.from(Buffer.from(trusteeMultisig, "hex"))
+    // );
     const runtimeArgs = RuntimeArgs.fromMap({
       default_token: utils.createRecipientAddress(_defaultToken),
-      trustee_multisig:utils.createRecipientAddress(_trusteeMultisig),
+      trustee_multisig:utils.createRecipientAddress(trusteeMultisig),
       contract_name: CLValueBuilder.string(contractName),
     });
 

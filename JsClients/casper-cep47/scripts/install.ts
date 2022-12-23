@@ -37,7 +37,7 @@ const {
 const TOKEN_NAME = "LNFT test";
 const TOKEN_META = new  Map<string,string>().set("company name","Scytalelabs");
 const TOKEN_SYMBOL = "LNFT";
-const CONTRACT_NAME = "LNFT";
+const CONTRACT_NAME = "kirman-LNFT-1";
 const INSTALL_PAYMENT_AMOUNT = "200000000000";
 const WASM_PATH = "wasm/cep47-token.wasm";
 const KEYS = Keys.Ed25519.parseKeyFiles(
