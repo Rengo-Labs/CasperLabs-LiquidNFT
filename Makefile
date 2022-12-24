@@ -66,7 +66,6 @@ clean:
 	rm -rf ${js_client_lnft_factory-flow-tests_address}/keys
 	rm -rf ${js_client_main_contract_flow_script}/keys
 	rm -rf ${js_client_too_late_liquidate_flow_script}/keys
-	rm -rf ${js_client_address}	
 	rm -rf ${LiquidNFT_factory_node_modules}/node_modules
 	rm -rf ${js_client_cep47_address}/node_modules
 	rm -rf ${LiquidNFT_node_modules}/node_modules
