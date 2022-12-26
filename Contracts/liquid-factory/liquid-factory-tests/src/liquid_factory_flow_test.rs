@@ -35,14 +35,14 @@ fn test_contract_flow() {
         runtime_args! {
             "prepay_amount" => U256::from(200_000_000)
         },
-        now() + (ONE_DAY_IN_MS * 5),
+        now(),
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_MINUTE_IN_MS * 20),
+        now(),
     );
     let old_balance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(old_balance, 10_389_800_000_000u64.into());
@@ -51,14 +51,14 @@ fn test_contract_flow() {
         accounts[0],
         lockers_package_address,
         200_000_000u64.into(),
-        now() + (ONE_DAY_IN_MS * 10),
+        now(),
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_DAY_IN_MS * 10),
+        now(),
     );
     let new_balance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(
@@ -68,18 +68,13 @@ fn test_contract_flow() {
     );
 
     let donation_amount: U256 = 50.into();
-    factory_instance.donate_to_locker(
-        accounts[0],
-        lockers_package_address,
-        donation_amount,
-        now() + (ONE_DAY_IN_MS * 10),
-    );
+    factory_instance.donate_to_locker(accounts[0], lockers_package_address, donation_amount, now());
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_DAY_IN_MS * 10),
+        now(),
     );
     assert_eq!(
         new_balance - donation_amount,
@@ -104,7 +99,7 @@ fn should_be_able_to_contribute_before_contribution_phase_end() {
         accounts[0],
         lockers_package_address,
         payment_amount,
-        now() + (ONE_MINUTE_IN_MS * 5),
+        now(),
     );
     let (total_increase, users_increase): (U256, U256) = factory_instance.query("result");
     assert_eq!(
@@ -134,7 +129,7 @@ fn should_return_back_nft_to_owner_as_floor_not_reached_in_contribution_phase() 
         accounts[0],
         lockers_package_address,
         payment_amount,
-        now() + (ONE_MINUTE_IN_MS * 5),
+        now(),
     );
 
     let (total_increase, users_increase): (U256, U256) = factory_instance.query("result");
@@ -151,7 +146,7 @@ fn should_return_back_nft_to_owner_as_floor_not_reached_in_contribution_phase() 
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_MINUTE_IN_MS * 8),
+        now(),
     );
     let balance: U256 = cep47.query_named_key("balance".into());
     assert_eq!(
@@ -166,14 +161,14 @@ fn should_return_back_nft_to_owner_as_floor_not_reached_in_contribution_phase() 
         accounts[0],
         "disable_locker",
         runtime_args! {},
-        now() + (ONE_MINUTE_IN_MS * 15),
+        now(),
     );
 
     cep47.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_MINUTE_IN_MS * 17),
+        now(),
     );
     let balance: U256 = cep47.query_named_key("balance".into());
     assert_eq!(balance, 2.into(), "2 NFT's not returned to owner");
@@ -195,7 +190,7 @@ fn should_be_able_to_liquadate_locker_as_owner_didnt_do_payment_for_days() {
         accounts[1],
         lockers_package_address,
         payment_amount,
-        now() + (ONE_MINUTE_IN_MS * 5),
+        now(),
     );
     let (total_increase, users_increase): (U256, U256) = factory_instance.query("result");
     assert_eq!(
@@ -213,7 +208,7 @@ fn should_be_able_to_liquadate_locker_as_owner_didnt_do_payment_for_days() {
         accounts[1],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_MINUTE_IN_MS * 9),
+        now(),
     );
     let balance: U256 = cep47.query_named_key("balance".into());
     assert_eq!(balance, 0.into(), "Should not have NFT initially");
