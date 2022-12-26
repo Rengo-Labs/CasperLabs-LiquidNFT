@@ -137,14 +137,14 @@ fn test_contribute_to_locker() {
         accounts[0],
         lockers_package_address,
         3_000_000_000u64.into(),
-        now() + (ONE_MINUTE_IN_MS * 5),
+        now(),
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_MINUTE_IN_MS * 10),
+        now(),
     );
     let old_balance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(old_balance, 9987000000000u64.into());
@@ -235,14 +235,14 @@ fn test_payback_to_locker() {
         runtime_args! {
             "prepay_amount" => U256::from(200_000_000)
         },
-        now() + (ONE_DAY_IN_MS * 5),
+        now(),
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_MINUTE_IN_MS * 20),
+        now(),
     );
     let old_balance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(old_balance, 10_389_800_000_000u64.into());
@@ -251,14 +251,14 @@ fn test_payback_to_locker() {
         accounts[0],
         lockers_package_address,
         200_000_000u64.into(),
-        now() + (ONE_DAY_IN_MS * 10),
+        now(),
     );
 
     erc20.call_contract(
         accounts[0],
         "balance_of_js_client",
         runtime_args! { "owner" => Key::Account(accounts[0]) },
-        now() + (ONE_DAY_IN_MS * 10),
+        now(),
     );
     let new_balance: U256 = erc20.query_named_key("balance".into());
     assert_eq!(
