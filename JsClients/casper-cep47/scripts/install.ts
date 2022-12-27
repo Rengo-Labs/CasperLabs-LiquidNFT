@@ -34,10 +34,10 @@ const {
   //CONTRACT_NAME
 } = process.env;
 
-const TOKEN_NAME = "LNFT test";
-const TOKEN_META = new  Map<string,string>().set("company name","Scytalelabs");
+const TOKEN_NAME = "An NFT";
+const TOKEN_META = new Map<string, string>().set("company name", "Scytalelabs");
 const TOKEN_SYMBOL = "LNFT";
-const CONTRACT_NAME = "kirman-LNFT-1";
+const CONTRACT_NAME = "Scytalelabs-Baz-cep47-";
 const INSTALL_PAYMENT_AMOUNT = "200000000000";
 const WASM_PATH = "wasm/cep47-token.wasm";
 const KEYS = Keys.Ed25519.parseKeyFiles(
@@ -47,28 +47,29 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
 
 
 function getDeploymentCount() {
-  return fs.readFileSync('deploymentCount','utf8');
+  return fs.readFileSync('deploymentCount', 'utf8');
 }
 
 function updateDeploymentCount() {
-  let val:bigint = BigInt(fs.readFileSync('deploymentCount','utf8'));
+  let val: bigint = BigInt(fs.readFileSync('deploymentCount', 'utf8'));
   let newVal = val + BigInt(1);
-  fs.writeFileSync('deploymentCount',newVal.toString(),{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('deploymentCount', newVal.toString(), { encoding: 'utf8', flag: 'w' });
 }
 
-const deployContract = async (tokenName: string = TOKEN_NAME,
-                    tokenSymbol: string = TOKEN_SYMBOL, 
-                    tokenMeta: Map<string,string> = TOKEN_META,
-                    contractName: string = CONTRACT_NAME,
-                    installPaymentAmount: string = INSTALL_PAYMENT_AMOUNT,
-                    wasmPath: string = WASM_PATH
-                    ) => {
+const deployContract = async (
+  tokenName: string = TOKEN_NAME,
+  tokenSymbol: string = TOKEN_SYMBOL,
+  tokenMeta: Map<string, string> = TOKEN_META,
+  contractName: string = CONTRACT_NAME,
+  installPaymentAmount: string = INSTALL_PAYMENT_AMOUNT,
+  wasmPath: string = WASM_PATH
+) => {
   const cep47 = new CEP47Client(
     NODE_ADDRESS!,
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
-  
+
   contractName = contractName + getDeploymentCount();
   updateDeploymentCount();
 
@@ -97,22 +98,22 @@ const deployContract = async (tokenName: string = TOKEN_NAME,
     accountInfo,
     `${contractName!}_contract_hash`
   );
-  fs.writeFileSync('cep47ContractHash',contractHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/cep47ContractHash',contractHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('cep47ContractHash', contractHash, { encoding: 'utf8', flag: 'w' });
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/cep47ContractHash', contractHash, { encoding: 'utf8', flag: 'w' });
   console.log(`... Contract Hash: ${contractHash}`);
 
   const packageHash = await utils.getAccountNamedKeyValue(
     accountInfo,
     `${contractName!}_package_hash`
   );
-  fs.writeFileSync('cep47PackageHash',packageHash,{encoding:'utf8',flag:'w'});
-  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/cep47PackageHash',packageHash,{encoding:'utf8',flag:'w'});
+  fs.writeFileSync('cep47PackageHash', packageHash, { encoding: 'utf8', flag: 'w' });
+  fs.writeFileSync('.././LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/cep47PackageHash', packageHash, { encoding: 'utf8', flag: 'w' });
   console.log(`... Package Hash: ${packageHash}`);
 };
 
-function deployContractWithParams(){
-  switch(process.argv.length) {
-    case 2:{
+function deployContractWithParams() {
+  switch (process.argv.length) {
+    case 2: {
       deployContract();
       break;
     }
@@ -121,23 +122,23 @@ function deployContractWithParams(){
       break;
     }
     case 4: {
-      deployContract(process.argv[2],process.argv[3]);
+      deployContract(process.argv[2], process.argv[3]);
       break;
     }
-    case 5:{
-      deployContract(process.argv[2],process.argv[3], new Map(parseTokenMeta(process.argv[4]!)));
+    case 5: {
+      deployContract(process.argv[2], process.argv[3], new Map(parseTokenMeta(process.argv[4]!)));
       break;
     }
     case 6: {
-      deployContract(process.argv[2],process.argv[3],new Map(parseTokenMeta(process.argv[4]!)),process.argv[5])
+      deployContract(process.argv[2], process.argv[3], new Map(parseTokenMeta(process.argv[4]!)), process.argv[5])
       break;
     }
     case 7: {
-      deployContract(process.argv[2],process.argv[3],new Map(parseTokenMeta(process.argv[4]!)),process.argv[5],process.argv[6]);
+      deployContract(process.argv[2], process.argv[3], new Map(parseTokenMeta(process.argv[4]!)), process.argv[5], process.argv[6]);
       break;
     }
     case 8: {
-      deployContract(process.argv[2],process.argv[3],new Map(parseTokenMeta(process.argv[4]!)),process.argv[5],process.argv[6],process.argv[7]);
+      deployContract(process.argv[2], process.argv[3], new Map(parseTokenMeta(process.argv[4]!)), process.argv[5], process.argv[6], process.argv[7]);
       break;
     }
   }

@@ -30,7 +30,7 @@ const KEYS = Keys.Ed25519.parseKeyFiles(
   `${LIQUIDNFT_FACTORY_MASTER_KEY_PAIR_PATH}/secret_key.pem`
 );
 
-export const deployContract = async (defaultToken: string) => {
+export const deployContract = async (defaultToken: string, trusteeMultisig: string) => {
   const liquidNFT = new LIQUIDNFTFactoryClientForDeployment(
     NODE_ADDRESS!,
     CHAIN_NAME!,
@@ -42,7 +42,7 @@ export const deployContract = async (defaultToken: string) => {
   const installDeployHash = await liquidNFT.install(
     KEYS,
     defaultToken!,
-    KEYS.publicKey!,
+    trusteeMultisig!,
     contractName!,
     LIQUIDNFT_FACTORY_INSTALL_PAYMENT_AMOUNT!,
     LIQUIDNFT_FACTORY_WASM_PATH!

@@ -1,7 +1,7 @@
-import {LiquidNFTFactory} from "../../../LiquidNFT-Factory/LiquidNFT-Factory/scripts/lnftFactory";
-import {LiquidNFT} from "../../../LiquidNFT/LiquidNFT/scripts/lnft";
-import {Cep47} from '../../../casper-cep47/scripts/cep47';
-import {ERC20} from '../../../uniswapV2Core-erc20/ERC20/scripts/erc20';
+import { LiquidNFTFactory } from "../../../LiquidNFT-Factory/LiquidNFT-Factory/scripts/lnftFactory";
+import { LiquidNFT } from "../../../LiquidNFT/LiquidNFT/scripts/lnft";
+import { Cep47 } from '../../../casper-cep47/scripts/cep47';
+import { ERC20 } from '../../../uniswapV2Core-erc20/ERC20/scripts/erc20';
 import * as fs from 'fs';
 
 async function testMainContractFlow(
@@ -19,56 +19,58 @@ async function testMainContractFlow(
     mintApproveAmount: string,
     paymentAmountContributeToLocker: string,
     prePaymentAmount: string,
-    paymentAmountForPaybackToLocker: string)
-{
+    paymentAmountForPaybackToLocker: string
+) {
     //initializing all classes
     let liquidNFTfactory = new LiquidNFTFactory();
-    let cep47 = new Cep47();
-    let erc20 = new ERC20();
+    // let cep47 = new Cep47();
+    // let erc20 = new ERC20();
 
-    // Call mintOneToken
-    let map = new Map<string,string>().set(key,value);
-    let arrayOfMaps = [map];
-    let tokenIds = id;
-    
-    await cep47.mint(tokenIds,arrayOfMaps);
+    // // Call mintOneToken
+    // let map = new Map<string, string>().set(key, value);
+    // let arrayOfMaps = [map];
+    // let tokenIds = id;
 
-    //Call approveOneToken
-    await cep47.approve(liquidNFTFactoryPackageHash,tokenIds);
+    // await cep47.mint(tokenIds, arrayOfMaps);
 
-    // Call createliquidLockerJsClient
-    await liquidNFTfactory.createLiquidLockerJsClient(
-        tokenIds,
-        cep47PackageHash,
-        floorAsked, 
-        totalFloor,
-        paymentTime, 
-        paymentRate, 
-        erc20PackageHash);
+    // //Call approveOneToken
+    // await cep47.approve(liquidNFTFactoryPackageHash, tokenIds);
 
-    // Call lockerHashes
-    let result = await liquidNFTfactory.lockerHashes();
-    fs.writeFileSync('liquidNFTContractHash',result.contractHash,{encoding:'utf8',flag:'w'});
-    fs.writeFileSync('liquidNFTPackageHash',result.packageHash,{encoding:'utf8',flag:'w'});
+    // // Call createliquidLockerJsClient
+    // await liquidNFTfactory.createLiquidLockerJsClient(
+    //     tokenIds,
+    //     cep47PackageHash,
+    //     floorAsked,
+    //     totalFloor,
+    //     paymentTime,
+    //     paymentRate,
+    //     erc20PackageHash);
 
-    let _lockerPackageHash = fs.readFileSync('liquidNFTPackageHash','utf8');
-    let lockerPackageHash=_lockerPackageHash.split("-").pop()!; 
-    
-    // Call erc20 mint
-    await erc20.mint(keyPath,mintApproveAmount);
+    // // Call lockerHashes
+    // let result = await liquidNFTfactory.lockerHashes();
+    // fs.writeFileSync('liquidNFTContractHash', result.contractHash, { encoding: 'utf8', flag: 'w' });
+    // fs.writeFileSync('liquidNFTPackageHash', result.packageHash, { encoding: 'utf8', flag: 'w' });
 
-    // Call erc20 approve
-    await erc20.approve(liquidNFTFactoryPackageHash,mintApproveAmount);
+    // let _lockerPackageHash = fs.readFileSync('liquidNFTPackageHash', 'utf8');
+    // let lockerPackageHash = _lockerPackageHash.split("-").pop()!;
 
-    // Call contributeToLocker
-    await liquidNFTfactory.contributeToLocker(lockerPackageHash,paymentAmountContributeToLocker);    
+    // // Call erc20 mint
+    // await erc20.mint(keyPath, mintApproveAmount);
+
+    // // Call erc20 approve
+    // await erc20.approve(liquidNFTFactoryPackageHash, mintApproveAmount);
+
+    // // Call contributeToLocker
+    // await liquidNFTfactory.contributeToLocker(lockerPackageHash, paymentAmountContributeToLocker);
 
     let liquidNFT = new LiquidNFT();
     // Call enableLocker
     await liquidNFT.enableLocker(prePaymentAmount);
 
+    let lockerPackageHash = "bddb8dc00c3e1e358de0d5107fa58a86a3364a6496cf5e1839261b149973f763";
+
     // Call paybackToLocker
-    await liquidNFTfactory.paybackToLocker(lockerPackageHash,paymentAmountForPaybackToLocker);
+    await liquidNFTfactory.paybackToLocker(lockerPackageHash, paymentAmountForPaybackToLocker);
 
 }
 testMainContractFlow(
@@ -93,7 +95,7 @@ testMainContractFlow(
     "Script testMainContractFlow comments": {
     "Description" : "use it to test main contract flow",
     "Syntax" : "npm run testMainContractFlow  <id> <key> <value> <liquidNFTFactoryPackageHash> <cep47PackageHash> <floorAsked> <totalFloor> <paymentTime> <paymentRate> <erc20PackageHash> <keyPath> <mintApproveAmount> <paymentAmountContributeToLocker> <prePaymentAmount> <paymentAmountForPaybackToLocker> ",
-    "Example" : "npm run testMainContractFlow 17 name AwesomeNFT f7e686e9086b54918896bda93b490d878abf9a4c35006f68f8fb6ce8811cdff0 5c89f407dacab04f69b704a81c6786b9e115ea3dcea6499d6a95203bece6c406 4000000000 10000000000 86400000 10 4efb977f33caaddc15ebd244a1245b3e930cc9fc898b98792688ba7ecfad4c04 keys 1000000000000 5000000000 1000000000 1000000000"
+    "Example" : "npm run testMainContractFlow 2 ANFT AwesomeNFT 084a5fe30ed8d73e73975e0fc6223057b4a97f8a428a9ab5e5ec94cf8de71b33 17abda90dc374099950c346a5e7b22dc3ad14b51ceb936b915a2649ea78b650b 600000000000 0 25920000000 10000000000 eb4f9467e9a3f43cf59b3da7e60f0a6fc99659326fd2054b96fc4c3520b81c6f keys 9990000000000 600000000000 200000000 200000000"
   },
 */
 
