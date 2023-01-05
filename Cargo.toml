@@ -6,10 +6,10 @@ members = [
   "Contracts/mock-cep47",
   # MOCK ERC20
   "Contracts/mock-erc20",
-  # LIQUID BASE
-  "Contracts/liquid-base-crate",
-  # LIQUID HELPER
-  "Contracts/liquid-helper-crate",
+  # CRATES
+  "Contracts/crates/liquid-base-crate",
+  "Contracts/crates/liquid-helper-crate",
+  "Contracts/crates/liquid-transfer-crate",
   # LIQUID FACTORY
   "Contracts/liquid-factory/liquid-factory",
   "Contracts/liquid-factory/liquid-factory-crate",
@@ -17,8 +17,6 @@ members = [
   # LIQUID LOCKER
   "Contracts/liquid-locker/liquid-locker",
   "Contracts/liquid-locker/liquid-locker-crate",
-  # LIQUID TRANSFER
-  "Contracts/liquid-transfer-crate",
 ]
 [profile.release]
 codegen-units = 1
