@@ -7,8 +7,8 @@ edition = "2018"
 [dependencies]
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
-contract-utils = { path = "../../utils/contract-utils" }
-liquid-transfer-crate = { path = "../../liquid-transfer-crate" }
+casperlabs-contract-utils = "0.1.0"
+liquid-transfer-crate = { path = "../../crates/liquid-transfer-crate" }
 liquid-locker-crate = { path = "../../liquid-locker/liquid-locker-crate" }
 common = { path = "../../common" }
 renvm-sig = "0.1.1"

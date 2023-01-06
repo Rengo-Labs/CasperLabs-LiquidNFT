@@ -1,0 +1,23 @@
+[workspace]
+members = [
+  # COMMON
+  "Contracts/common",
+  # MOCK CEP47
+  "Contracts/mock-cep47",
+  # MOCK ERC20
+  "Contracts/mock-erc20",
+  # CRATES
+  "Contracts/crates/liquid-base-crate",
+  "Contracts/crates/liquid-helper-crate",
+  "Contracts/crates/liquid-transfer-crate",
+  # LIQUID FACTORY
+  "Contracts/liquid-factory/liquid-factory",
+  "Contracts/liquid-factory/liquid-factory-crate",
+  "Contracts/liquid-factory/liquid-factory-tests",
+  # LIQUID LOCKER
+  "Contracts/liquid-locker/liquid-locker",
+  "Contracts/liquid-locker/liquid-locker-crate",
+]
+[profile.release]
+codegen-units = 1
+lto = true

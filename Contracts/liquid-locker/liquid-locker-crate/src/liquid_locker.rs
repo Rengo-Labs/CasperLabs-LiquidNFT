@@ -1,50 +1,61 @@
-use crate::{data, events::LiquidLockerEvent};
 use alloc::{collections::BTreeMap, string::ToString, vec::Vec};
 use casper_contract::{
-    contract_api::{runtime, storage},
+    contract_api::{
+        runtime::{self, get_blocktime},
+        storage,
+    },
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
-use liquid_helper_crate::liquid_base_crate::{data as liquid_base_data, data::*, LIQUIDBASE};
+use liquid_helper_crate::liquid_base_crate::{data::*, events::LiquidBaseEvent};
 use liquid_helper_crate::LIQUIDHELPER;
 use liquid_transfer_crate::LIQUIDTRANSFER;
 
 pub trait LIQUIDLOCKER<Storage: ContractStorage>:
-    ContractContext<Storage> + LIQUIDHELPER<Storage> + LIQUIDBASE<Storage> + LIQUIDTRANSFER<Storage>
+    ContractContext<Storage> + LIQUIDHELPER<Storage> + LIQUIDTRANSFER<Storage>
 {
     fn init(
         &mut self,
         trustee_multisig: Key,
         payment_token: Key,
+        factory_address: Key,
         contract_hash: Key,
         package_hash: ContractPackageHash,
     ) {
-        LIQUIDBASE::init(self);
         let mut g = get_globals();
         g.locker_owner = self.get_caller();
         set_globals(g);
-        data::set_hash(contract_hash);
-        data::set_package_hash(package_hash);
-        liquid_base_data::set_payment_token(payment_token);
-        liquid_base_data::set_trustee_multisig(trustee_multisig);
+        LIQUIDHELPER::init(
+            self,
+            factory_address,
+            trustee_multisig,
+            payment_token,
+            contract_hash,
+            package_hash,
+        );
     }
 
     fn only_locker_owner(&self) {
-        if !(self.get_caller() == get_globals().locker_owner) {
+        if self.get_caller() != get_globals().locker_owner {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
     }
 
-    fn only_during_contribution_phase(&self) {
-        if !(LIQUIDHELPER::contribution_phase(self) == true
-            && LIQUIDHELPER::payment_time_not_set(self) == true)
-        {
-            runtime::revert(ApiError::from(Error::NotContributionPhase));
+    fn only_from_factory(&self) {
+        if self.get_caller() != get_factory_address() {
+            runtime::revert(ApiError::from(Error::InvalidAddress));
         }
     }
 
+    fn only_during_contribution_phase(&self) {
+        if !(self.contribution_phase() && self.payment_time_not_set()) {
+            runtime::revert(ApiError::from(Error::InvalidPhase));
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn initialize(
         &self,
         token_id: Vec<U256>,
@@ -55,6 +66,7 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         payment_time: U256,
         payment_rate: U256,
     ) {
+        self.only_from_factory();
         set_globals(Globals {
             token_id,
             payment_time,
@@ -62,100 +74,130 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             locker_owner: token_owner,
             token_address,
         });
-
-        LIQUIDBASE::set_floor_asked(self, floor_asked);
-        LIQUIDBASE::set_total_asked(self, total_asked);
-
-        if LIQUIDBASE::get_creation_time(self) > 0.into() {
-            self._reset_values();
-        }
-
-        let blocktime: u64 = runtime::get_blocktime().into();
-        LIQUIDBASE::set_creation_time(self, U256::from(blocktime));
-    }
-
-    fn _reset_values(&self) {
-        LIQUIDBASE::set_claimable_balance(self, 0.into());
-        LIQUIDBASE::set_remaining_balance(self, 0.into());
-        LIQUIDBASE::set_penalties_balance(self, 0.into());
+        set_floor_asked(floor_asked);
+        set_total_asked(total_asked);
+        set_creation_time(U256::from(u64::from(get_blocktime())));
     }
 
     fn increase_payment_rate(&self, new_payment_rate: U256) {
         self.only_locker_owner();
         self.only_during_contribution_phase();
 
-        if !(new_payment_rate > get_globals().payment_rate) {
+        if new_payment_rate > PRECISION_R {
+            runtime::revert(ApiError::from(Error::InvalidRate));
+        }
+
+        if new_payment_rate <= get_globals().payment_rate {
             runtime::revert(ApiError::from(Error::InvalidIncrease));
         }
 
         let mut g = get_globals();
         g.payment_rate = new_payment_rate;
         set_globals(g);
+
+        self.emit(&LiquidBaseEvent::PaymentRateIncrease { new_payment_rate });
     }
 
     fn decrease_payment_time(&self, new_payment_time: U256) {
         self.only_locker_owner();
         self.only_during_contribution_phase();
 
-        if !(new_payment_time < get_globals().payment_time) {
+        if new_payment_time >= get_globals().payment_time {
             runtime::revert(ApiError::from(Error::InvalidDecrease));
         }
 
         let mut g = get_globals();
         g.payment_time = new_payment_time;
         set_globals(g);
+
+        self.emit(&LiquidBaseEvent::PaymentTimeDecrease { new_payment_time });
+    }
+
+    fn update_settings(&mut self, new_payment_rate: U256, new_payment_time: U256) {
+        self.only_locker_owner();
+        self.only_during_contribution_phase();
+
+        if new_payment_rate > PRECISION_R {
+            runtime::revert(ApiError::from(Error::InvalidRate1));
+        }
+
+        if new_payment_rate <= get_globals().payment_rate {
+            runtime::revert(ApiError::from(Error::InvalidRate2));
+        }
+
+        if new_payment_time >= get_globals().payment_time {
+            runtime::revert(ApiError::from(Error::InvalidTime));
+        }
+
+        let mut g = get_globals();
+        g.payment_rate = new_payment_rate;
+        g.payment_time = new_payment_time;
+        set_globals(g);
+
+        self.emit(&LiquidBaseEvent::PaymentRateIncrease { new_payment_rate });
+        self.emit(&LiquidBaseEvent::PaymentTimeDecrease { new_payment_time });
     }
 
     fn make_contribution(&mut self, token_amount: U256, token_holder: Key) -> (U256, U256) {
+        self.only_from_factory();
         self.only_during_contribution_phase();
 
         let total_increase: U256 = self._total_increase(token_amount);
         let users_increase: U256 = self._users_increase(token_holder, token_amount, total_increase);
-        LIQUIDHELPER::_increase_contributions(self, token_holder, users_increase);
-        LIQUIDHELPER::_increase_total_collected(self, total_increase);
+        self._increase_contributions(token_holder, users_increase);
+        self._increase_total_collected(total_increase);
 
         (total_increase, users_increase)
     }
 
+    /// @dev Check if this contribution adds enough for the user to become the sole contributor.
+    /// Make them the sole contributor if so, otherwise return the totalAmount
     fn _users_increase(
         &mut self,
         token_holder: Key,
         token_amount: U256,
         total_amount: U256,
     ) -> U256 {
-        if LIQUIDHELPER::reached_total(self, token_holder, token_amount) {
+        if self.reached_total(token_holder, token_amount) {
             self._reached_total(token_holder)
         } else {
             total_amount
         }
     }
 
+    /// @dev Calculate whether a contribution go over the maximum asked.
+    /// If so only allow it to go up to the totalAsked an not over
     fn _total_increase(&self, token_amount: U256) -> U256 {
-        if LIQUIDBASE::get_total_collected(self)
+        if get_total_collected()
             .checked_add(token_amount)
             .unwrap_or_revert()
-            < LIQUIDBASE::get_total_asked(self)
+            < get_total_asked()
         {
             token_amount
         } else {
-            token_amount
-                .checked_sub(LIQUIDBASE::get_total_collected(self))
+            get_total_asked()
+                .checked_sub(get_total_collected())
                 .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub0)
         }
     }
 
+    /// @dev Make the user the singleProvider.
+    /// Making the user the singleProvider allows all other contributors to claim their funds back.
+    /// Essentially if you contribute the whole maximum asked on your own you will kick everyone else out
     fn _reached_total(&mut self, token_holder: Key) -> U256 {
-        if !(LIQUIDBASE::get_single_provider(self) == zero_address()) {
+        if get_single_provider() != zero_address()
+            && get_single_provider() != account_zero_address()
+        {
             runtime::revert(ApiError::from(Error::ProviderExists));
         }
 
-        let total_reach: U256 = LIQUIDBASE::get_total_asked(self)
-            .checked_sub(LIQUIDBASE::Contributions(self).get(&token_holder))
+        let total_reach: U256 = get_total_asked()
+            .checked_sub(Contributions::instance().get(&token_holder))
             .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub1);
 
-        LIQUIDBASE::set_single_provider(self, token_holder);
+        set_single_provider(token_holder);
 
-        self.emit(&LiquidLockerEvent::SingleProvider {
+        self.emit(&LiquidBaseEvent::SingleProvider {
             single_provider: token_holder,
         });
 
@@ -163,149 +205,153 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn enable_locker(&mut self, prepay_amount: U256) {
-        if !(LIQUIDHELPER::below_floor_asked(self) == false) {
+        self.only_locker_owner();
+
+        if self.below_floor_asked() {
             runtime::revert(ApiError::from(Error::BelowFloor));
         }
 
-        if !(LIQUIDHELPER::payment_time_not_set(self) == true) {
+        if !self.payment_time_not_set() {
             runtime::revert(ApiError::from(Error::EnabledLocker));
         }
 
         let (total_payback, epoch_payback, teams_payback): (U256, U256, U256) = self
             .calculate_paybacks(
-                LIQUIDBASE::get_total_collected(self),
+                get_total_collected(),
                 get_globals().payment_time,
                 get_globals().payment_rate,
             );
 
-        LIQUIDBASE::set_claimable_balance(
-            self,
-            LIQUIDBASE::get_claimable_balance(self)
+        set_claimable_balance(
+            get_claimable_balance()
                 .checked_add(prepay_amount)
                 .unwrap_or_revert(),
         );
 
-        LIQUIDBASE::set_remaining_balance(
-            self,
+        set_remaining_balance(
             total_payback
                 .checked_sub(prepay_amount)
                 .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub2),
         );
 
-        LIQUIDHELPER::_safe_transfer(
-            self,
-            get_payment_token(),
-            get_globals().locker_owner,
-            LIQUIDBASE::get_total_collected(self)
-                .checked_sub(prepay_amount)
-                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub3)
-                .checked_sub(teams_payback)
-                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub4),
-        );
-
-        LIQUIDHELPER::_safe_transfer(
-            self,
-            get_payment_token(),
-            get_trustee_multisig(),
-            teams_payback,
-        );
-
-        LIQUIDBASE::set_next_due_time(
-            self,
-            LIQUIDHELPER::starting_timestamp(self)
+        set_next_due_time(
+            self.starting_timestamp()
                 .checked_add(prepay_amount)
                 .unwrap_or_revert()
                 .checked_div(epoch_payback)
                 .unwrap_or_revert_with(Error::LiquidLockerDivision0),
         );
 
-        self.emit(&LiquidLockerEvent::PaymentMade {
+        self._safe_transfer(
+            get_payment_token(),
+            self.get_caller(),
+            get_total_collected()
+                .checked_sub(prepay_amount)
+                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub3)
+                .checked_sub(teams_payback)
+                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub4),
+        );
+
+        self._safe_transfer(get_payment_token(), get_trustee_multisig(), teams_payback);
+
+        self.emit(&LiquidBaseEvent::PaymentMade {
             payment_amount: prepay_amount,
+            payment_address: self.get_caller(),
         });
     }
 
     fn disable_locker(&self) {
         self.only_locker_owner();
-
-        if !(self.get_caller() == get_globals().locker_owner) {
-            runtime::revert(ApiError::from(Error::InvalidOwner));
-        }
-        if !(LIQUIDHELPER::below_floor_asked(self) == true) {
+        if !self.below_floor_asked() {
             runtime::revert(ApiError::from(Error::FloorReached));
         }
-        self._disable_locker();
+        self._return_owner_tokens();
     }
 
-    fn _disable_locker(&self) {
-        self._return_token();
-        LIQUIDHELPER::_revoke_owner(self);
+    /// @dev Internal function that does the work for disableLocker
+    /// it returns all the NFT tokens to the original owner.
+    fn _return_owner_tokens(&self) {
+        let mut g = get_globals();
+        let locker_owner = g.locker_owner;
+        g.locker_owner = account_zero_address();
+        set_globals(g);
+
+        self.transfer_nft(
+            get_globals().token_address,
+            locker_owner,
+            get_globals().token_id,
+        );
     }
 
     fn rescue_locker(&self) {
-        if !(self.get_caller() == get_trustee_multisig()) {
+        if self.get_caller() != get_trustee_multisig() {
             runtime::revert(ApiError::from(Error::InvalidTrustee));
         }
 
-        if !(LIQUIDHELPER::time_since(self, LIQUIDBASE::get_creation_time(self)) > DEADLINE_TIME) {
+        if self.time_since(get_creation_time()) <= DEADLINE_TIME {
             runtime::revert(ApiError::from(Error::NotEnoughTime));
         }
 
-        if !(LIQUIDHELPER::payment_time_not_set(self) == true) {
+        if !self.payment_time_not_set() {
             runtime::revert(ApiError::from(Error::AlreadyStarted));
         }
 
-        self._disable_locker();
+        self._return_owner_tokens();
     }
 
-    fn refund_due_disabled(&self, refund_address: Key) {
-        if !(LIQUIDHELPER::ownerless_locker(self) == true
-            || LIQUIDHELPER::floor_not_reached(self) == true)
-        {
+    fn refund_due_expired(&self, refund_address: Key) {
+        if !(self.ownerless_locker() || self.floor_not_reached()) {
             runtime::revert(ApiError::from(Error::EnabledLocker));
         }
 
-        let token_amount: U256 = LIQUIDBASE::Contributions(self).get(&refund_address);
+        let token_amount: U256 = Contributions::instance().get(&refund_address);
 
         self._refund_tokens(token_amount, refund_address);
 
-        LIQUIDHELPER::_decrease_total_collected(self, token_amount);
+        self._decrease_total_collected(token_amount);
     }
 
     fn refund_due_single(&self, refund_address: Key) {
-        if !(LIQUIDHELPER::not_single_provider(self, refund_address) == true) {
+        if !self.not_single_provider(refund_address) {
             runtime::revert(ApiError::from(Error::InvalidSender));
         }
         self._refund_tokens(
-            LIQUIDBASE::Contributions(self).get(&refund_address),
+            Contributions::instance().get(&refund_address),
             refund_address,
         );
     }
 
     fn donate_funds(&self, donation_amount: U256) {
-        LIQUIDBASE::set_claimable_balance(
-            self,
-            LIQUIDBASE::get_claimable_balance(self)
+        self.only_from_factory();
+        set_claimable_balance(
+            get_claimable_balance()
                 .checked_add(donation_amount)
                 .unwrap_or_revert(),
         );
     }
 
-    fn pay_back_funds(&mut self, payment_amount: U256) {
-        if !(LIQUIDHELPER::missed_deadline(self) == false) {
+    fn pay_back_funds(&mut self, payment_amount: U256, payment_address: Key) {
+        self.only_from_factory();
+
+        if !self.missed_deadline() {
             runtime::revert(ApiError::from(Error::TooLate));
         }
 
         self._adjust_balances(payment_amount, self._penalty_amount());
 
-        if LIQUIDBASE::get_remaining_balance(self) == U256::from(0) {
-            self._disable_locker();
-            LIQUIDHELPER::_revoke_due_time(self);
-            self._split_penalties();
+        self.emit(&LiquidBaseEvent::PaymentMade {
+            payment_amount,
+            payment_address,
+        });
+
+        if get_remaining_balance() == U256::from(0) {
+            self._revoke_due_time();
+            self._return_owner_tokens();
             return;
         }
 
-        let payed_timestamp: U256 = LIQUIDBASE::get_next_due_time(self);
-        let final_timestamp: U256 = LIQUIDHELPER::payback_timestamp(self);
+        let mut payed_timestamp: U256 = get_next_due_time();
+        let final_timestamp: U256 = self.payback_timestamp();
 
         if payed_timestamp == final_timestamp {
             return;
@@ -313,56 +359,60 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
 
         let purchased_time: U256 = payment_amount
             .checked_div(self.calculate_epoch(
-                LIQUIDBASE::get_total_collected(self),
+                get_total_collected(),
                 get_globals().payment_time,
                 get_globals().payment_rate,
             ))
             .unwrap_or_revert_with(Error::LiquidLockerDivision1);
 
-        if !(purchased_time >= SECONDS_IN_DAY) {
+        if purchased_time < MILLI_SECONDS_IN_DAY {
             runtime::revert(ApiError::from(Error::MinimumPayoff));
         }
 
-        let blocktime: u64 = runtime::get_blocktime().into();
-        if payed_timestamp > U256::from(blocktime) {
-            LIQUIDHELPER::_add(self, payed_timestamp, purchased_time);
+        payed_timestamp = if payed_timestamp > U256::from(u64::from(get_blocktime())) {
+            payed_timestamp
+                .checked_add(purchased_time)
+                .unwrap_or_revert()
         } else {
-            LIQUIDHELPER::_add(self, U256::from(blocktime), purchased_time);
-        }
+            U256::from(u64::from(get_blocktime()))
+                .checked_add(purchased_time)
+                .unwrap_or_revert()
+        };
 
-        if payed_timestamp < final_timestamp {
-            LIQUIDBASE::set_next_due_time(self, payed_timestamp);
-        } else {
-            LIQUIDBASE::set_next_due_time(self, final_timestamp);
-        }
-
-        self.emit(&LiquidLockerEvent::PaymentMade { payment_amount });
+        set_next_due_time(payed_timestamp);
     }
 
     fn liquidate_locker(&self) {
-        if !(LIQUIDHELPER::missed_activate(self) == true
-            || LIQUIDHELPER::missed_deadline(self) == true)
-        {
+        if !(self.missed_activate() || self.missed_deadline()) {
             runtime::revert(ApiError::from(Error::TooEarly));
         }
-        LIQUIDTRANSFER::transfer_nft(
-            self,
+        self._revoke_due_time();
+
+        let mut g = get_globals();
+        g.locker_owner = account_zero_address();
+        set_globals(g);
+
+        self.transfer_nft(
             get_globals().token_address,
-            LIQUIDHELPER::liquidate_to(self),
+            self.liquidate_to(),
             get_globals().token_id,
         );
-        LIQUIDHELPER::_revoke_due_time(self);
-        self._claim_penalties();
+
+        self.emit(&LiquidBaseEvent::Liquidated {
+            liquidator_address: self.get_caller(),
+        });
     }
 
     fn penalty_amount(&self, total_collected: U256, late_days_amount: U256) -> U256 {
         self._get_penalty_amount(total_collected, late_days_amount)
     }
 
+    /// @dev calculate how much in penalties the owner has due to late time since last payment
     fn _penalty_amount(&self) -> U256 {
-        self._get_penalty_amount(LIQUIDBASE::get_total_collected(self), self.get_late_days())
+        self._get_penalty_amount(get_total_collected(), self.get_late_days())
     }
 
+    /// @dev Calculate penalties. .5% for first 4 days and 1% for each day after the 4th
     fn _get_penalty_amount(&self, total_collected: U256, late_days_amount: U256) -> U256 {
         total_collected
             .checked_mul(self._days_base(late_days_amount))
@@ -371,6 +421,8 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
             .unwrap_or_revert_with(Error::LiquidLockerDivision2)
     }
 
+    /// @dev Helper for the days math of calcualte penalties.
+    /// Returns +1 per day before the 4th day and +2 for each day after the 4th day
     fn _days_base(&self, days_amount: U256) -> U256 {
         if days_amount > 4.into() {
             days_amount
@@ -384,12 +436,11 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
     }
 
     fn get_late_days(&self) -> U256 {
-        let blocktime: u64 = runtime::get_blocktime().into();
-        if U256::from(blocktime) > LIQUIDBASE::get_next_due_time(self) {
-            U256::from(blocktime)
-                .checked_sub(LIQUIDBASE::get_next_due_time(self))
+        if U256::from(u64::from(get_blocktime())) > get_next_due_time() {
+            U256::from(u64::from(get_blocktime()))
+                .checked_sub(get_next_due_time())
                 .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub6)
-                .checked_div(SECONDS_IN_DAY)
+                .checked_div(MILLI_SECONDS_IN_DAY)
                 .unwrap_or_revert_with(Error::LiquidLockerDivision3)
         } else {
             0.into()
@@ -403,18 +454,18 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         payment_rate: U256,
     ) -> (U256, U256, U256) {
         let total_payback: U256 = payment_rate
-            .checked_add(100.into())
+            .checked_add(PRECISION_R)
             .unwrap_or_revert()
             .checked_mul(total_value)
             .unwrap_or_revert()
-            .checked_div(100.into())
+            .checked_div(PRECISION_R)
             .unwrap_or_revert_with(Error::LiquidLockerDivision4);
         let teams_payback: U256 = total_payback
             .checked_sub(total_value)
             .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub7)
             .checked_mul(FEE)
             .unwrap_or_revert()
-            .checked_div(100.into())
+            .checked_div(PRECISION_R)
             .unwrap_or_revert_with(Error::LiquidLockerDivision5);
         let epoch_payback: U256 = total_payback
             .checked_sub(total_value)
@@ -429,152 +480,127 @@ pub trait LIQUIDLOCKER<Storage: ContractStorage>:
         total_value
             .checked_mul(payment_rate)
             .unwrap_or_revert()
-            .checked_div(100.into())
+            .checked_div(PRECISION_R)
             .unwrap_or_revert_with(Error::LiquidLockerDivision7)
             .checked_div(payment_time)
             .unwrap_or_revert_with(Error::LiquidLockerDivision8)
     }
 
-    fn claim_interest_single(&self) {
-        if !(LIQUIDBASE::get_single_provider(self) == self.get_caller()) {
-            runtime::revert(ApiError::from(Error::NotSingleProvider));
+    fn claim_interest(&self) {
+        let provider = get_single_provider();
+
+        if !(provider == zero_address()
+            || provider == account_zero_address()
+            || provider == self.get_caller())
+        {
+            runtime::revert(ApiError::from(Error::NotAuthorized));
         }
 
         self._claim_interest(self.get_caller());
     }
 
-    fn claim_interest_public(&self) {
-        if !(LIQUIDBASE::get_single_provider(self) == zero_address()) {
-            runtime::revert(ApiError::from(Error::SingleProviderExists));
-        }
-
-        self._claim_interest(self.get_caller());
-    }
-
+    /// @dev Does the internal work of claiming payed back tokens.
+    /// Amount to claimed is based on share of contributions, and we record what someone has claimed in the
+    /// compensations mapping
     fn _claim_interest(&self, claim_address: Key) {
-        let claim_amount: U256 = LIQUIDBASE::get_claimable_balance(self)
-            .checked_mul(LIQUIDBASE::Contributions(self).get(&claim_address))
+        let claim_amount: U256 = get_claimable_balance()
+            .checked_mul(Contributions::instance().get(&claim_address))
             .unwrap_or_revert()
-            .checked_div(LIQUIDBASE::get_total_collected(self))
+            .checked_div(get_total_collected())
             .unwrap_or_revert_with(Error::LiquidLockerDivision9);
 
-        LIQUIDHELPER::_safe_transfer(
-            self,
-            get_payment_token(),
+        let tokens_to_transfer = claim_amount
+            .checked_sub(Compensations::instance().get(&claim_address))
+            .unwrap_or_revert();
+
+        Compensations::instance().set(&claim_address, claim_amount);
+
+        self._safe_transfer(get_payment_token(), claim_address, tokens_to_transfer);
+
+        self.emit(&LiquidBaseEvent::ClaimMade {
+            claim_amount: tokens_to_transfer,
             claim_address,
-            claim_amount
-                .checked_sub(LIQUIDBASE::Compensations(self).get(&claim_address))
-                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub9),
-        );
-
-        LIQUIDBASE::Compensations(self).set(&claim_address, claim_amount);
-    }
-
-    fn _claim_penalties(&self) {
-        if !(LIQUIDBASE::get_penalties_balance(self) > LIQUIDBASE::get_claimable_balance(self)) {
-            return;
-        }
-
-        LIQUIDHELPER::_safe_transfer(
-            self,
-            get_payment_token(),
-            get_trustee_multisig(),
-            LIQUIDBASE::get_penalties_balance(self),
-        );
-
-        LIQUIDBASE::set_claimable_balance(
-            self,
-            LIQUIDBASE::get_claimable_balance(self)
-                .checked_sub(LIQUIDBASE::get_penalties_balance(self))
-                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub10),
-        );
-
-        LIQUIDBASE::set_penalties_balance(self, 0.into());
-    }
-
-    fn _split_penalties(&self) {
-        let team_balance: U256 = LIQUIDBASE::get_penalties_balance(self)
-            .checked_mul(FEE)
-            .unwrap_or_revert()
-            .checked_div(100.into())
-            .unwrap_or_revert_with(Error::LiquidLockerDivision10);
-
-        if team_balance > LIQUIDBASE::get_claimable_balance(self) {
-            return;
-        }
-
-        LIQUIDHELPER::_safe_transfer(
-            self,
-            get_payment_token(),
-            get_trustee_multisig(),
-            team_balance,
-        );
-
-        LIQUIDBASE::set_claimable_balance(
-            self,
-            LIQUIDBASE::get_claimable_balance(self)
-                .checked_sub(team_balance)
-                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub11),
-        );
-
-        LIQUIDBASE::set_penalties_balance(self, 0.into());
-    }
-
-    fn _adjust_balances(&self, payment_tokens: U256, penalty_tokens: U256) {
-        LIQUIDBASE::set_claimable_balance(
-            self,
-            LIQUIDBASE::get_claimable_balance(self)
-                .checked_add(payment_tokens)
-                .unwrap_or_revert(),
-        );
-        LIQUIDBASE::set_penalties_balance(
-            self,
-            LIQUIDBASE::get_penalties_balance(self)
-                .checked_add(penalty_tokens)
-                .unwrap_or_revert(),
-        );
-
-        LIQUIDBASE::set_remaining_balance(
-            self,
-            LIQUIDBASE::get_remaining_balance(self)
-                .checked_sub(payment_tokens)
-                .unwrap_or_revert_with(Error::LiquidLockerUnderflowSub12)
-                .checked_add(penalty_tokens)
-                .unwrap_or_revert(),
-        );
-    }
-
-    fn _return_token(&self) {
-        LIQUIDTRANSFER::transfer_nft(
-            self,
-            get_globals().token_address,
-            get_globals().locker_owner,
-            get_globals().token_id,
-        );
+        });
     }
 
     fn _refund_tokens(&self, refund_amount: U256, refund_address: Key) {
-        LIQUIDBASE::Contributions(self).set(&refund_address, 0.into());
-
-        LIQUIDHELPER::_safe_transfer(self, get_payment_token(), refund_address, refund_amount);
+        Contributions::instance().set(
+            &refund_address,
+            Contributions::instance()
+                .get(&refund_address)
+                .checked_sub(refund_amount)
+                .unwrap_or_revert(),
+        );
+        self._safe_transfer(get_payment_token(), refund_address, refund_amount);
+        self.emit(&LiquidBaseEvent::RefundMade {
+            refund_amount,
+            refund_address,
+        });
     }
 
-    fn emit(&mut self, liquid_locker_event: &LiquidLockerEvent) {
+    fn emit(&self, liquid_base_event: &LiquidBaseEvent) {
         let mut events = Vec::new();
-        let package = data::get_contract_package_hash();
-        match liquid_locker_event {
-            LiquidLockerEvent::SingleProvider { single_provider } => {
+        let package = get_contract_package_hash();
+        match liquid_base_event {
+            LiquidBaseEvent::SingleProvider { single_provider } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", liquid_locker_event.type_name());
+                event.insert("event_type", liquid_base_event.type_name());
                 event.insert("single_provider", single_provider.to_string());
                 events.push(event);
             }
-            LiquidLockerEvent::PaymentMade { payment_amount } => {
+            LiquidBaseEvent::PaymentMade {
+                payment_amount,
+                payment_address,
+            } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", liquid_locker_event.type_name());
+                event.insert("event_type", liquid_base_event.type_name());
                 event.insert("payment_amount", payment_amount.to_string());
+                event.insert("payment_address", payment_address.to_string());
+                events.push(event);
+            }
+            LiquidBaseEvent::RefundMade {
+                refund_amount,
+                refund_address,
+            } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", liquid_base_event.type_name());
+                event.insert("refund_amount", refund_amount.to_string());
+                event.insert("refund_address", refund_address.to_string());
+                events.push(event);
+            }
+            LiquidBaseEvent::ClaimMade {
+                claim_amount,
+                claim_address,
+            } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", liquid_base_event.type_name());
+                event.insert("claim_amount", claim_amount.to_string());
+                event.insert("claim_address", claim_address.to_string());
+                events.push(event);
+            }
+            LiquidBaseEvent::Liquidated { liquidator_address } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", liquid_base_event.type_name());
+                event.insert("liquidator_address", liquidator_address.to_string());
+                events.push(event);
+            }
+            LiquidBaseEvent::PaymentRateIncrease { new_payment_rate } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", liquid_base_event.type_name());
+                event.insert("new_payment_rate", new_payment_rate.to_string());
+                events.push(event);
+            }
+            LiquidBaseEvent::PaymentTimeDecrease { new_payment_time } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", liquid_base_event.type_name());
+                event.insert("new_payment_time", new_payment_time.to_string());
                 events.push(event);
             }
         };

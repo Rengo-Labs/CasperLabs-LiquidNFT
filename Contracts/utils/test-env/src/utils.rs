@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_engine_test_support::{
     DeployItemBuilder, ExecuteRequestBuilder, InMemoryWasmTestBuilder, ARG_AMOUNT,
     DEFAULT_ACCOUNT_ADDR, DEFAULT_PAYMENT,
@@ -27,16 +28,17 @@ pub fn query<T: FromBytes + CLTyped>(
 }
 
 pub fn fund_account(account: &AccountHash) -> ExecuteRequest {
+    let mut rng = rand::thread_rng();
     let deploy_item = DeployItemBuilder::new()
         .with_address(*DEFAULT_ACCOUNT_ADDR)
         .with_authorization_keys(&[*DEFAULT_ACCOUNT_ADDR])
         .with_empty_payment_bytes(runtime_args! {ARG_AMOUNT => *DEFAULT_PAYMENT})
         .with_transfer_args(runtime_args! {
-            mint::ARG_AMOUNT => U512::from(30_000_000_000_000_u64),
+            mint::ARG_AMOUNT => U512::from(3_000_000_000_000_000_u64),
             mint::ARG_TARGET => *account,
             mint::ARG_ID => <Option::<u64>>::None
         })
-        .with_deploy_hash([1; 32])
+        .with_deploy_hash(rng.gen())
         .build();
 
     ExecuteRequestBuilder::from_deploy_item(deploy_item).build()
@@ -69,7 +71,6 @@ pub fn deploy(
         .with_address(*deployer)
         .with_authorization_keys(&[*deployer])
         .with_deploy_hash(rng.gen());
-
     deploy_builder = match source {
         DeploySource::Code(path) => deploy_builder.with_session_code(path, args),
         DeploySource::ByContractHash { hash, method } => {
@@ -126,7 +127,8 @@ pub fn query_dictionary_item(
                 let dictionary_uref = named_keys
                     .get(&name)
                     .and_then(Key::as_uref)
-                    .ok_or_else(|| "No dictionary uref was found in named keys".to_string())?;
+                    .unwrap_or_revert();
+                // ..unwrap_or_revert_with(r_else(|| "No dictionary uref was found in named keys".to_string())?;
 
                 Key::dictionary(*dictionary_uref, dictionary_key_bytes)
             } else {

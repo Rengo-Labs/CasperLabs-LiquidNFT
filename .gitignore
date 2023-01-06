@@ -1,3 +1,10 @@
+<<<<<<< HEAD
 .vscode
 target
 Cargo.lock
+=======
+**/keys
+**/node_modules
+target
+*.wasm
+>>>>>>> b65e88a361f7f18f2eeb1197d7844f31d4d3fd6d

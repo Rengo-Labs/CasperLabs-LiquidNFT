@@ -42,7 +42,7 @@ pub fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "decrease_payment_time",
-        vec![Parameter::new("new_payment_rate", CLType::U256)],
+        vec![Parameter::new("new_payment_time", CLType::U256)],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -69,7 +69,7 @@ pub fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "refund_due_disabled",
+        "refund_due_expired",
         vec![Parameter::new("refund_address", CLType::Key)],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -91,7 +91,10 @@ pub fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "pay_back_funds",
-        vec![Parameter::new("payment_amount", CLType::U256)],
+        vec![
+            Parameter::new("payment_amount", CLType::U256),
+            Parameter::new("payment_address", CLType::Key),
+        ],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -104,14 +107,7 @@ pub fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "claim_interest_single",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claim_interest_public",
+        "claim_interest",
         vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
