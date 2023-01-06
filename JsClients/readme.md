@@ -51,11 +51,11 @@ npm run testTooLatePayBackFlow 22 name AwesomeNFT d10359a72bdf42adbe6067b4e7c1c1
 
 Readme for mainContract flow:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/mainContractFlowScript/readme.md
 
 Readme for tooLate liquidate flow:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory-Tests-Scripts/tooLateLiquidateFlowScript/readme.md
 
 
 ## Test JsClients Individually
@@ -64,16 +64,16 @@ See all JsClients readme
 
 Readme for cep47 JSClient:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/casper-cep47/README.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/casper-cep47/README.md
 
 Readme for erc20 JSClient:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/uniswapV2Core-erc20/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/uniswapV2Core-erc20/readme.md
 
 Readme for LiquidNFT JSClient: 
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT/readme.md
 
 Readme for LiquidNFT-Factory JSClient:
 
-https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory/readme.md
+https://github.com/Rengo-Labs/CasperLabs-LiquidNFT/blob/main/JsClients/LiquidNFT-Factory/readme.md

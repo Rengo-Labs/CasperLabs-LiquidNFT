@@ -34,10 +34,10 @@ const {
   //CONTRACT_NAME
 } = process.env;
 
-const TOKEN_NAME = "An NFT";
-const TOKEN_META = new Map<string, string>().set("company name", "Scytalelabs");
+const TOKEN_NAME = "LNFT test";
+const TOKEN_META = new  Map<string,string>().set("company name","Rengo Labs");
 const TOKEN_SYMBOL = "LNFT";
-const CONTRACT_NAME = "Scytalelabs-Baz-cep47-";
+const CONTRACT_NAME = "Rengo Labs-Baz-cep47-";
 const INSTALL_PAYMENT_AMOUNT = "200000000000";
 const WASM_PATH = "wasm/cep47-token.wasm";
 const KEYS = Keys.Ed25519.parseKeyFiles(

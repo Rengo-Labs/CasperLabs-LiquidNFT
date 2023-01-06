@@ -35,7 +35,7 @@ Implementation of following contracts for the CasperLabs platform.
 3. Clone this repo and navigate into the folder.
 
 ```bash
-$ git clone https://github.com/Scytalelabs-official/CasperLabs-LiquidNFT.git
+$ git clone https://github.com/Rengo-Labs-official/CasperLabs-LiquidNFT.git
 ```
 
 4. A receiving Casper account. An easy way to set one up is using the [Casperlabs Signer](https://docs.cspr.community/docs/user-guides/SignerGuide.html).

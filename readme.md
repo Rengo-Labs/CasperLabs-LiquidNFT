@@ -1,5 +1,7 @@
 # CasperLabs-LiquidNFT
 
+[![Rengo-Labs/CasperLabs-LiquidNFT](https://circleci.com/gh/Rengo-Labs/CasperLabs-LiquidNFT.svg?style=svg)](https://circleci.com/gh/Rengo-Labs/CasperLabs-LiquidNFT)
+
 ### Install the prerequisites
 
 You can install the required software by issuing the following commands. If you are on an up-to-date Casper node, you probably already have all of the prerequisites installed so you can skip this step.
